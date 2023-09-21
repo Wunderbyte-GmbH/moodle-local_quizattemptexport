@@ -1,0 +1,68 @@
+<div class="usersattemptslist">
+
+    {{#zipdownloadurl}}
+        <a href="{{{zipdownloadurl}}}" id="zipdownloadbtn" class="btn btn-primary">{{#str}}template_usersattemptslist_zipdownload, local_quizattemptexport{{/str}}</a>
+    {{/zipdownloadurl}}
+
+    {{#exportallurl}}
+        <a href="{{{exportallurl}}}" id="exportallbtn" class="btn btn-primary">{{#str}}template_usersattemptslist_exportall, local_quizattemptexport{{/str}}</a>
+    {{/exportallurl}}
+
+    {{#users}}
+
+        <div class="userattempts">
+
+            <h3>{{{fullname}}} ({{{username}}})</h3>
+
+            {{#attempts}}
+
+                <table>
+                    <tr>
+                        <th class="mainheadline" colspan="2">
+                            {{#str}}template_usersattemptslist_attemptfrom, local_quizattemptexport{{/str}}: {{{timefinished}}}
+                            {{#reexporturl}}
+                                <a class="btn btn-primary reexporturl" href="{{{reexporturl}}}">{{#str}}template_usersattemptslist_reexportattempttitle, local_quizattemptexport{{/str}}</a>
+                            {{/reexporturl}}
+                        </th>
+                    </tr>
+                    <tr>
+                        <th class="subheadline" colspan="2">{{#str}}template_usersattemptslist_pdfexportheader, local_quizattemptexport{{/str}}</th>
+                    </tr>
+                    {{#exportfiles}}
+                        <tr>
+                            <td><a href="{{{url}}}">{{{name}}}</a></td>
+                            <td>{{{timecreated}}}</td>
+                        </tr>
+                    {{/exportfiles}}
+                    {{^exportfiles}}
+                        <tr>
+                            <td colspan="2">{{#str}}template_usersattemptslist_nofiles, local_quizattemptexport{{/str}}</td>
+                        </tr>
+                    {{/exportfiles}}
+                    <tr>
+                        <th class="subheadline" colspan="2">{{#str}}template_usersattemptslist_attachmentexportheader, local_quizattemptexport{{/str}}</th>
+                    </tr>
+                    {{#attachmentfiles}}
+                        <tr>
+                            <td><a href="{{{url}}}">{{{name}}}</a></td>
+                            <td>{{{timecreated}}}</td>
+                        </tr>
+                    {{/attachmentfiles}}
+                    {{^attachmentfiles}}
+                        <tr>
+                            <td colspan="2">{{#str}}template_usersattemptslist_nofiles, local_quizattemptexport{{/str}}</td>
+                        </tr>
+                    {{/attachmentfiles}}
+                </table>
+
+            {{/attempts}}
+
+        </div>
+
+    {{/users}}
+
+    {{^users}}
+        <h3>{{#str}}template_usersattemptslist_noattempts, local_quizattemptexport{{/str}}</h3>
+    {{/users}}
+
+</div>
