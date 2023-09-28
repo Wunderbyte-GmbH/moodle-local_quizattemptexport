@@ -42,13 +42,37 @@ class renderer extends \plugin_renderer_base {
             'zipdownloadurl' => !empty($rawdata) ? new \moodle_url('/local/quizattemptexport/overview.php', ['cmid' => $cmid, 'downloadzip' => 1]) : ''
         ];
         foreach ($rawdata as $userid => $attempts) {
-
             $user = $DB->get_record('user', ['id' => $userid]);
             $userdata = [
-                'fullname' => fullname($user),
-                'username' => $user->username,
                 'attempts' => []
             ];
+            
+            $tld = get_config('local_quizattemptexport', 'toplinedata');
+            $h_userinfo = "";
+            $h_bracket = "";
+            if (FALSE !== strpos($tld, 'fullname')) {
+                $h_userinfo .= fullname($user);
+            };
+
+            if (FALSE !== strpos($tld, 'username')) {
+                if ($h_userinfo == "") {
+                    $h_userinfo .= $user->username;
+                } else {
+                    $h_bracket .= $user->username;
+                }
+            };
+
+            if (FALSE !== strpos($tld, 'idnumber')) {
+                if ($h_bracket != "") {
+                    $h_bracket .= ", " . $user->idnumber;
+                } else {
+                    $h_bracket .= $user->idnumber;
+                }
+            };
+            if ($h_bracket != "") {
+                $h_userinfo .= " (" . $h_bracket . ")";
+            };
+            $userdata['toplineheading'] = $h_userinfo;
 
             foreach ($attempts as $attemptid => $filearrays) {
 
