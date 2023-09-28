@@ -74,4 +74,10 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
             PARAM_INT)
     );
 
+    // Show description on overview page.
+    $settings->add(new admin_setting_confightmleditor('local_quizattemptexport/overview_intro', 
+        get_string('setting_usersattemptslist_intro', 'local_quizattemptexport', null, true), 
+        get_string('setting_usersattemptslist_intro_description', 'local_quizattemptexport', null, true), 
+        ''
+    ));
 }

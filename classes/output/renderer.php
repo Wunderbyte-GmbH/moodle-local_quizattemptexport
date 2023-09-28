@@ -36,6 +36,7 @@ class renderer extends \plugin_renderer_base {
         global $DB;
 
         $templatedata = [
+            'intro' => get_config('local_quizattemptexport', 'overview_intro'),
             'users' => [],
             'exportallurl' => $canexportagain && !empty($rawdata) ? new \moodle_url('/local/quizattemptexport/overview.php', ['cmid' => $cmid, 'exportall' => 1]) : '',
             'zipdownloadurl' => !empty($rawdata) ? new \moodle_url('/local/quizattemptexport/overview.php', ['cmid' => $cmid, 'downloadzip' => 1]) : ''
