@@ -31,27 +31,50 @@ $string['attemptresult'] = '{$a->gradeachieved} von {$a->grademax} Punkten ({$a-
 $string['ddimageortext_correctanswer_title'] = 'Korrekte Antworten';
 $string['ddmarker_correctanswer_title'] = 'Korrekte Antworten';
 $string['ddwtos_emptydrop_placeholderstr'] = '-----------------';
-$string['except_attemptnotinquiz'] = 'The given attempt does not belong to the current quiz instance.';
-$string['except_configinvalid'] = 'A setting of the plugin "local_quizattemptexport" is either missing or contains an invalid value: {$a}';
-$string['except_dirmissing'] = 'Directory missing: {$a}';
-$string['except_dirnotwritable'] = 'Directory is not writable: {$a}';
-$string['except_usernoidnumber'] = 'User does not have an idnumber. User id: {$a}';
-$string['except_usernotfound'] = 'User could not be found. User id: {$a}';
+$string['except_attemptnotinquiz'] = 'Dieser Versuch gehört nicht zu diesem Quiz.';
+$string['except_configinvalid'] = 'Eine Einstellung des Plugins "local_quizattemptexport" fehlt entweder oder enthält einen fehlerhaften Wert: {$a}';
+$string['except_dirmissing'] = 'Verzeichnis existiert nicht: {$a}';
+$string['except_dirnotwritable'] = 'Verzeichnis ist nicht beschreibbar: {$a}';
+$string['except_usernoidnumber'] = 'Der Nutzer hat keine "idnumber". Nutzer-ID: {$a}';
+$string['except_usernotfound'] = 'Der Nutzer konnte nicht gefunden werden. Nutzer-ID: {$a}';
 $string['label_coursename'] = 'Prüfung';
-$string['label_quizname'] = 'Assessment';
-$string['label_studentname'] = 'Student';
+$string['label_quizname'] = 'Quiz';
+$string['label_studentname'] = 'Teilnehmer*in';
 $string['label_matriculationid'] = 'Matrikelnummer';
-$string['label_coursecode'] = 'Assessment Code';
+$string['label_coursecode'] = 'Quiz Code';
 $string['label_attemptstarted'] = 'Versuch gestartet';
 $string['label_attemptended'] = 'Versuch beendet';
 $string['label_attemptresult'] = 'Ergebnis';
-$string['nav_exportoverview'] = 'Assessment Export Übersicht';
+$string['nav_exportoverview'] = 'PDF-Export dieser Test-Aktivität';
 $string['page_overview_title'] = 'Exporte für "{$a}"';
-$string['page_overview_attemptedreexport'] = 'Es wurde versucht den Versuch erneut zu exportieren.';
+$string['page_overview_attemptedreexport'] = 'Es wurde probiert, den Versuch erneut zu exportieren.';
 $string['page_overview_progressbar_step'] = 'Exportiere Versuch mit ID "{$a}".';
 $string['page_overview_progressbar_finished'] = 'Exportieren aller Versuche abgeschlossen.';
 $string['setting_usersattemptslist_heading'] = 'Versuchs-Übersichtsseite';
 $string['plugindesc'] = 'Automatischer Export aller Quiz-Versuche.';
+$string['pluginname'] = 'Quiz PDF-Export';
+$string['setting_autoexport'] = 'Aktiviere automatischen Export';
+$string['setting_autoexport_desc'] = 'Aktivieren Sie diese Einstellung, um jeden Quiz-Versuch automatisch zu exportieren, wenn der Benutzer den Versuch einreicht.';
+$string['setting_exportfilesystem'] = 'Export in das Dateisystem auf dem Server';
+$string['setting_exportfilesystem_desc'] = 'Aktivieren Sie diese Option, um PDFs auch in das Dateisystem des Servers zu exportieren. 
+        <br><br> Jeder eingereichte Versuch wird als PDF exportiert und über das Verwaltungsmenü der jeweiligen Quizinstanzen bereitgestellt, 
+        wo sie einzeln heruntergeladen oder bequem in einem ZIP-Archiv zusammengefasst werden können. Außerdem möchten Sie vielleicht, 
+        dass diese Dateien in einen Pfad innerhalb des Dateisystems Ihres Servers exportiert werden, wo Serverprozesse wie Archivierungsjobs auf diese Dateien zugreifen können. 
+        <br><br>Aktivieren Sie diese Option, um die Dateien zusätzlich in das in der Einstellung unten definierte Verzeichnis exportieren zu lassen.';
+$string['setting_mathjaxenable'] = 'Aktiviere MathJax Schriftsatz';
+$string['setting_mathjaxenable_desc'] = 'Aktiviert das Setzen mathematischer Eingaben mit MathJax';
+$string['setting_mathjaxdelay'] = 'MathJax Verarbeitungsverzögerung (Sekunden)';
+$string['setting_mathjaxdelay_desc'] = 'Die Verwendung des MathJax-Schriftsatzes erfordert eine Verarbeitungsverzögerung für jede generierte PDF-Datei, die es MathJax ermöglicht, 
+        die Verarbeitung/den Satz abzuschließen. Der Standardwert sollte die meisten Fälle abdecken. Wenn Ihre Quizinstanzen viele mathematische Eingaben enthalten und
+        nicht alle diese Eingaben gesetzt wurden, müssen Sie diesen Wert möglicherweise auf einen höheren Wert setzen.';
+$string['setting_pdfexportdir'] = 'Export Pfad auf dem Server';
+$string['setting_pdfexportdir_desc'] = 'Dies ist der Pfad eines Verzeichnisses im Dateisystem Ihres Servers, in dem die PDFs zusätzlich gespeichert werden, 
+        wenn Sie die obige Option aktivieren.';
+$string['setting_pdfgenerationtimeout'] = 'Timeout für die PDF-Erstellung (Sekunden)';
+$string['setting_pdfgenerationtimeout_desc'] = 'Stellen Sie den Timeout in Sekunden ein, der für die Generierung der PDF-Dateien gelten soll. 
+        Wenn der Generierungsprozess nach der angegebenen Zeit nicht abgeschlossen ist, wird der Prozess abgebrochen. Stellen Sie den Wert 0 ein, 
+        um das Timeout zu deaktivieren.';
+$string['task_generate_pdf_name'] = 'Erstelle PDF-Exporte';
 $string['setting_usersattemptslist_intro'] = 'Export Übersicht Einleitung';
 $string['setting_usersattemptslist_intro_description'] = 'Hier können Sie einen Text eintragen, der oben auf der Export Übersichtsseite angezeigt wird.';
 $string['task_generate_pdf_name'] = 'Erstelle PDF-Exporte';
@@ -62,8 +85,7 @@ $string['template_usersattemptslist_noattempts'] = 'Für dieses Quiz konnten kei
 $string['template_usersattemptslist_nofiles'] = 'Für diesen Versuch konnten keine Dateien gefunden werden.';
 $string['template_usersattemptslist_pdfexportheader'] = 'Generierte PDF Dateien';
 $string['template_usersattemptslist_reexportattempttitle'] = 'Versuch erneut exportieren';
-$string['template_usersattemptslist_zipdownload'] = 'Alle exportierten Dateien als Zip herunterladen';
-
+$string['template_usersattemptslist_zipdownload'] = 'Alle exportierten Dateien als Zip-Archiv herunterladen';
 $string['envcheck_execfailed'] = 'Problem beim Versuch einen CLI Aufruf abzusetzen.';
 $string['envcheck_notexecutable'] = 'Das im Plugin enthaltene Binary muss durch den Webserver-User ausführbar sein. Details sind in der Readme beschrieben.';
 $string['envcheck_sharedlibsmissing'] = 'Dem enthaltenen Binary fehlen shared Libraries: {$a}';
