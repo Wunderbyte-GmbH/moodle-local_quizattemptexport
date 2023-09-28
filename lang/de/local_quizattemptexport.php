@@ -77,7 +77,29 @@ $string['setting_pdfgenerationtimeout_desc'] = 'Stellen Sie den Timeout in Sekun
 $string['task_generate_pdf_name'] = 'Erstelle PDF-Exporte';
 $string['setting_usersattemptslist_intro'] = 'Export Übersicht Einleitung';
 $string['setting_usersattemptslist_intro_description'] = 'Hier können Sie einen Text eintragen, der oben auf der Export Übersichtsseite angezeigt wird.';
+$string['setting_dynamicfilenameheading'] = 'Einstellungen für dynamische Dateinamen';
+$string['setting_dynamicfilenameheading_desc'] = 'Alle Einstellungen für den dynamischen Dateinamen.';
+$string['setting_dynamicfilename'] = 'Dynamischer Dateiname';
+$string['setting_dynamicfilename_desc'] = 'Geben Sie das Format für den Dateinamen ein oder benutzen Sie die Buttons. <br>
+        Sie können die folgenden Platzhalter verwenden: <code>QUIZNAME, USERID, ATTEMPTID, FNAMECHUNKQUESTION, FNAMECHUNKANSWER, SLOT, CONTENTHASH, TIMESTAMP</code> <br>
+        Sie können jeden anderen Text als statischen Text verwenden. Tippfehler werden in statischen Text umgewandelt. <br>
+        Verwenden Sie <code style="font-size:150%">-</code> oder <code style="font-size:120%">_</code> als Trennzeichen. <br>
+        Beispiel: <code>prefix_QUIZNAME_USERID_ATTEMPTID</code>';
+$string['setting_dynamicfilenamehashalgo'] = 'Hash-Algorithmus';
+$string['setting_dynamicfilenamehashalgo_desc'] = 'Wählen Sie den Hash-Algorithmus aus, der im Dateinamen des exportierten PDFs verwendet werden soll.';
+$string['setting_dynamicfilenamehashlength'] = 'Hash-Länge';
+$string['setting_dynamicfilenamehashlength_desc'] = 'Wählen Sie die Länge des im Dateinamen des exportierten PDFs verwendeten Hash-Wertes aus.';
+$string['filename_quizname'] = 'Quizname';
+$string['filename_idname'] = 'ID-Name';
+$string['filename_username'] = 'Username';
+$string['filename_attemptid'] = 'Versuchs-ID';
+$string['filename_filetype'] = 'Filetype';
+$string['filename_slot'] = 'Versuchs-Slot';
+$string['filename_contexthash'] = 'Kontext Hashwert';
+$string['filename_filenametimestamp'] = 'Datum File';
+
 $string['task_generate_pdf_name'] = 'Erstelle PDF-Exporte';
+
 $string['template_usersattemptslist_attachmentexportheader'] = 'Vom Nutzer hochgeladene Dateianhänge';
 $string['template_usersattemptslist_attemptfrom'] = 'Versuch vom';
 $string['template_usersattemptslist_exportall'] = 'Alle Versuche in dieser Quizinstanz erneut exportieren';

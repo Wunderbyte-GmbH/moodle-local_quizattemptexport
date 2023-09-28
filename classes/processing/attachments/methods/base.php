@@ -82,17 +82,7 @@ abstract class base {
 
         $fs = get_file_storage();
         foreach ($attachments as $attachment) {
-
-            $oldfilename = $attachment->get_filename();
-            $filenameparts = explode('.', $oldfilename);
-            $filetype = array_pop($filenameparts);
-            $filenamepart = implode('.', $filenameparts);
-            $contenthash = hash('sha256', $attachment->get_content());
-
-            $fnamechunk_question = get_string('attachmentexport_filenamechunk_questionno', 'local_quizattemptexport');
-            $fnamechunk_attachment = get_string('attachmentexport_filenamechunk_attachment', 'local_quizattemptexport');
-
-            $filename = $quizname . '_' . $user->idnumber . '_' . $attempt->get_attemptid() . '_' . $fnamechunk_question . $slot . '_'. $fnamechunk_attachment . '_' . $filenamepart . '_' . $contenthash . '.' . $filetype;
+            $filename = self::generate_filename($quizname, $user, $attempt, $attachment, $slot);
 
             $newfile = new \stdClass;
             $newfile->context = $context->id;
@@ -119,6 +109,53 @@ abstract class base {
                 }
             }
         }
+    }
+
+    /**
+     * Generates a filename for a given attempt.
+     * 
+     */
+    protected static function generate_filename($quizname, $user, $attempt, $attachment, $slot) {
+        // Get the format from the settings.
+        $format = get_config('local_quizattemptexport', 'dynamicfilename');
+        $hashtype = get_config('local_quizattemptexport', 'dynamicfilenamehashalgo');
+        $hashlength = get_config('local_quizattemptexport', 'dynamicfilenamehashlength');
+        
+        // Get the Values for the wildcards.
+        $fnamechunkquestion = get_string('attachmentexport_filenamechunk_questionno', 'local_quizattemptexport');
+        $fnamechunkattachment = get_string('attachmentexport_filenamechunk_attachment', 'local_quizattemptexport');
+        $userid = $user->idnumber;
+        $username = $user->username;
+        $attemptid = $attempt->get_attemptid();
+        $oldfilename = $attachment->get_filename();
+        $filenameparts = explode('.', $oldfilename);
+        $filetype = array_pop($filenameparts);
+        $filenamepart = implode('.', $filenameparts);
+        $contenthash = hash($hashtype, $attachment->get_content()); 
+        $convertedquizname = clean_param(\core_text::convert($quizname, 'utf-8', 'ascii'), PARAM_ALPHANUMEXT);
+
+        // Replace the wildcards with the actual values.
+        $replacements = [
+            'QUIZNAME'    => $convertedquizname,
+            'USERID'      => $userid,
+            'USERNAME'    => $username,
+            'ATTEMPTID'   => $attemptid,
+            'FNAMECHUNKQUESTION'  => $fnamechunkquestion,
+            'FNAMECHUNKQATTACHMENT'  => $fnamechunkattachment,
+            'FILETYPE'   => $filetype,
+            'FILENAMEPART'   => $filenamepart,
+            'SLOT'        => $slot,
+            'CONTENTHASH' => substr($contenthash, 0, $hashlength),
+        ];
+    
+        foreach ($replacements as $wildcard => $value) {
+            $format = str_replace( $wildcard, $value, $format);
+        }
+    
+        // Replace invalid characters in the file name.
+        $filename = preg_replace('/[^a-zA-Z0-9\-_\.]/', '', $format);
+    
+        return $filename;
     }
 
 }

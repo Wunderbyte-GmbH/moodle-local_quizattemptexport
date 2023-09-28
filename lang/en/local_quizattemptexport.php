@@ -69,7 +69,28 @@ $string['setting_usersattemptslist_intro'] = 'Overview page intro';
 $string['setting_usersattemptslist_intro_description'] = 'Here you can enter text which is shown at the top of the attempt overview page.';
 $string['setting_toplinedata'] = 'Topline Table Data';
 $string['setting_toplinedata_desc'] = 'Select, which fields from the database should be included in the table of the document.';
+$string['setting_dynamicfilenameheading'] = 'Dynamic Filename Settings';
+$string['setting_dynamicfilenameheading_desc'] = 'All settings for the dynamic filename.';
+$string['setting_dynamicfilename'] = 'Dynamic Filename';
+$string['setting_dynamicfilename_desc'] = 'Enter the format for the file name or press the buttons.<br> 
+        You can use the following wildcards: <code>QUIZNAME, USERID, ATTEMPTID, FNAMECHUNKQUESTION, FNAMECHUNKANSWER, SLOT, CONTENTHASH, TIMESTAMP</code> <br>
+        You can use any other text as static text. Typing errors are converted to static text. <br>
+        Use <code style="font-size:150%">-</code> or <code style="font-size:120%">_</code> as separators. <br>';
+$string['setting_dynamicfilenamehashalgo'] = 'Hash Algorithm';
+$string['setting_dynamicfilenamehashalgo_desc'] = 'Select hash algorithm to be used in the filename of the exported pdf.';
+$string['setting_dynamicfilenamehashlength'] = 'Hash Length';
+$string['setting_dynamicfilenamehashlength_desc'] = 'Select the length of the hash value used in the filename of the exported pdf.';
+$string['filename_quizname'] = 'Quiz Name';
+$string['filename_idname'] = 'ID Name';
+$string['filename_username'] = 'Username';
+$string['filename_attemptid'] = 'Attempt ID';
+$string['filename_filetype'] = 'File Type';
+$string['filename_slot'] = 'Attempt Slot';
+$string['filename_contexthash'] = 'Context Hash';
+$string['filename_filenametimestamp'] = 'File Date';
+
 $string['task_generate_pdf_name'] = 'Generate attempt PDFs';
+
 $string['template_usersattemptslist_attachmentexportheader'] = 'Attachments uploaded by user';
 $string['template_usersattemptslist_attemptfrom'] = 'Attempt from';
 $string['template_usersattemptslist_exportall'] = 'Re-export all attempts within this quiz instance';

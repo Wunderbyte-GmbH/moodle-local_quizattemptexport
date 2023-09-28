@@ -25,6 +25,34 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$generateHtmlButtons = function($keyvaluelist) {
+        $html = '<div id="dynamicfilename-buttons">';
+
+        foreach ($keyvaluelist as $key => $value) {
+            $html .= '<button class="btn btn-primary m-2" type="button" data-placeholder="' . $key . '">' . $value . '</button>';
+        }
+        $html.= '</div>';
+
+        $html .= <<<JS
+        <script>
+        document.addEventListener('DOMContentLoaded', () => {
+                let dynamicfilenamebuttoncontent = document.getElementById("dynamicfilename-buttons")
+                let buttons = dynamicfilenamebuttoncontent.getElementsByTagName("button"); 
+
+                let textField = document.getElementById("id_s_local_quizattemptexport_dynamicfilename");
+                buttons.forEach(function(button) {
+                        button.addEventListener('click', function() {
+                        let placeholder = button.getAttribute('data-placeholder');
+                        textField.value += "_" + placeholder;
+                        });
+                });
+                });
+        </script>
+        JS;
+        
+        return $html;
+};
+
 if ($hassiteconfig) { // needs this condition or there is error on login page
 
     $settings = new admin_settingpage('local_quizattemptexport', get_string('pluginname', 'local_quizattemptexport'));
@@ -74,6 +102,41 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
             PARAM_INT)
     );
 
+    $settings->add(new admin_setting_heading('local_quizattemptexport/dynamicfilenameheading',
+                get_string('setting_dynamicfilenameheading','local_quizattemptexport'),
+                get_string('setting_dynamicfilenameheading_desc', 'local_quizattemptexport'))
+        );
+
+    $choices = array('sha256' => 'sha256');        
+    $settings->add(new admin_setting_configselect('local_quizattemptexport/dynamicfilenamehashalgo',
+                get_string('setting_dynamicfilenamehashalgo', 'local_quizattemptexport'),
+                get_string('setting_dynamicfilenamehashalgo_desc', 'local_quizattemptexport'),
+                'sha256',
+                $choices));
+
+    $settings->add(new admin_setting_configtext('local_quizattemptexport/dynamicfilenamehashlength',
+                get_string('setting_dynamicfilenamehashlength', 'local_quizattemptexport'),
+                get_string('setting_dynamicfilenamehashlength_desc', 'local_quizattemptexport'),
+                8, PARAM_INT));
+
+    $keyvaluebuttonlist = array(
+                "QUIZNAME"    => get_string('filename_quizname', 'local_quizattemptexport'),
+                "USERID"      => get_string('filename_idname', 'local_quizattemptexport'),
+                "USERNAME"      => get_string('filename_username', 'local_quizattemptexport'),
+                "ATTEMPTID"   => get_string('filename_attemptid', 'local_quizattemptexport'),
+                "FNAMECHUNKQUESTION"  => get_string('attachmentexport_filenamechunk_questionno', 'local_quizattemptexport'),
+                "FNAMECHUNKQATTACHMENT"   => get_string('attachmentexport_filenamechunk_attachment', 'local_quizattemptexport'),
+                "FILETYPE"   => get_string('filename_filetype', 'local_quizattemptexport'),
+                "SLOT"        => get_string('filename_slot', 'local_quizattemptexport'),
+                "CONTEXTHASH" => get_string('filename_contexthash', 'local_quizattemptexport'),
+                "FILENAMETIMESTAMP"   => get_string('filename_filenametimestamp', 'local_quizattemptexport'),
+                );
+
+    $settings->add(new admin_setting_configtextarea('local_quizattemptexport/dynamicfilename',
+            get_string('setting_dynamicfilename', 'local_quizattemptexport'),
+            $generateHtmlButtons($keyvaluebuttonlist). get_string('setting_dynamicfilename_desc', 'local_quizattemptexport'),
+            'prefix_QUIZNAME_IDNUMBER_ATTEMPTID', PARAM_RAW)
+    );
 
     $settings->add(new admin_setting_heading('local_quizattemptexport/overview_heading', get_string('setting_usersattemptslist_heading', 'local_quizattemptexport'), null));
     
