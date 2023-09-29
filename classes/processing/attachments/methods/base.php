@@ -124,16 +124,16 @@ abstract class base {
         // Get the Values for the wildcards.
         $fnamechunkquestion = get_string('attachmentexport_filenamechunk_questionno', 'local_quizattemptexport');
         $fnamechunkattachment = get_string('attachmentexport_filenamechunk_attachment', 'local_quizattemptexport');
-        $userid = $user->idnumber;
-        $username = $user->username;
-        $attemptid = $attempt->get_attemptid();
-        $oldfilename = $attachment->get_filename();
+        $userid = isset($user->idnumber) ? $user->idnumber : '';
+        $username = isset($user->username) ? $user->username : '';
+        $attemptid = is_object($attempt) ? $attempt->get_attemptid() : '';
+        $oldfilename = is_object($attachment) ? $attachment->get_filename() : '';
         $filenameparts = explode('.', $oldfilename);
         $filetype = array_pop($filenameparts);
         $filenamepart = implode('.', $filenameparts);
-        $contenthash = hash($hashtype, $attachment->get_content()); 
-        $convertedquizname = clean_param(\core_text::convert($quizname, 'utf-8', 'ascii'), PARAM_ALPHANUMEXT);
-
+        $contenthash = (is_object($attachment) && isset($hashtype)) ? hash($hashtype, $attachment->get_content()) : '';
+        $convertedquizname = isset($quizname) ? clean_param(\core_text::convert($quizname, 'utf-8', 'ascii'), PARAM_ALPHANUMEXT) : '';
+        
         // Replace the wildcards with the actual values.
         $replacements = [
             'QUIZNAME'    => $convertedquizname,
@@ -151,7 +151,9 @@ abstract class base {
         foreach ($replacements as $wildcard => $value) {
             $format = str_replace( $wildcard, $value, $format);
         }
-    
+
+        // Remove consecutive underscores for missing values
+        $format = preg_replace('/_+/', '_', $format);
         // Replace invalid characters in the file name.
         $filename = preg_replace('/[^a-zA-Z0-9\-_\.]/', '', $format);
     
