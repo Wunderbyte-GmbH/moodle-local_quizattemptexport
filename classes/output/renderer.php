@@ -41,39 +41,37 @@ class renderer extends \plugin_renderer_base {
             'exportallurl' => $canexportagain && !empty($rawdata) ? new \moodle_url('/local/quizattemptexport/overview.php', ['cmid' => $cmid, 'exportall' => 1]) : '',
             'zipdownloadurl' => !empty($rawdata) ? new \moodle_url('/local/quizattemptexport/overview.php', ['cmid' => $cmid, 'downloadzip' => 1]) : ''
         ];
+
+            // Extract all user IDs from $rawdata
+            $userIds = array_keys($rawdata);
+
+            // Fetch all user records with a single query
+            $usersRecords = $DB->get_records_list('user', 'id', $userIds);
+
         foreach ($rawdata as $userid => $attempts) {
-            $user = $DB->get_record('user', ['id' => $userid]);
-            $userdata = [
-                'attempts' => []
+            // Use the fetched user record from $usersRecords
+            $user = $usersRecords[$userid];
+            $topLineDataConfig = get_config('local_quizattemptexport', 'toplinedata');
+            $userdata = ['attempts' => []];
+            
+            // Define mappings for user information retrieval
+            $infoMappings = [
+                'fullname' => function($user) { return fullname($user); },
+                'username' => function($user) { return $user->username; },
+                'idnumber' => function($user) { return $user->idnumber; }
             ];
             
-            $tld = get_config('local_quizattemptexport', 'toplinedata');
-            $h_userinfo = "";
-            $h_bracket = "";
-            if (FALSE !== strpos($tld, 'fullname')) {
-                $h_userinfo .= fullname($user);
-            };
-
-            if (FALSE !== strpos($tld, 'username')) {
-                if ($h_userinfo == "") {
-                    $h_userinfo .= $user->username;
-                } else {
-                    $h_bracket .= $user->username;
+            // Extract desired user information based on the configuration
+            $parts = [];
+            foreach ($infoMappings as $key => $func) {
+                if (strpos($topLineDataConfig, $key) !== FALSE) {
+                    $parts[] = $func($user);
                 }
-            };
+            }
 
-            if (FALSE !== strpos($tld, 'idnumber')) {
-                if ($h_bracket != "") {
-                    $h_bracket .= ", " . $user->idnumber;
-                } else {
-                    $h_bracket .= $user->idnumber;
-                }
-            };
-            if ($h_bracket != "") {
-                $h_userinfo .= " (" . $h_bracket . ")";
-            };
-            $userdata['toplineheading'] = $h_userinfo;
-
+            // Construct the top line heading
+            $userdata['toplineheading'] = array_shift($parts) . (empty($parts) ? '' : ' (' . implode(', ', $parts) . ')');
+            
             foreach ($attempts as $attemptid => $filearrays) {
 
                 $attemptobj = \quiz_attempt::create($attemptid);
