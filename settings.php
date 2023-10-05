@@ -134,7 +134,8 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
     $settings->add(new admin_setting_configtextarea('local_quizattemptexport/dynamicfilename',
             get_string('setting_dynamicfilename', 'local_quizattemptexport'),
             $generateHtmlButtons($keyvaluebuttonlist). get_string('setting_dynamicfilename_desc', 'local_quizattemptexport'),
-            'prefix_QUIZNAME_IDNUMBER_ATTEMPTID', PARAM_RAW)
+            'QUIZNAME_USERID_ATTEMPTID_FNAMECHUNKQUESTION_SLOT_FNAMECHUNKQATTACHMENT_FILENAMETIMESTAMP_CONTEXTHASH',
+            PARAM_RAW, $cols = '50', $rows = '2')
     );
 
     $settings->add(new admin_setting_heading('local_quizattemptexport/overview_heading', get_string('setting_usersattemptslist_heading', 'local_quizattemptexport'), null));
@@ -149,7 +150,7 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
     $settings->add(new admin_setting_configmultiselect('local_quizattemptexport/toplinedata',
         get_string('setting_toplinedata', 'local_quizattemptexport', null, true),
         get_string('setting_toplinedata_desc', 'local_quizattemptexport', null, true),
-        [],
+        ["fullname"],
         ["fullname" => "fullname", "username" => "username", "idnumber" => "idnumber"]
     ));
 
