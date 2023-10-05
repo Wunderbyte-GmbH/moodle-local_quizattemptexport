@@ -133,17 +133,12 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
                 "USERID"      => get_string('filename_idname', 'local_quizattemptexport'),
                 "USERNAME"      => get_string('filename_username', 'local_quizattemptexport'),
                 "ATTEMPTID"   => get_string('filename_attemptid', 'local_quizattemptexport'),
-                "FNAMECHUNKQUESTION"  => get_string('attachmentexport_filenamechunk_questionno', 'local_quizattemptexport'),
-                "FNAMECHUNKQATTACHMENT"   => get_string('attachmentexport_filenamechunk_attachment', 'local_quizattemptexport'),
-                "SLOT"        => get_string('filename_slot', 'local_quizattemptexport'),
-                "CONTEXTHASH" => get_string('filename_contexthash', 'local_quizattemptexport'),
-                "FILENAMETIMESTAMP"   => get_string('filename_filenametimestamp', 'local_quizattemptexport'),
                 );
 
     $settings->add(new admin_setting_configtextarea('local_quizattemptexport/dynamicfilename',
             get_string('setting_dynamicfilename', 'local_quizattemptexport'),
             $generateHtmlButtons($keyvaluebuttonlist). get_string('setting_dynamicfilename_desc', 'local_quizattemptexport'),
-            'QUIZNAME_USERID_ATTEMPTID_FNAMECHUNKQUESTION_SLOT_FNAMECHUNKQATTACHMENT_FILENAMETIMESTAMP_CONTEXTHASH',
+            'QUIZNAME_USERID_ATTEMPTID',
             PARAM_RAW, $cols = '50', $rows = '2')
     );
 

@@ -124,36 +124,36 @@ class export_attempt {
             $binarypath = $CFG->dirroot . '/local/quizattemptexport/vendor/wemersonjanuario/wkhtmltopdf-windows/bin/64bit/wkhtmltopdf.exe';
         }
 
-        try {
-            // Start pdf generation and write into a temp file.
-            $snappy = new Pdf();
-            $snappy->setLogger($this->logger);
-            $snappy->setTemporaryFolder($CFG->tempdir);
-            $snappy->setTimeout($conf->pdfgenerationtimeout);
+        // try {
+        //     // Start pdf generation and write into a temp file.
+        //     $snappy = new Pdf();
+        //     $snappy->setLogger($this->logger);
+        //     $snappy->setTemporaryFolder($CFG->tempdir);
+        //     $snappy->setTimeout($conf->pdfgenerationtimeout);
 
-            $snappy->setOption('toc', false);
-            $snappy->setOption('no-outline', true);
-            $snappy->setOption('images', true);
-            $snappy->setOption('enable-local-file-access', true);
-            $snappy->setOption('enable-external-links', true);
+        //     $snappy->setOption('toc', false);
+        //     $snappy->setOption('no-outline', true);
+        //     $snappy->setOption('images', true);
+        //     $snappy->setOption('enable-local-file-access', true);
+        //     $snappy->setOption('enable-external-links', true);
 
-            if ($conf->mathjaxenable) {
-                $snappy->setOption('javascript-delay', $conf->mathjaxdelay);
-            }
+        //     if ($conf->mathjaxenable) {
+        //         $snappy->setOption('javascript-delay', $conf->mathjaxdelay);
+        //     }
 
-            $snappy->setBinary($binarypath);
-            $snappy->generateFromHtml($html, $tempexportfile);
+        //     $snappy->setBinary($binarypath);
+        //     $snappy->generateFromHtml($html, $tempexportfile);
 
-        } catch (\Exception $exc) {
+        // } catch (\Exception $exc) {
 
-            // Check if file really was not generated or if the error returned
-            // by wkhtmltopdf may have been non-critical.
+        //     // Check if file really was not generated or if the error returned
+        //     // by wkhtmltopdf may have been non-critical.
 
-            if (!file_exists($tempexportfile) || !filesize($tempexportfile)) {
-                $this->logexception($exc);
-                return;
-            }
-        }
+        //     if (!file_exists($tempexportfile) || !filesize($tempexportfile)) {
+        //         $this->logexception($exc);
+        //         return;
+        //     }
+        // }
 
         // Get content from temp file for further processing and clean up.
         $tempfilecontent = file_get_contents($tempexportfile);
@@ -166,20 +166,10 @@ class export_attempt {
         $instance = $DB->get_record('quiz', ['id' => $cm->instance]);
         $quizname = clean_param($instance->name, PARAM_FILE);
 
-        // The idnumber which is used for matriculation id.
-        $idnumber = $this->user_rec->idnumber;
-
-        // The attempts id for uniqueness.
-        $attemptid = $this->attempt_obj->get_attemptid();
-
         // The current time for more uniqueness.
         $time = date('YmdHis', time());
 
-        // The sha256 hash of the file content for validation purposes.
-        $contenthash = hash('sha256', $tempfilecontent);
-
-        // Piece the file name parts together.
-        $filename = $quizname . '_' . $idnumber . '_' . $attemptid . '_' . $time . '_' . $contenthash . '.pdf';
+        $filename = self::generate_filename($quizname, $this->user_rec,$this->attempt_obj,$time,$tempfilecontent);
 
         // Write file into filesystem?
         if ($this->exportfilesystem) {
@@ -251,5 +241,43 @@ class export_attempt {
             'debug' => $debug,
             'errorcode' => $errorcode
         ]);
+    }
+
+    /**
+     * Generates a filename.
+     * 
+     */
+    protected function generate_filename($quizname, $user, $attempt, $time, $tempcontent) {
+        // Get the format from the settings.
+        $format = get_config('local_quizattemptexport', 'dynamicfilename');
+        $hashtype = get_config('local_quizattemptexport', 'dynamicfilenamehashalgo');
+        $hashlength = get_config('local_quizattemptexport', 'dynamicfilenamehashlength');
+        
+        // Get the Values for the wildcards.
+        $userid = isset($user->idnumber) ? $user->idnumber : '';
+        $username = isset($user->username) ? $user->username : '';
+        $attemptid = is_object($attempt) ? $attempt->get_attemptid() : '';
+        $contenthash = (isset($tempcontent) && isset($hashtype)) ? hash($hashtype, $tempcontent) : '';
+        $convertedquizname = isset($quizname) ? clean_param(\core_text::convert($quizname, 'utf-8', 'ascii'), PARAM_ALPHANUMEXT) : '';
+        
+        // Replace the wildcards with the actual values.
+        $replacements = [
+            'QUIZNAME'    => $convertedquizname,
+            'USERID'      => $userid,
+            'USERNAME'    => $username,
+            'ATTEMPTID'   => $attemptid,
+        ];
+    
+        foreach ($replacements as $wildcard => $value) {
+            $format = str_replace( $wildcard, $value, $format);
+        }
+
+        // Remove consecutive underscores for missing values
+        $format = preg_replace('/_+/', '_', $format);
+        // Replace invalid characters in the file name.
+        $filename = preg_replace('/[^a-zA-Z0-9\-_\.]/', '', $format);
+
+        $ending = '_' . $time . '_' . substr($contenthash, 0, $hashlength) . ".pdf";
+        return $filename . $ending;
     }
 }

@@ -83,7 +83,7 @@ $string['setting_dynamicfilenameheading'] = 'Einstellungen für dynamische Datei
 $string['setting_dynamicfilenameheading_desc'] = 'Alle Einstellungen für den dynamischen Dateinamen.';
 $string['setting_dynamicfilename'] = 'Dynamischer Dateiname';
 $string['setting_dynamicfilename_desc'] = 'Geben Sie das Format für den Dateinamen ein oder benutzen Sie die Buttons. <br>
-        Sie können die folgenden Platzhalter verwenden: <code>QUIZNAME, USERID, ATTEMPTID, FNAMECHUNKQUESTION, FNAMECHUNKANSWER, SLOT, CONTENTHASH, TIMESTAMP</code> <br>
+        Sie können die folgenden Platzhalter verwenden: <code>QUIZNAME, USERID, USERNAME, ATTEMPTID</code> <br>
         Sie können jeden anderen Text als statischen Text verwenden. Tippfehler werden in statischen Text umgewandelt. <br>
         Verwenden Sie <code style="font-size:150%">-</code> oder <code style="font-size:120%">_</code> als Trennzeichen. <br>
         Beispiel: <code>prefix_QUIZNAME_USERID_ATTEMPTID</code>';

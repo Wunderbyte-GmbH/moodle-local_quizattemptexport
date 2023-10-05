@@ -115,7 +115,7 @@ abstract class base {
      * Generates a filename for a given attempt.
      * 
      */
-    protected static function generate_filename($quizname, $user, $attempt, $attachment, $slot) {
+    protected function generate_filename($quizname, $user, $attempt, $attachment, $slot) {
         // Get the format from the settings.
         $format = get_config('local_quizattemptexport', 'dynamicfilename');
         $hashtype = get_config('local_quizattemptexport', 'dynamicfilenamehashalgo');
@@ -140,11 +140,6 @@ abstract class base {
             'USERID'      => $userid,
             'USERNAME'    => $username,
             'ATTEMPTID'   => $attemptid,
-            'FNAMECHUNKQUESTION'  => $fnamechunkquestion,
-            'FNAMECHUNKQATTACHMENT'  => $fnamechunkattachment,
-            'FILENAMEPART'   => $filenamepart,
-            'SLOT'        => $slot,
-            'CONTENTHASH' => substr($contenthash, 0, $hashlength),
         ];
     
         foreach ($replacements as $wildcard => $value) {
@@ -155,8 +150,11 @@ abstract class base {
         $format = preg_replace('/_+/', '_', $format);
         // Replace invalid characters in the file name.
         $filename = preg_replace('/[^a-zA-Z0-9\-_\.]/', '', $format);
-    
-        return $filename . "." . $filetype;
+            
+        $ending =  '_' . $fnamechunkquestion . $slot . '_'. 
+                $fnamechunkattachment . '_' . $filenamepart . '_' . 
+                substr($contenthash, 0, $hashlength) . '.' . $filetype;
+        return $filename . $ending;
     }
 
 }
