@@ -35,9 +35,39 @@ class quiz_attempt {
         global $DB;
 
         $exportenabled = get_config('local_quizattemptexport', 'autoexport');
+        $catfilter = get_config('local_quizattemptexport', 'catfilter');
+
         if ($exportenabled) {
 
+            if(!empty($catfilter)) {
+                $catfilter = explode(',', $catfilter);
+            }
+
             $event_data = $event->get_data();
+
+            $sql = '
+            SELECT c.*, cc.path
+            FROM
+                {quiz_attempts} qa,
+                {quiz} q,
+                {course} c,
+                {course_categories} cc
+            WHERE
+                qa.id = :attemptid
+            AND
+                qa.quiz = q.id
+            AND
+                q.course = c.id
+            AND
+                c.category = cc.id';
+        $params = ['attemptid' => $event_data['objectid']];
+
+        $course = array_values($DB->get_records_sql($sql, $params))[0];
+
+if (!empty($course) && !empty(array_intersect(explode('/', $course->path), $catfilter))) {
+                generate_pdf::add_attempt_to_queue($event_data['objectid']);
+            }
+
             generate_pdf::add_attempt_to_queue($event_data['objectid']);
         }
     }

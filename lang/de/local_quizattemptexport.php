@@ -55,6 +55,8 @@ $string['plugindesc'] = 'Automatischer Export aller Quiz-Versuche.';
 $string['pluginname'] = 'Quiz PDF-Export';
 $string['setting_autoexport'] = 'Aktiviere automatischen Export';
 $string['setting_autoexport_desc'] = 'Aktivieren Sie diese Einstellung, um jeden Quiz-Versuch automatisch zu exportieren, wenn der Benutzer den Versuch einreicht.';
+$string['setting_catfilter'] = 'Kategoriefilter';
+$string['setting_catfilter_desc'] = 'Wählen Sie die Kurskategorien innerhalb derer der automatische Export aktiv sein soll. Es werden nur die Quizversuche automatisch exportiert, die in Kursen stattfinden die in einer der hier ausgewählten Kategorien sind. Unterkategorien von Kategorien die ausgewählt wurden, sind implizit mit ausgewählt. <br><br>Nutzen Sie STRG+Mausklick um mehrere Kurskategorien auszuwählen.';
 $string['setting_exportfilesystem'] = 'Export in das Dateisystem auf dem Server';
 $string['setting_exportfilesystem_desc'] = 'Aktivieren Sie diese Option, um PDFs auch in das Dateisystem des Servers zu exportieren. 
         <br><br> Jeder eingereichte Versuch wird als PDF exportiert und über das Verwaltungsmenü der jeweiligen Quizinstanzen bereitgestellt, 
