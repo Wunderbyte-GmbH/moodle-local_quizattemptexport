@@ -40,10 +40,11 @@ class quiz_attempt {
         if ($exportenabled) {
 
             if(!empty($catfilter)) {
-                $catfilter = explode(',', $catfilter);
+                $categories = explode(',', $catfilter);
             }
 
             $event_data = $event->get_data();
+            $params = ['attemptid' => $event_data['objectid']];
 
             $sql = '
             SELECT c.*, cc.path
@@ -60,15 +61,14 @@ class quiz_attempt {
                 q.course = c.id
             AND
                 c.category = cc.id';
-        $params = ['attemptid' => $event_data['objectid']];
+            $course = array_values($DB->get_records_sql($sql, $params))[0];
 
-        $course = array_values($DB->get_records_sql($sql, $params))[0];
-
-if (!empty($course) && !empty(array_intersect(explode('/', $course->path), $catfilter))) {
+            if (!empty($course)) {
+                if(!empty($catfilter) && empty(array_intersect(explode('/', $course->path), $categories))){
+                    return;
+                }
                 generate_pdf::add_attempt_to_queue($event_data['objectid']);
             }
-
-            generate_pdf::add_attempt_to_queue($event_data['objectid']);
         }
     }
 }
