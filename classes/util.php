@@ -60,9 +60,8 @@ class util {
 
         // Construct subdir path.
         $course = $attempt->get_course();
-        //$coursename = clean_param($course->fullname, PARAM_SAFEDIR);
-        //$dirname = $course->id . '_' . $coursename;
-        $dirname = $course->id;
+        $cm = $attempt->get_cm();
+        $dirname = $course->id . '/' . $cm->id;
         $exportpath = $exportdir . '/' . $dirname;
 
         // Create the export path if missing.
