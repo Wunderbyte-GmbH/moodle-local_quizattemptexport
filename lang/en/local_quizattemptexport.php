@@ -84,7 +84,6 @@ $string['filename_quizname'] = 'Quiz Name';
 $string['filename_idname'] = 'ID Name';
 $string['filename_username'] = 'Username';
 $string['filename_attemptid'] = 'Attempt ID';
-$string['filename_filetype'] = 'File Type';
 $string['filename_slot'] = 'Attempt Slot';
 $string['filename_contexthash'] = 'Context Hash';
 $string['filename_filenametimestamp'] = 'File Date';

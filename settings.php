@@ -126,7 +126,6 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
                 "ATTEMPTID"   => get_string('filename_attemptid', 'local_quizattemptexport'),
                 "FNAMECHUNKQUESTION"  => get_string('attachmentexport_filenamechunk_questionno', 'local_quizattemptexport'),
                 "FNAMECHUNKQATTACHMENT"   => get_string('attachmentexport_filenamechunk_attachment', 'local_quizattemptexport'),
-                "FILETYPE"   => get_string('filename_filetype', 'local_quizattemptexport'),
                 "SLOT"        => get_string('filename_slot', 'local_quizattemptexport'),
                 "CONTEXTHASH" => get_string('filename_contexthash', 'local_quizattemptexport'),
                 "FILENAMETIMESTAMP"   => get_string('filename_filenametimestamp', 'local_quizattemptexport'),

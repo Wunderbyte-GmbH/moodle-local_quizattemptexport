@@ -93,7 +93,6 @@ $string['filename_quizname'] = 'Quizname';
 $string['filename_idname'] = 'ID-Name';
 $string['filename_username'] = 'Username';
 $string['filename_attemptid'] = 'Versuchs-ID';
-$string['filename_filetype'] = 'Filetype';
 $string['filename_slot'] = 'Versuchs-Slot';
 $string['filename_contexthash'] = 'Kontext Hashwert';
 $string['filename_filenametimestamp'] = 'Datum File';

@@ -142,7 +142,6 @@ abstract class base {
             'ATTEMPTID'   => $attemptid,
             'FNAMECHUNKQUESTION'  => $fnamechunkquestion,
             'FNAMECHUNKQATTACHMENT'  => $fnamechunkattachment,
-            'FILETYPE'   => $filetype,
             'FILENAMEPART'   => $filenamepart,
             'SLOT'        => $slot,
             'CONTENTHASH' => substr($contenthash, 0, $hashlength),
@@ -157,7 +156,7 @@ abstract class base {
         // Replace invalid characters in the file name.
         $filename = preg_replace('/[^a-zA-Z0-9\-_\.]/', '', $format);
     
-        return $filename;
+        return $filename . "." . $filetype;
     }
 
 }
