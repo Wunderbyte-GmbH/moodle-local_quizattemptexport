@@ -70,13 +70,13 @@ class export_attempt {
         }
 
         // idnumber currently not used...
-        if (empty($this->user_rec->idnumber)) {
+        // if (empty($this->user_rec->idnumber)) {
 
-            $exc = new \moodle_exception('except_usernoidnumber', 'local_quizattemptexport', '', $this->user_rec->id);
-            $this->logmessage($exc->getMessage());
+        //     $exc = new \moodle_exception('except_usernoidnumber', 'local_quizattemptexport', '', $this->user_rec->id);
+        //     $this->logmessage($exc->getMessage());
 
-            throw $exc;
-        }
+        //     throw $exc;
+        // }
 
         if ($this->exportfilesystem = get_config('local_quizattemptexport', 'exportfilesystem')) {
 
