@@ -124,36 +124,36 @@ class export_attempt {
             $binarypath = $CFG->dirroot . '/local/quizattemptexport/vendor/wemersonjanuario/wkhtmltopdf-windows/bin/64bit/wkhtmltopdf.exe';
         }
 
-        // try {
-        //     // Start pdf generation and write into a temp file.
-        //     $snappy = new Pdf();
-        //     $snappy->setLogger($this->logger);
-        //     $snappy->setTemporaryFolder($CFG->tempdir);
-        //     $snappy->setTimeout($conf->pdfgenerationtimeout);
+        try {
+            // Start pdf generation and write into a temp file.
+            $snappy = new Pdf();
+            $snappy->setLogger($this->logger);
+            $snappy->setTemporaryFolder($CFG->tempdir);
+            $snappy->setTimeout($conf->pdfgenerationtimeout);
 
-        //     $snappy->setOption('toc', false);
-        //     $snappy->setOption('no-outline', true);
-        //     $snappy->setOption('images', true);
-        //     $snappy->setOption('enable-local-file-access', true);
-        //     $snappy->setOption('enable-external-links', true);
+            $snappy->setOption('toc', false);
+            $snappy->setOption('no-outline', true);
+            $snappy->setOption('images', true);
+            $snappy->setOption('enable-local-file-access', true);
+            $snappy->setOption('enable-external-links', true);
 
-        //     if ($conf->mathjaxenable) {
-        //         $snappy->setOption('javascript-delay', $conf->mathjaxdelay);
-        //     }
+            if ($conf->mathjaxenable) {
+                $snappy->setOption('javascript-delay', $conf->mathjaxdelay);
+            }
 
-        //     $snappy->setBinary($binarypath);
-        //     $snappy->generateFromHtml($html, $tempexportfile);
+            $snappy->setBinary($binarypath);
+            $snappy->generateFromHtml($html, $tempexportfile);
 
-        // } catch (\Exception $exc) {
+        } catch (\Exception $exc) {
 
-        //     // Check if file really was not generated or if the error returned
-        //     // by wkhtmltopdf may have been non-critical.
+            // Check if file really was not generated or if the error returned
+            // by wkhtmltopdf may have been non-critical.
 
-        //     if (!file_exists($tempexportfile) || !filesize($tempexportfile)) {
-        //         $this->logexception($exc);
-        //         return;
-        //     }
-        // }
+            if (!file_exists($tempexportfile) || !filesize($tempexportfile)) {
+                $this->logexception($exc);
+                return;
+            }
+        }
 
         // Get content from temp file for further processing and clean up.
         $tempfilecontent = file_get_contents($tempexportfile);

@@ -75,7 +75,7 @@ $string['setting_dynamicfilenameheading'] = 'Dynamic Filename Settings';
 $string['setting_dynamicfilenameheading_desc'] = 'All settings for the dynamic filename.';
 $string['setting_dynamicfilename'] = 'Dynamic Filename';
 $string['setting_dynamicfilename_desc'] = 'Enter the format for the file name or press the buttons.<br> 
-        You can use the following wildcards: <code>QUIZNAME, USERID, USERNAME, ATTEMPTID/code> <br>
+        You can use the following wildcards: <code>QUIZNAME, USERID, USERNAME, ATTEMPTID </code> <br>
         You can use any other text as static text. Typing errors are converted to static text. <br>
         Use <code style="font-size:150%">-</code> or <code style="font-size:120%">_</code> as separators. <br>';
 $string['setting_dynamicfilenamehashalgo'] = 'Hash Algorithm';
