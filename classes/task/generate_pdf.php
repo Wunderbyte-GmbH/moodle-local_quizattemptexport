@@ -37,8 +37,10 @@ use local_quizattemptexport\util;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once $CFG->dirroot . '/mod/quiz/attemptlib.php';
-require_once $CFG->dirroot . '/mod/quiz/accessmanager.php';
+// Deprecated; these files have been deprecated as of Moodle 4.2 and will be removed in Moodle 4.7
+// require_once $CFG->dirroot . '/mod/quiz/attemptlib.php';
+// require_once $CFG->dirroot . '/mod/quiz/accessmanager.php';
+
 
 class generate_pdf extends \core\task\scheduled_task {
 
