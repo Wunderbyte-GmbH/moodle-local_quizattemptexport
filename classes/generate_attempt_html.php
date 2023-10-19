@@ -190,7 +190,7 @@ class generate_attempt_html {
             'quizname' => $quiz->name,
             'studentname' => fullname($this->user_rec),
             'matriculationid' => $this->user_rec->idnumber,
-            //'coursecode' => $coursecode,
+            'coursecode' => $coursecode,
             'attemptstarted' => $attemptstartedtime,
             'attemptended' => $attemptsubmittedtime,
             'attemptresult' => $attemptresultstr
