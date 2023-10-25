@@ -111,10 +111,16 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
             PARAM_INT)
     );
 
+    $settings->add(new admin_setting_configcheckbox('local_quizattemptexport/enrolmentkey',
+        get_string('setting_enrolmentkey', 'local_quizattemptexport'),
+        get_string('setting_enrolmentkey_desc', 'local_quizattemptexport'),
+        1)
+    );
+
     $settings->add(new admin_setting_heading('local_quizattemptexport/dynamicfilenameheading',
                 get_string('setting_dynamicfilenameheading','local_quizattemptexport'),
                 get_string('setting_dynamicfilenameheading_desc', 'local_quizattemptexport'))
-        );
+    );
 
     $choices = array('sha256' => 'sha256');        
     $settings->add(new admin_setting_configselect('local_quizattemptexport/dynamicfilenamehashalgo',

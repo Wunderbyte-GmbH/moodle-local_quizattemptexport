@@ -160,12 +160,11 @@ class generate_attempt_html {
     }
 
     protected function report_header() {
-        global $CFG, $DB;
+        $conf = get_config('local_quizattemptexport');
 
         // Prepare data.
         $course = $this->attempt_obj->get_course();
         $quiz = $this->quiz_rec;
-        $coursecode = $this->get_coursecode();
         $attemptsubmittedtime = date('d.m.Y - H:i:s', $this->attempt_rec->timefinish);
         $attemptstartedtime = date('d.m.Y - H:i:s', $this->attempt_rec->timestart);
 
@@ -190,11 +189,15 @@ class generate_attempt_html {
             'quizname' => $quiz->name,
             'studentname' => fullname($this->user_rec),
             'matriculationid' => $this->user_rec->idnumber,
-            'coursecode' => $coursecode,
             'attemptstarted' => $attemptstartedtime,
             'attemptended' => $attemptsubmittedtime,
             'attemptresult' => $attemptresultstr
         ];
+
+        if ($conf->enrolmentkey) {
+            $coursecode = $this->get_coursecode();
+            $templatedata['coursecode'] = $coursecode;
+        };
 
         return $templatedata;
     }
