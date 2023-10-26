@@ -50,7 +50,6 @@ $string['page_overview_title'] = 'Exporte für "{$a}"';
 $string['page_overview_attemptedreexport'] = 'Es wurde probiert, den Versuch erneut zu exportieren.';
 $string['page_overview_progressbar_step'] = 'Exportiere Versuch mit ID "{$a}".';
 $string['page_overview_progressbar_finished'] = 'Exportieren aller Versuche abgeschlossen.';
-$string['setting_usersattemptslist_heading'] = 'Versuchs-Übersichtsseite';
 $string['plugindesc'] = 'Automatischer Export aller Quiz-Versuche.';
 $string['pluginname'] = 'Quiz PDF-Export';
 $string['quizattemptexport:viewpdf'] = 'View/download PDF';
@@ -58,7 +57,11 @@ $string['quizattemptexport:generatepdf'] = 'Export PDF';
 $string['setting_autoexport'] = 'Aktiviere automatischen Export';
 $string['setting_autoexport_desc'] = 'Aktivieren Sie diese Einstellung, um jeden Quiz-Versuch automatisch zu exportieren, wenn der Benutzer den Versuch einreicht.';
 $string['setting_catfilter'] = 'Kategoriefilter';
-$string['setting_catfilter_desc'] = 'Wählen Sie die Kurskategorien innerhalb derer der automatische Export aktiv sein soll. Es werden nur die Quizversuche automatisch exportiert, die in Kursen stattfinden die in einer der hier ausgewählten Kategorien sind. Unterkategorien von Kategorien die ausgewählt wurden, sind implizit mit ausgewählt. <br><br>Nutzen Sie STRG+Mausklick um mehrere Kurskategorien auszuwählen.';
+$string['setting_catfilter_desc'] = 'Wählen Sie die Kurskategorien innerhalb derer der automatische Export aktiv sein soll. 
+Es werden nur die Quizversuche automatisch exportiert, die in Kursen stattfinden die in einer der hier ausgewählten Kategorien sind. 
+Unterkategorien von Kategorien die ausgewählt wurden, sind implizit mit ausgewählt. <br><br>Nutzen Sie STRG+Mausklick um mehrere Kurskategorien auszuwählen.';
+$string['setting_enrolmentkey'] = 'Einschreibeschlüssel anzeigen';
+$string['setting_enrolmentkey_desc'] = 'Anzeige des Einschreibeschlüssels im PDF Export.';
 $string['setting_exportfilesystem'] = 'Export in das Dateisystem auf dem Server';
 $string['setting_exportfilesystem_desc'] = 'Aktivieren Sie diese Option, um PDFs auch in das Dateisystem des Servers zu exportieren. 
         <br><br> Jeder eingereichte Versuch wird als PDF exportiert und über das Verwaltungsmenü der jeweiligen Quizinstanzen bereitgestellt, 
@@ -78,9 +81,12 @@ $string['setting_pdfgenerationtimeout'] = 'Timeout für die PDF-Erstellung (Seku
 $string['setting_pdfgenerationtimeout_desc'] = 'Stellen Sie den Timeout in Sekunden ein, der für die Generierung der PDF-Dateien gelten soll. 
         Wenn der Generierungsprozess nach der angegebenen Zeit nicht abgeschlossen ist, wird der Prozess abgebrochen. Stellen Sie den Wert 0 ein, 
         um das Timeout zu deaktivieren.';
-$string['task_generate_pdf_name'] = 'Erstelle PDF-Exporte';
+$string['setting_usersattemptslist_heading'] = 'Versuchs-Übersichtsseite';
 $string['setting_usersattemptslist_intro'] = 'Export Übersicht Einleitung';
 $string['setting_usersattemptslist_intro_description'] = 'Hier können Sie einen Text eintragen, der oben auf der Export Übersichtsseite angezeigt wird.';
+$string['setting_toplinedata'] = 'Export Übersicht Nutzerdaten';
+$string['setting_toplinedata_desc'] = 'Wählen Sie aus, welche Nutzerdaten in der Export Übersicht angezeigt werden.
+<br/>Mit STRG+Mausklick können mehrere Felder ausgewählt werden.';
 $string['setting_dynamicfilenameheading'] = 'Einstellungen für dynamische Dateinamen';
 $string['setting_dynamicfilenameheading_desc'] = 'Alle Einstellungen für den dynamischen Dateinamen.';
 $string['setting_dynamicfilename'] = 'Dynamischer Dateiname';
@@ -94,12 +100,12 @@ $string['setting_dynamicfilenamehashalgo_desc'] = 'Wählen Sie den Hash-Algorith
 $string['setting_dynamicfilenamehashlength'] = 'Hash-Länge';
 $string['setting_dynamicfilenamehashlength_desc'] = 'Wählen Sie die Länge des im Dateinamen des exportierten PDFs verwendeten Hash-Wertes aus.';
 $string['filename_quizname'] = 'Quizname';
-$string['filename_idname'] = 'ID-Name';
-$string['filename_username'] = 'Username';
+$string['filename_idname'] = 'User-ID';
+$string['filename_username'] = 'Benutzername';
 $string['filename_attemptid'] = 'Versuchs-ID';
 $string['filename_slot'] = 'Versuchs-Slot';
 $string['filename_contexthash'] = 'Kontext Hashwert';
-$string['filename_filenametimestamp'] = 'Datum File';
+$string['filename_filenametimestamp'] = 'Dateidatum';
 
 $string['task_generate_pdf_name'] = 'Erstelle PDF-Exporte';
 

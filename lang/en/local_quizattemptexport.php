@@ -57,24 +57,36 @@ $string['quizattemptexport:generatepdf'] = 'Export PDF';
 $string['setting_autoexport'] = 'Enable automatic export';
 $string['setting_autoexport_desc'] = 'Enable this setting to export each quiz attempt automatically when the user submits the attempt.';
 $string['setting_catfilter'] = 'Category Filter';
-$string['setting_catfilter_desc'] = 'Select the course categories where the automatic quiz attempt export should be enabled. Only attempts of quiz instances within courses that are in a category selected here will be exported automatically. Selecting a category will also implicitly select its subcategories. <br><br> You may select multiple categories by using CTRL+Click.';
+$string['setting_catfilter_desc'] = 'Select the course categories where the automatic quiz attempt export should be enabled. 
+Only attempts of quiz instances within courses that are in a category selected here will be exported automatically. 
+Selecting a category will also implicitly select its subcategories. <br><br> You may select multiple categories by using CTRL+Click.';
+$string['setting_enrolmentkey'] = 'Include enrolment key';
+$string['setting_enrolmentkey_desc'] = 'Include enrolment key in the pdf report header.';
 $string['setting_exportfilesystem'] = 'Export into server filesystem';
-$string['setting_exportfilesystem_desc'] = 'Enable this option to export PDFs into the servers filesystem as well. <br><br> Each submitted attempt will be exported as PDF and made available through the respective quiz instances administration menu where they may be downloaded individually or conveniently packed together into one ZIP archive. Additionally you may wish to have these files exported into a path within your servers filesystem where server processes like archival jobs may access these files. <br><br>Enable this option to additionally have the files be exported into the directory defined in the setting below.';
+$string['setting_exportfilesystem_desc'] = 'Enable this option to export PDFs into the servers filesystem as well. 
+        <br><br> Each submitted attempt will be exported as PDF and made available through the respective quiz instances 
+        administration menu where they may be downloaded individually or conveniently packed together into one ZIP archive. 
+        Additionally you may wish to have these files exported into a path within your servers filesystem where server processes 
+        like archival jobs may access these files. <br><br>Enable this option to additionally have the files be exported into the directory defined in the setting below.';
 $string['setting_mathjaxenable'] = 'Enable MathJax typesetting';
 $string['setting_mathjaxenable_desc'] = 'Enables typesetting of math input using MathJax';
 $string['setting_mathjaxdelay'] = 'MathJax Processing Delay (seconds)';
-$string['setting_mathjaxdelay_desc'] = 'Using the MathJax typesetting requires a processing delay for each PDF being generated that allows for MathJax to finish processing/typesetting. The default value should cover most cases. If your quiz instances contain a lot of math input and not all of that input was typeset, it might be necessary to set this to a higher value.';
-$string['setting_enrolmentkey'] = 'Include enrolment key';
-$string['setting_enrolmentkey_desc'] = 'Include enrolment key in the pdf report header.';
+$string['setting_mathjaxdelay_desc'] = 'Using the MathJax typesetting requires a processing delay for each PDF being generated that 
+        allows for MathJax to finish processing/typesetting. The default value should cover most cases. If your quiz instances contain 
+        a lot of math input and not all of that input was typeset, it might be necessary to set this to a higher value.';
 $string['setting_pdfexportdir'] = 'Export path on server';
-$string['setting_pdfexportdir_desc'] = 'This is the path of a directory within your servers filesystem where the PDFs will additionally be saved to if you enable the option above.';
+$string['setting_pdfexportdir_desc'] = 'This is the path of a directory within your servers filesystem where the PDFs will additionally 
+        be saved to if you enable the option above.';
 $string['setting_pdfgenerationtimeout'] = 'Timeout for PDF generation (seconds)';
-$string['setting_pdfgenerationtimeout_desc'] = 'Set the timeout in seconds that should apply for the generation of the PDF files. If the generation process has not finished after the given amount of time the process will be cancelled. Set a value of 0 to deactivate the timeout.';
+$string['setting_pdfgenerationtimeout_desc'] = 'Set the timeout in seconds that should apply for the generation of the PDF files. 
+        If the generation process has not finished after the given amount of time the process will be cancelled. Set a value of 0 to 
+        deactivate the timeout.';
 $string['setting_usersattemptslist_heading'] = 'Attempt Overview page';
 $string['setting_usersattemptslist_intro'] = 'Overview page intro';
 $string['setting_usersattemptslist_intro_description'] = 'Here you can enter text which is shown at the top of the attempt overview page.';
 $string['setting_toplinedata'] = 'Topline Table Data';
-$string['setting_toplinedata_desc'] = 'Select, which fields from the database should be included in the table of the document.';
+$string['setting_toplinedata_desc'] = 'Select the data to be shown on the overview page.
+<br/>You may select multiple items by using CTRL+Click.';
 $string['setting_dynamicfilenameheading'] = 'Dynamic Filename Settings';
 $string['setting_dynamicfilenameheading_desc'] = 'All settings for the dynamic filename.';
 $string['setting_dynamicfilename'] = 'Dynamic Filename';
@@ -82,12 +94,13 @@ $string['setting_dynamicfilename_desc'] = 'Enter the format for the file name or
         You can use the following wildcards: <code>QUIZNAME, USERID, USERNAME, ATTEMPTID </code> <br>
         You can use any other text as static text. Typing errors are converted to static text. <br>
         Use <code style="font-size:150%">-</code> or <code style="font-size:120%">_</code> as separators. <br>';
+
 $string['setting_dynamicfilenamehashalgo'] = 'Hash Algorithm';
 $string['setting_dynamicfilenamehashalgo_desc'] = 'Select hash algorithm to be used in the filename of the exported pdf.';
 $string['setting_dynamicfilenamehashlength'] = 'Hash Length';
 $string['setting_dynamicfilenamehashlength_desc'] = 'Select the length of the hash value used in the filename of the exported pdf.';
 $string['filename_quizname'] = 'Quiz Name';
-$string['filename_idname'] = 'ID Name';
+$string['filename_idname'] = 'User-ID';
 $string['filename_username'] = 'Username';
 $string['filename_attemptid'] = 'Attempt ID';
 $string['filename_slot'] = 'Attempt Slot';
