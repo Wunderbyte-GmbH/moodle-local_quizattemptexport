@@ -59,7 +59,7 @@ $string['setting_autoexport_desc'] = 'Enable this setting to export each quiz at
 $string['setting_catfilter'] = 'Category Filter';
 $string['setting_catfilter_desc'] = 'Select the course categories where the automatic quiz attempt export should be enabled. 
 Only attempts of quiz instances within courses that are in a category selected here will be exported automatically. 
-Selecting a category will also implicitly select its subcategories. <br><br> You may select multiple categories by using CTRL+Click.';
+Selecting a category will also implicitly select its subcategories.<strong>If no category is selected, all attempts in all categories are exported.</strong> <br><br> You may select multiple categories by using CTRL+Click.';
 $string['setting_enrolmentkey'] = 'Include enrolment key';
 $string['setting_enrolmentkey_desc'] = 'Include enrolment key in the pdf report header.';
 $string['setting_exportfilesystem'] = 'Export into server filesystem';
