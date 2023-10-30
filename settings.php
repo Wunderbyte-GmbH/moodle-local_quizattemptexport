@@ -29,7 +29,7 @@ $generateHtmlButtons = function($keyvaluelist) {
         $html = '<div id="dynamicfilename-buttons">';
 
         foreach ($keyvaluelist as $key => $value) {
-            $html .= '<button class="btn btn-primary m-2" type="button" data-placeholder="' . $key . '">' . $value . '</button>';
+            $html .= '<button class="btn btn-warning m-2" type="button" data-placeholder="' . $key . '">' . $value . '</button>';
         }
         $html.= '</div>';
 
