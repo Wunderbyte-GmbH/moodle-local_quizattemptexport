@@ -36,17 +36,26 @@ $generateHtmlButtons = function($keyvaluelist) {
         $html .= <<<JS
         <script>
         document.addEventListener('DOMContentLoaded', () => {
-                let dynamicfilenamebuttoncontent = document.getElementById("dynamicfilename-buttons")
-                let buttons = dynamicfilenamebuttoncontent.getElementsByTagName("button"); 
-
-                let textField = document.getElementById("id_s_local_quizattemptexport_dynamicfilename");
-                buttons.forEach(function(button) {
-                        button.addEventListener('click', function() {
-                        let placeholder = button.getAttribute('data-placeholder');
-                        textField.value += "_" + placeholder;
-                        });
-                });
-                });
+            let dynamicfilenamebuttoncontent = document.getElementById("dynamicfilename-buttons");
+            let buttons = dynamicfilenamebuttoncontent.getElementsByTagName("button");
+    
+            let textField = document.getElementById("id_s_local_quizattemptexport_dynamicfilename");
+    
+            Array.from(buttons).forEach(function(button) {
+                    button.addEventListener('click', function() {
+                            
+                    let placeholder = "_" + button.getAttribute('data-placeholder');
+                    let cursorPosition = textField.selectionStart;
+                    let valueBeforeCursor = textField.value.substring(0, cursorPosition);
+                    let valueAfterCursor = textField.value.substring(cursorPosition);
+    
+                    textField.value = valueBeforeCursor + placeholder + valueAfterCursor;
+    
+                    textField.selectionStart = cursorPosition + placeholder.length;
+                    textField.selectionEnd = cursorPosition + placeholder.length;
+                    });
+            });
+        });
         </script>
         JS;
         

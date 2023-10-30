@@ -254,7 +254,7 @@ class export_attempt {
         $hashlength = get_config('local_quizattemptexport', 'dynamicfilenamehashlength');
         
         // Get the Values for the wildcards.
-        $userid = isset($user->idnumber) ? $user->idnumber : '';
+        $userid = isset($user->id) ? $user->id : '';
         $username = isset($user->username) ? $user->username : '';
         $attemptid = is_object($attempt) ? $attempt->get_attemptid() : '';
         $contenthash = (isset($tempcontent) && isset($hashtype)) ? hash($hashtype, $tempcontent) : '';
@@ -277,7 +277,7 @@ class export_attempt {
         // Replace invalid characters in the file name.
         $filename = preg_replace('/[^a-zA-Z0-9\-_\.]/', '', $format);
 
-        $ending = '_' . $time . '_' . substr($contenthash, 0, $hashlength) . ".pdf";
+        $ending = ('' != $filename ? '_' : '') . $time . '_' . substr($contenthash, 0, $hashlength) . ".pdf";
         return $filename . $ending;
     }
 }

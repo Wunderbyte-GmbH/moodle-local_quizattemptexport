@@ -124,7 +124,7 @@ abstract class base {
         // Get the Values for the wildcards.
         $fnamechunkquestion = get_string('attachmentexport_filenamechunk_questionno', 'local_quizattemptexport');
         $fnamechunkattachment = get_string('attachmentexport_filenamechunk_attachment', 'local_quizattemptexport');
-        $userid = isset($user->idnumber) ? $user->idnumber : '';
+        $userid = isset($user->id) ? $user->id : '';
         $username = isset($user->username) ? $user->username : '';
         $attemptid = is_object($attempt) ? $attempt->get_attemptid() : '';
         $oldfilename = is_object($attachment) ? $attachment->get_filename() : '';
@@ -151,7 +151,7 @@ abstract class base {
         // Replace invalid characters in the file name.
         $filename = preg_replace('/[^a-zA-Z0-9\-_\.]/', '', $format);
             
-        $ending =  '_' . $fnamechunkquestion . $slot . '_'. 
+        $ending =  ('' != $filename ? '_' : '') . $fnamechunkquestion . $slot . '_'.
                 $fnamechunkattachment . '_' . $filenamepart . '_' . 
                 substr($contenthash, 0, $hashlength) . '.' . $filetype;
         return $filename . $ending;
