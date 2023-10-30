@@ -60,8 +60,8 @@ $string['setting_catfilter'] = 'Kategoriefilter';
 $string['setting_catfilter_desc'] = 'Wählen Sie die Kurskategorien innerhalb derer der automatische Export aktiv sein soll. 
 Es werden nur die Quizversuche automatisch exportiert, die in Kursen stattfinden die in einer der hier ausgewählten Kategorien sind. 
 Unterkategorien von Kategorien die ausgewählt wurden, sind implizit mit ausgewählt. <strong>Wenn keine Kategorie gewählt ist, dann werden alle Versuche aus allen Kategorien exportiert.</strong> <br><br>Nutzen Sie STRG+Mausklick um mehrere Kurskategorien auszuwählen.';
-$string['setting_enrolmentkey'] = 'Einschreibeschlüssel anzeigen';
-$string['setting_enrolmentkey_desc'] = 'Anzeige des Einschreibeschlüssels im PDF Export.';
+$string['setting_enrolmentkey'] = 'Einschreibeschlüssel anzeigen ("eLeDia Schlüsseleinschreibung")';
+$string['setting_enrolmentkey_desc'] = 'Anzeige des Einschreibeschlüssels im PDF Export. Achtung: Dies funktioniert <strong>ausschließlich</strong> mit dem Plugin "eLeDia Schlüsseleinschreibung"';
 $string['setting_exportfilesystem'] = 'Export in das Dateisystem auf dem Server';
 $string['setting_exportfilesystem_desc'] = 'Aktivieren Sie diese Option, um PDFs auch in das Dateisystem des Servers zu exportieren. 
         <br><br> Jeder eingereichte Versuch wird als PDF exportiert und über das Verwaltungsmenü der jeweiligen Quizinstanzen bereitgestellt, 

@@ -60,8 +60,8 @@ $string['setting_catfilter'] = 'Category Filter';
 $string['setting_catfilter_desc'] = 'Select the course categories where the automatic quiz attempt export should be enabled. 
 Only attempts of quiz instances within courses that are in a category selected here will be exported automatically. 
 Selecting a category will also implicitly select its subcategories.<strong>If no category is selected, all attempts in all categories are exported.</strong> <br><br> You may select multiple categories by using CTRL+Click.';
-$string['setting_enrolmentkey'] = 'Include enrolment key';
-$string['setting_enrolmentkey_desc'] = 'Include enrolment key in the pdf report header.';
+$string['setting_enrolmentkey'] = 'Include enrolment key ("One time course key enrolment")';
+$string['setting_enrolmentkey_desc'] = 'Include enrolment key in the pdf report header. This works <strong>only</strong> with the plugin "One time course key enrolment"!';
 $string['setting_exportfilesystem'] = 'Export into server filesystem';
 $string['setting_exportfilesystem_desc'] = 'Enable this option to export PDFs into the servers filesystem as well. 
         <br><br> Each submitted attempt will be exported as PDF and made available through the respective quiz instances 

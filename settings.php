@@ -114,7 +114,7 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
     $settings->add(new admin_setting_configcheckbox('local_quizattemptexport/enrolmentkey',
         get_string('setting_enrolmentkey', 'local_quizattemptexport'),
         get_string('setting_enrolmentkey_desc', 'local_quizattemptexport'),
-        1)
+        0)
     );
 
     $settings->add(new admin_setting_heading('local_quizattemptexport/dynamicfilenameheading',
