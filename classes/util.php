@@ -66,7 +66,7 @@ class util {
 
         // Create the export path if missing.
         if (!is_dir($exportpath)) {
-            if (!mkdir($exportpath)) {
+            if (!mkdir($exportpath, 0777, true)) {
                 throw new \moodle_exception('except_dirnotwritable', 'local_quizattemptexport', '', $exportdir);
             }
         }
