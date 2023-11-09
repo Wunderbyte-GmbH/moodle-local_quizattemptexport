@@ -115,7 +115,7 @@ abstract class base {
      * Generates a filename for a given attempt.
      * 
      */
-    protected function generate_filename($quizname, $user, $attempt, $attachment, $slot) {
+    protected static function generate_filename($quizname, $user, $attempt, $attachment, $slot) {
         // Get the format from the settings.
         $format = get_config('local_quizattemptexport', 'dynamicfilename');
         $hashtype = get_config('local_quizattemptexport', 'dynamicfilenamehashalgo');
