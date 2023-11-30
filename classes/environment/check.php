@@ -34,8 +34,8 @@ class check {
         $osinfo = php_uname('s');
         if (false !== strpos($osinfo, 'Windows')) {
 
-            $result->setStatus(true);
-            $result->setFeedbackStr(['envcheck_success', 'local_quizattemptexport']);
+            $result->setStatus(false);
+            $result->setFeedbackStr(['envcheck_winnotsupported', 'local_quizattemptexport']);
 
         } else {
 
