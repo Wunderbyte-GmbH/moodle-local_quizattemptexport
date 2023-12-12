@@ -21,6 +21,8 @@ This plugin requires Moodle 3.9+
 - Use specific capabilities: `local/quizattemptexport:viewpdf`, `local/quizattemptexport:generatepdf`.
 - Use `course module id` as subdir in the course folder of the exportpath in moodledata (see below).
 - PDF export: show `enrolmentkey` from plugin `enrol_elediamultikeys` in the pdf heading table.
+- Overview page intro: show customised text at the top of the attempt overview page.
+- Hash length: Select the lenght of the hash value used in the filename of the exported pdf. 
 
 ## Packaged binary
 The plugin uses a packaged binary to perform the transformation, which might require the installation of some additional shared libraries.
