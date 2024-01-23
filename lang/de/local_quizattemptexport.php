@@ -121,3 +121,4 @@ $string['envcheck_execfailed'] = 'Problem beim Versuch einen CLI Aufruf abzusetz
 $string['envcheck_notexecutable'] = 'Das im Plugin enthaltene Binary muss durch den Webserver-User ausführbar sein. Details sind in der Readme beschrieben.';
 $string['envcheck_sharedlibsmissing'] = 'Dem enthaltenen Binary fehlen shared Libraries: {$a}';
 $string['envcheck_success'] = 'Alle Voraussetzungen erfüllt.';
+$string['envcheck_winnotsupported'] = 'Windows wird von dieser Minimalversion des Plugins nicht unterstützt. Bitte installiere die vollständige Version des Plugins mit allen Abhängigkeiten.';

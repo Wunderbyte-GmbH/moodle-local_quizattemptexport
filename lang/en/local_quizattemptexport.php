@@ -122,3 +122,4 @@ $string['envcheck_execfailed'] = 'Error when trying to execute CLI call.';
 $string['envcheck_notexecutable'] = 'The binary contained in the plugin needs to be executable for the webserver user. Check the readme for details.';
 $string['envcheck_sharedlibsmissing'] = 'The binary is missing shared libraries: {$a}';
 $string['envcheck_success'] = 'The environment check succeeded. All dependencies are met.';
+$string['envcheck_winnotsupported'] = 'Windows is not supported in this minimized version of the plugin. Please install the version with the full dependencies.';
