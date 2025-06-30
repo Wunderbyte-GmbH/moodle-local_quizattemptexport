@@ -113,7 +113,7 @@ class export_attempt {
 
         // Decide which wkhtmltopdf binary to use.
         $osinfo = php_uname('s');
-        $binarypath = $CFG->dirroot . '/local/quizattemptexport/vendor/h4cc/wkhtmltopdf-amd64/bin/wkhtmltopdf-amd64';
+        $binarypath = '/usr/local/bin/wkhtmltopdf';
 
         try {
             // Start pdf generation and write into a temp file.
