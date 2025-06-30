@@ -18,7 +18,7 @@
  *
  *
  * @package    local_quizattemptexport
- * @author     Ralf Wiederhold <ralf.wiederhold@eledia.de>
+ * @author     Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
  * @copyright  Ralf Wiederhold 2020
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,11 +26,6 @@
 namespace local_quizattemptexport;
 
 use local_quizattemptexport\processing\html\processor as html_processor;
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once $CFG->dirroot . '/mod/quiz/attemptlib.php';
-require_once $CFG->dirroot . '/mod/quiz/accessmanager.php';
 
 class generate_attempt_html {
 
@@ -49,7 +44,7 @@ class generate_attempt_html {
         $this->page = $page;
     }
 
-    public function generate(\quiz_attempt $attempt) {
+    public function generate(\mod_quiz\quiz_attempt $attempt) {
         global $CFG;
 
         $conf = get_config('local_quizattemptexport');
@@ -95,7 +90,7 @@ class generate_attempt_html {
         return $output;
     }
 
-    private function initialize_attempt(\quiz_attempt $attempt) {
+    private function initialize_attempt(\mod_quiz\quiz_attempt $attempt) {
         global $DB;
 
         $this->attempt_obj = $attempt;
@@ -124,16 +119,16 @@ class generate_attempt_html {
         $userid = $this->attempt_obj->get_userid();
 
         $sql = 'SELECT ue.*
-                FROM 
+                FROM
                     {user_enrolments} ue,
                     {enrol} e
                 WHERE
                     e.enrol = :enrolname
-                AND 
+                AND
                     e.courseid = :courseid
-                AND 
+                AND
                     ue.enrolid = e.id
-                AND 
+                AND
                     ue.userid = :userid';
         $params = [
             'enrolname' => 'elediamultikeys',
@@ -288,11 +283,11 @@ class generate_attempt_html {
 
             if ($this->attempt_rec->timefinish) {
                 $summarydata['completedon'] = array(
-                    'title' => get_string('completedon', 'quiz'),
+                    'title' => 'Compeleted on',
                     'content' => userdate($this->attempt_rec->timefinish),
                 );
                 $summarydata['timetaken'] = array(
-                    'title' => get_string('timetaken', 'quiz'),
+                    'title' => 'time taken',
                     'content' => $timetaken,
                 );
             }
@@ -310,13 +305,13 @@ class generate_attempt_html {
 
                 if (!$this->attempt_rec->timefinish) {
                     $summarydata['grade'] = array(
-                        'title' => get_string('grade', 'quiz'),
-                        'content' => get_string('attemptstillinprogress', 'quiz'),
+                        'title' => 'Grade',
+                        'content' => 'Attempt still in progress',
                     );
 
                 } else if (is_null($grade)) {
                     $summarydata['grade'] = array(
-                        'title' => get_string('grade', 'quiz'),
+                        'title' => 'Grade',
                         'content' => quiz_format_grade($this->quiz_rec, $grade),
                     );
 
@@ -344,7 +339,7 @@ class generate_attempt_html {
                         $formattedgrade = get_string('outof', 'quiz', $a);
                     }
                     $summarydata['grade'] = array(
-                        'title' => get_string('grade', 'quiz'),
+                        'title' => 'Grade',
                         'content' => $formattedgrade,
                     );
                 }

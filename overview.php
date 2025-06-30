@@ -25,7 +25,7 @@
 
 define('NO_OUTPUT_BUFFERING', true); // Required for progress bar to work.
 
-require_once '../../config.php';
+require_once('../../config.php');
 
 // Get params.
 $cmid = required_param('cmid', PARAM_INT);
@@ -108,10 +108,7 @@ if ($downloadzip) {
 // Check if we should export an attempt.
 if ($hasexportcap && $reexportattemptid) {
 
-    require_once $CFG->dirroot . '/mod/quiz/attemptlib.php';
-    require_once $CFG->dirroot . '/mod/quiz/accessmanager.php';
-
-    $attempt = \quiz_attempt::create($reexportattemptid);
+    $attempt = \mod_quiz\quiz_attempt::create($reexportattemptid);
     if ($attempt->get_quiz()->id != $instance->id) {
         throw new moodle_exception('except_attemptnotinquiz', 'local_quizattemptexport');
     }
@@ -125,8 +122,6 @@ if ($hasexportcap && $reexportattemptid) {
 // Check if we should export all attempts.
 if ($hasexportcap && $reexportall) {
 
-    require_once $CFG->dirroot . '/mod/quiz/attemptlib.php';
-    require_once $CFG->dirroot . '/mod/quiz/accessmanager.php';
 
     echo $OUTPUT->header();
 
@@ -141,7 +136,7 @@ if ($hasexportcap && $reexportall) {
 
         $progressbar->update($current++, $allattemptsnum, get_string('page_overview_progressbar_step', 'local_quizattemptexport', $attemptid));
 
-        $attempt = \quiz_attempt::create($attemptid);
+        $attempt = \mod_quiz\quiz_attempt::create($attemptid);
         $export = new \local_quizattemptexport\export_attempt($attempt);
         $export->export_pdf();
     }

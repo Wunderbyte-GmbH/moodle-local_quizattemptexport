@@ -14,27 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Interface that may be used to export a quiz attempt as
- * a PDF.
- *
- * @package    local_quizattemptexport
- * @author     Ralf Wiederhold <ralf.wiederhold@eledia.de>
- * @copyright  Ralf Wiederhold 2020
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace local_quizattemptexport;
 
 use core\uuid;
 use Knp\Snappy\Pdf;
 use local_quizattemptexport\processing\attachments\processor as attachment_processor;
 
-defined('MOODLE_INTERNAL') || die();
-
-require_once $CFG->dirroot . '/mod/quiz/attemptlib.php';
-require_once $CFG->dirroot . '/mod/quiz/accessmanager.php';
-
+/**
+ * Interface that may be used to export a quiz attempt as
+ * a PDF.
+ *
+ * @package    local_quizattemptexport
+ * @author     Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
+ * @copyright  Ralf Wiederhold 2020
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class export_attempt {
 
     private $page;
@@ -44,17 +38,17 @@ class export_attempt {
     private $exportpath;
     private $exportfilesystem;
 
-    /** @var \quiz_attempt $attempt_obj */
+    /** @var \mod_quiz\quiz_attempt $attempt_obj */
     private $attempt_obj;
     private $user_rec;
 
-    public function __construct(\quiz_attempt $attempt) {
+    public function __construct(\mod_quiz\quiz_attempt $attempt) {
         global $SITE, $CFG, $PAGE, $DB;
 
         $this->attempt_obj = $attempt;
 
         // Load Vendor requirements.
-        require_once $CFG->dirroot . '/local/quizattemptexport/vendor/autoload.php';
+        require_once($CFG->dirroot . '/local/quizattemptexport/vendor/autoload.php');
 
         // Create logger.
         $log = new \Monolog\Logger('quizattemptexport');
@@ -242,21 +236,21 @@ class export_attempt {
 
     /**
      * Generates a filename.
-     * 
+     *
      */
     protected function generate_filename($quizname, $user, $attempt, $time, $tempcontent) {
         // Get the format from the settings.
         $format = get_config('local_quizattemptexport', 'dynamicfilename');
         $hashtype = get_config('local_quizattemptexport', 'dynamicfilenamehashalgo');
         $hashlength = get_config('local_quizattemptexport', 'dynamicfilenamehashlength');
-        
+
         // Get the Values for the wildcards.
         $userid = isset($user->id) ? $user->id : '';
         $username = isset($user->username) ? $user->username : '';
         $attemptid = is_object($attempt) ? $attempt->get_attemptid() : '';
         $contenthash = (isset($tempcontent) && isset($hashtype)) ? hash($hashtype, $tempcontent) : '';
         $convertedquizname = isset($quizname) ? clean_param(\core_text::convert($quizname, 'utf-8', 'ascii'), PARAM_ALPHANUMEXT) : '';
-        
+
         // Replace the wildcards with the actual values.
         $replacements = [
             'QUIZNAME'    => $convertedquizname,
@@ -264,7 +258,7 @@ class export_attempt {
             'USERNAME'    => $username,
             'ATTEMPTID'   => $attemptid,
         ];
-    
+
         foreach ($replacements as $wildcard => $value) {
             $format = str_replace( $wildcard, $value, $format);
         }

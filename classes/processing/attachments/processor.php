@@ -14,26 +14,26 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace local_quizattemptexport\processing\attachments;
+
 /**
  * Controller for postprocessing of file attachments
  * uploaded within an attempt.
  *
- * @package		local_quizattemptexport
- * @copyright	2021 Ralf Wiederhold
- * @author		Ralf Wiederhold <ralf.wiederhold@eledia.de>
- * @license    	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    local_quizattemptexport
+ * @copyright  2021 Ralf Wiederhold
+ * @author     Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-namespace local_quizattemptexport\processing\attachments;
-
-defined('MOODLE_INTERNAL') || die();
-
 class processor {
-
-    public static function execute(\quiz_attempt $attempt) {
+    /**
+     * Function execute
+     * @param \mod_quiz\quiz_attempt $attempt
+     * @return void
+     */
+    public static function execute(\mod_quiz\quiz_attempt $attempt) {
 
         foreach ($attempt->get_slots() as $slot) {
-
             $questionattempt = $attempt->get_question_attempt($slot);
             $question = $questionattempt->get_question();
 

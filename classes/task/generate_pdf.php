@@ -25,7 +25,7 @@
  * environment to avoid cluster instances trying to process the same attempts.
  *
  * @package    local_quizattemptexport
- * @author     Ralf Wiederhold <ralf.wiederhold@eledia.de>
+ * @author     Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
  * @copyright  Ralf Wiederhold 2020
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -35,11 +35,9 @@ namespace local_quizattemptexport\task;
 use local_quizattemptexport\export_attempt;
 use local_quizattemptexport\util;
 
-defined('MOODLE_INTERNAL') || die();
-
 // Deprecated; these files have been deprecated as of Moodle 4.2 and will be removed in Moodle 4.7
-// require_once $CFG->dirroot . '/mod/quiz/attemptlib.php';
-// require_once $CFG->dirroot . '/mod/quiz/accessmanager.php';
+//
+//
 
 
 class generate_pdf extends \core\task\scheduled_task {
@@ -117,7 +115,7 @@ class generate_pdf extends \core\task\scheduled_task {
                 mtrace('Trying to process attempt: ' . $attemptrec->attemptid);
 
                 // Generate attempt.
-                $attemptinstance = \quiz_attempt::create($attemptrec->attemptid);
+                $attemptinstance = \mod_quiz\quiz_attempt::create($attemptrec->attemptid);
                 $export = new export_attempt($attemptinstance);
                 $export->export_pdf();
 

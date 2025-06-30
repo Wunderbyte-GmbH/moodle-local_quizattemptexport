@@ -14,25 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Processing of user provided attachments for essay question type.
- *
- * @package		local_quizattemptexport
- * @copyright	2021 Ralf Wiederhold
- * @author		Ralf Wiederhold <ralf.wiederhold@eledia.de>
- * @license    	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace local_quizattemptexport\processing\attachments\methods;
 
-defined('MOODLE_INTERNAL') || die();
-
+ /**
+  * Processing of user provided attachments for essay question type.
+  *
+  * @package    local_quizattemptexport
+  * @copyright  2021 Ralf Wiederhold
+  * @author     Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
+  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+  */
 class essay extends base {
-
     /**
      * Processes attachments of essay question attempts.
      *
-     * @param \quiz_attempt $attempt
+     * @param \mod_quiz\quiz_attempt $attempt
      * @param int $slot
      * @return mixed|void
      * @throws \coding_exception
@@ -41,7 +37,7 @@ class essay extends base {
      * @throws \moodle_exception
      * @throws \stored_file_creation_exception
      */
-    public static function process(\quiz_attempt $attempt, int $slot) {
+    public static function process(\mod_quiz\quiz_attempt $attempt, int $slot) {
         global $DB;
 
         // Initialize data.
@@ -51,7 +47,6 @@ class essay extends base {
         // have been uploaded).
         $stepwithattachments = null;
         foreach ($questionattempt->get_step_iterator() as $step) {
-
             // User provided a full answer, i.e. provided written text and a file.
             if ($step->get_state() instanceof \question_state_complete) {
                 $stepwithattachments = $step;

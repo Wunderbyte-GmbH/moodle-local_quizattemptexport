@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 
 class processor {
 
-    public static function execute(string $html, \quiz_attempt $attempt) {
+    public static function execute(string $html, \mod_quiz\quiz_attempt $attempt) {
 
         $html = domdocument_util::prepare_html($html);
         $dom = domdocument_util::initialize_domdocument($html);

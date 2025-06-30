@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace local_quizattemptexport\processing\attachments\methods;
+
+use local_quizattemptexport\util;
+
 /**
  * Definition of base class for attachment processing methods.
  *
@@ -23,30 +27,22 @@
  * A processing method might be called multiple times per processing run and should therefore
  * generally be stateless.
  *
- * @package		local_quizattemptexport
- * @copyright	2021 Ralf Wiederhold
- * @author		Ralf Wiederhold <ralf.wiederhold@eledia.de>
- * @license    	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     local_quizattemptexport
+ * @copyright   2021 Ralf Wiederhold
+ * @author      Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-namespace local_quizattemptexport\processing\attachments\methods;
-
-use local_quizattemptexport\util;
-
-defined('MOODLE_INTERNAL') || die();
-
 abstract class base {
-
     /**
      * This method is called for a question attempt within a specific quiz attempt. It will
      * always be provided with the quiz attempt and the ID of a slot within that quiz attempt
      * that contains a question of the type the implementing class handles.
      *
-     * @param \quiz_attempt $attempt
+     * @param \mod_quiz\quiz_attempt $attempt
      * @param int $slot
      * @return mixed
      */
-    abstract public static function process(\quiz_attempt $attempt, int $slot);
+    abstract public static function process(\mod_quiz\quiz_attempt $attempt, int $slot);
 
 
     /**
@@ -54,7 +50,7 @@ abstract class base {
      * filearea of the export plugin and - if enabled within the plugin settings -
      * also into the applicable directory within moodledata.
      *
-     * @param \quiz_attempt $attempt
+     * @param \mod_quiz\quiz_attempt $attempt
      * @param int $slot
      * @param \stored_file[] $attachments
      * @throws \coding_exception
@@ -63,7 +59,7 @@ abstract class base {
      * @throws \moodle_exception
      * @throws \stored_file_creation_exception
      */
-    protected static function export_files(\quiz_attempt $attempt, int $slot, array $attachments) {
+    protected static function export_files(\mod_quiz\quiz_attempt $attempt, int $slot, array $attachments) {
         global $DB;
 
         $userid = $attempt->get_userid();
@@ -84,7 +80,7 @@ abstract class base {
         foreach ($attachments as $attachment) {
             $filename = self::generate_filename($quizname, $user, $attempt, $attachment, $slot);
 
-            $newfile = new \stdClass;
+            $newfile = new \stdClass();
             $newfile->context = $context->id;
             $newfile->component = 'local_quizattemptexport';
             $newfile->filearea = 'attemptattachments';
@@ -113,14 +109,14 @@ abstract class base {
 
     /**
      * Generates a filename for a given attempt.
-     * 
+     *
      */
     protected static function generate_filename($quizname, $user, $attempt, $attachment, $slot) {
         // Get the format from the settings.
         $format = get_config('local_quizattemptexport', 'dynamicfilename');
         $hashtype = get_config('local_quizattemptexport', 'dynamicfilenamehashalgo');
         $hashlength = get_config('local_quizattemptexport', 'dynamicfilenamehashlength');
-        
+
         // Get the Values for the wildcards.
         $fnamechunkquestion = get_string('attachmentexport_filenamechunk_questionno', 'local_quizattemptexport');
         $fnamechunkattachment = get_string('attachmentexport_filenamechunk_attachment', 'local_quizattemptexport');
@@ -133,7 +129,7 @@ abstract class base {
         $filenamepart = implode('.', $filenameparts);
         $contenthash = (is_object($attachment) && isset($hashtype)) ? hash($hashtype, $attachment->get_content()) : '';
         $convertedquizname = isset($quizname) ? clean_param(\core_text::convert($quizname, 'utf-8', 'ascii'), PARAM_ALPHANUMEXT) : '';
-        
+
         // Replace the wildcards with the actual values.
         $replacements = [
             'QUIZNAME'    => $convertedquizname,
@@ -141,20 +137,19 @@ abstract class base {
             'USERNAME'    => $username,
             'ATTEMPTID'   => $attemptid,
         ];
-    
+
         foreach ($replacements as $wildcard => $value) {
-            $format = str_replace( $wildcard, $value, $format);
+            $format = str_replace($wildcard, $value, $format);
         }
 
         // Remove consecutive underscores for missing values
         $format = preg_replace('/_+/', '_', $format);
         // Replace invalid characters in the file name.
         $filename = preg_replace('/[^a-zA-Z0-9\-_\.]/', '', $format);
-            
-        $ending =  ('' != $filename ? '_' : '') . $fnamechunkquestion . $slot . '_'.
-                $fnamechunkattachment . '_' . $filenamepart . '_' . 
+
+        $ending = ('' != $filename ? '_' : '') . $fnamechunkquestion . $slot . '_' .
+                $fnamechunkattachment . '_' . $filenamepart . '_' .
                 substr($contenthash, 0, $hashlength) . '.' . $filetype;
         return $filename . $ending;
     }
-
 }

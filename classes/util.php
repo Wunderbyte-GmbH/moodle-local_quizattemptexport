@@ -18,14 +18,12 @@
  * Static collection of utility methods.
  *
  * @package    local_quizattemptexport
- * @author     Ralf Wiederhold <ralf.wiederhold@eledia.de>
+ * @author     Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
  * @copyright  Ralf Wiederhold 2021
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace local_quizattemptexport;
-
-defined('MOODLE_INTERNAL') || die();
 
 class util {
 
@@ -38,12 +36,12 @@ class util {
      *
      * Throws an exception on any problem.
      *
-     * @param \quiz_attempt $attempt
+     * @param \mod_quiz\quiz_attempt $attempt
      * @return string
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public static function prepare_filearea_server(\quiz_attempt $attempt) {
+    public static function prepare_filearea_server(\mod_quiz\quiz_attempt $attempt) {
 
         // Get exportdir setting.
         $exportdir = get_config('local_quizattemptexport', 'pdfexportdir');

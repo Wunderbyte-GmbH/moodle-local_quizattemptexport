@@ -14,27 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace local_quizattemptexport\processing\html\methods;
+
+use local_quizattemptexport\processing\html\domdocument_util;
+
 /**
  * Postprocessing implementation for qtype_ddmarker
  *
  * @package		local_quizattemptexport
  * @copyright	2020 Ralf Wiederhold
- * @author		Ralf Wiederhold <ralf.wiederhold@eledia.de>
+ * @author		Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
  * @license    	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-namespace local_quizattemptexport\processing\html\methods;
-
-use local_quizattemptexport\processing\html\domdocument_util;
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once $CFG->dirroot . '/mod/quiz/attemptlib.php';
-require_once $CFG->dirroot . '/mod/quiz/accessmanager.php';
-
 class ddmarker extends base {
 
-    public static function process(string $questionhtml, \quiz_attempt $attempt, int $slot) : string {
+    public static function process(string $questionhtml, \mod_quiz\quiz_attempt $attempt, int $slot) : string {
         global $CFG, $DB;
 
         // Get question attempt and question definition.
@@ -204,7 +198,7 @@ class ddmarker extends base {
                 margin: 10px 0;
                 padding: 10px;
             }
-            
+
             .ddmarker div.correctresult h4 {
                 margin: 0 0 10px 0;
             }

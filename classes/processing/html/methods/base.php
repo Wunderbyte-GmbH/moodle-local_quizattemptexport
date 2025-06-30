@@ -14,21 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace local_quizattemptexport\processing\html\methods;
+
 /**
  * Interface definition for postprocessing methods.
  *
- * @package		local_quizattemptexport
- * @copyright	2020 Ralf Wiederhold
- * @author		Ralf Wiederhold <ralf.wiederhold@eledia.de>
- * @license    	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    local_quizattemptexport
+ * @copyright  2020 Ralf Wiederhold
+ * @author     Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-namespace local_quizattemptexport\processing\html\methods;
-
-defined('MOODLE_INTERNAL') || die();
-
 abstract class base {
-
     /**
      * Takes a html snippet which will contain the question container div of a specific
      * question within the html rendered from the attempt and the corresponding question
@@ -38,11 +34,11 @@ abstract class base {
      * The calling code will then replace the input html with the output html.
      *
      * @param string $questionhtml
-     * @param \quiz_attempt $attempt
+     * @param \mod_quiz\quiz_attempt $attempt
      * @param int $slot
      * @return string
      */
-    abstract public static function process(string $questionhtml, \quiz_attempt $attempt, int $slot) : string;
+    abstract public static function process(string $questionhtml, \mod_quiz\quiz_attempt $attempt, int $slot): string;
 
 
     /**
@@ -52,8 +48,7 @@ abstract class base {
      *
      * @return string
      */
-    public static function get_css() : string {
+    public static function get_css(): string {
         return '';
     }
-
 }

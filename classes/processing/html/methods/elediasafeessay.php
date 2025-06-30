@@ -14,37 +14,31 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace local_quizattemptexport\processing\html\methods;
+
+use local_quizattemptexport\processing\html\domdocument_util;
+
 /**
  * Postprocessing implementation for qtype_elediasafeessay
  *
  * @package		local_quizattemptexport
  * @copyright	2020 Ralf Wiederhold
- * @author		Ralf Wiederhold <ralf.wiederhold@eledia.de>
+ * @author		Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
  * @license    	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-namespace local_quizattemptexport\processing\html\methods;
-
-use local_quizattemptexport\processing\html\domdocument_util;
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once $CFG->dirroot . '/mod/quiz/attemptlib.php';
-require_once $CFG->dirroot . '/mod/quiz/accessmanager.php';
-
 class elediasafeessay extends base {
 
     /**
      * Adaption of postprocessing for qtype_essay. Does basically the same...
      *
      * @param string $questionhtml
-     * @param \quiz_attempt $attempt
+     * @param \mod_quiz\quiz_attempt $attempt
      * @param int $slot
      * @return string
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public static function process(string $questionhtml, \quiz_attempt $attempt, int $slot): string {
+    public static function process(string $questionhtml, \mod_quiz\quiz_attempt $attempt, int $slot): string {
         global $DB;
 
         // Get DOM and XPath.
