@@ -4,6 +4,7 @@
     "monolog/monolog": "*",
     "h4cc/wkhtmltopdf-amd64" : "~0.12",
     "wemersonjanuario/wkhtmltopdf-windows"  : "~0.12",
-    "mathjax/mathjax" : "2.7.9"
+    "mathjax/mathjax" : "2.7.9",
+    "dompdf/dompdf": "^3.1"
   }
 }
