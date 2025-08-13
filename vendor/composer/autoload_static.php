@@ -19,8 +19,6 @@ class ComposerStaticInit8cecc9e61c20681d6fd981ef2403a135
         array (
             'Symfony\\Polyfill\\Php80\\' => 23,
             'Symfony\\Component\\Process\\' => 26,
-            'Svg\\' => 4,
-            'Sabberworm\\CSS\\' => 15,
         ),
         'P' => 
         array (
@@ -29,19 +27,10 @@ class ComposerStaticInit8cecc9e61c20681d6fd981ef2403a135
         'M' => 
         array (
             'Monolog\\' => 8,
-            'Masterminds\\' => 12,
         ),
         'K' => 
         array (
             'Knp\\Snappy\\' => 11,
-        ),
-        'F' => 
-        array (
-            'FontLib\\' => 8,
-        ),
-        'D' => 
-        array (
-            'Dompdf\\' => 7,
         ),
     );
 
@@ -58,14 +47,6 @@ class ComposerStaticInit8cecc9e61c20681d6fd981ef2403a135
         array (
             0 => __DIR__ . '/..' . '/symfony/process',
         ),
-        'Svg\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/dompdf/php-svg-lib/src/Svg',
-        ),
-        'Sabberworm\\CSS\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/sabberworm/php-css-parser/src',
-        ),
         'Psr\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
@@ -74,28 +55,15 @@ class ComposerStaticInit8cecc9e61c20681d6fd981ef2403a135
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
-        'Masterminds\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/masterminds/html5/src',
-        ),
         'Knp\\Snappy\\' => 
         array (
             0 => __DIR__ . '/..' . '/knplabs/knp-snappy/src/Knp/Snappy',
-        ),
-        'FontLib\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/dompdf/php-font-lib/src/FontLib',
-        ),
-        'Dompdf\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/dompdf/dompdf/src',
         ),
     );
 
     public static $classMap = array (
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'Dompdf\\Cpdf' => __DIR__ . '/..' . '/dompdf/dompdf/lib/Cpdf.php',
         'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
         'UnhandledMatchError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
         'ValueError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
