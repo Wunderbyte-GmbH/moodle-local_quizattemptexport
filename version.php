@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2025063001;
+$plugin->version = 2025081301;
 $plugin->release = 'v2.0-r1';
 $plugin->requires  = 2022112800;
 $plugin->component = 'local_quizattemptexport';

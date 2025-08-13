@@ -31,6 +31,12 @@ $string['attemptresult'] = '{$a->gradeachieved} von {$a->grademax} Punkten ({$a-
 $string['ddimageortext_correctanswer_title'] = 'Korrekte Antworten';
 $string['ddmarker_correctanswer_title'] = 'Korrekte Antworten';
 $string['ddwtos_emptydrop_placeholderstr'] = '-----------------';
+$string['diagnosticsheading'] = 'Diagnose';
+$string['diagnosticsintro'] =
+    'Öffnen Sie die Diagnoseseite, um erkannte Plattform, konfigurierte/gebündelte/System-Binaries, Ausführbarkeit, '
+    . 'Versionen und die vom Locator gewählte effektive Binary anzuzeigen.';
+$string['diagnosticslinktext'] = 'Diagnose öffnen (wkhtmltopdf)';
+
 $string['except_attemptnotinquiz'] = 'Dieser Versuch gehört nicht zu diesem Quiz.';
 $string['except_configinvalid'] = 'Eine Einstellung des Plugins "local_quizattemptexport" fehlt entweder oder enthält einen fehlerhaften Wert: {$a}';
 $string['except_dirmissing'] = 'Verzeichnis existiert nicht: {$a}';
@@ -57,29 +63,29 @@ $string['quizattemptexport:generatepdf'] = 'Export PDF';
 $string['setting_autoexport'] = 'Aktiviere automatischen Export';
 $string['setting_autoexport_desc'] = 'Aktivieren Sie diese Einstellung, um jeden Quiz-Versuch automatisch zu exportieren, wenn der Benutzer den Versuch einreicht.';
 $string['setting_catfilter'] = 'Kategoriefilter';
-$string['setting_catfilter_desc'] = 'Wählen Sie die Kurskategorien innerhalb derer der automatische Export aktiv sein soll. 
-Es werden nur die Quizversuche automatisch exportiert, die in Kursen stattfinden die in einer der hier ausgewählten Kategorien sind. 
+$string['setting_catfilter_desc'] = 'Wählen Sie die Kurskategorien innerhalb derer der automatische Export aktiv sein soll.
+Es werden nur die Quizversuche automatisch exportiert, die in Kursen stattfinden die in einer der hier ausgewählten Kategorien sind.
 Unterkategorien von Kategorien die ausgewählt wurden, sind implizit mit ausgewählt. <strong>Wenn keine Kategorie gewählt ist, dann werden alle Versuche aus allen Kategorien exportiert.</strong> <br><br>Nutzen Sie STRG+Mausklick um mehrere Kurskategorien auszuwählen.';
 $string['setting_enrolmentkey'] = 'Einschreibeschlüssel anzeigen ("eLeDia Schlüsseleinschreibung")';
 $string['setting_enrolmentkey_desc'] = 'Anzeige des Einschreibeschlüssels im PDF Export. Achtung: Dies funktioniert <strong>ausschließlich</strong> mit dem Plugin "eLeDia Schlüsseleinschreibung"';
 $string['setting_exportfilesystem'] = 'Export in das Dateisystem auf dem Server';
-$string['setting_exportfilesystem_desc'] = 'Aktivieren Sie diese Option, um PDFs auch in das Dateisystem des Servers zu exportieren. 
-        <br><br> Jeder eingereichte Versuch wird als PDF exportiert und über das Verwaltungsmenü der jeweiligen Quizinstanzen bereitgestellt, 
-        wo sie einzeln heruntergeladen oder bequem in einem ZIP-Archiv zusammengefasst werden können. Außerdem möchten Sie vielleicht, 
-        dass diese Dateien in einen Pfad innerhalb des Dateisystems Ihres Servers exportiert werden, wo Serverprozesse wie Archivierungsjobs auf diese Dateien zugreifen können. 
+$string['setting_exportfilesystem_desc'] = 'Aktivieren Sie diese Option, um PDFs auch in das Dateisystem des Servers zu exportieren.
+        <br><br> Jeder eingereichte Versuch wird als PDF exportiert und über das Verwaltungsmenü der jeweiligen Quizinstanzen bereitgestellt,
+        wo sie einzeln heruntergeladen oder bequem in einem ZIP-Archiv zusammengefasst werden können. Außerdem möchten Sie vielleicht,
+        dass diese Dateien in einen Pfad innerhalb des Dateisystems Ihres Servers exportiert werden, wo Serverprozesse wie Archivierungsjobs auf diese Dateien zugreifen können.
         <br><br>Aktivieren Sie diese Option, um die Dateien zusätzlich in das in der Einstellung unten definierte Verzeichnis exportieren zu lassen.';
 $string['setting_mathjaxenable'] = 'Aktiviere MathJax Schriftsatz';
 $string['setting_mathjaxenable_desc'] = 'Aktiviert das Setzen mathematischer Eingaben mit MathJax';
 $string['setting_mathjaxdelay'] = 'MathJax Verarbeitungsverzögerung (Sekunden)';
-$string['setting_mathjaxdelay_desc'] = 'Die Verwendung des MathJax-Schriftsatzes erfordert eine Verarbeitungsverzögerung für jede generierte PDF-Datei, die es MathJax ermöglicht, 
+$string['setting_mathjaxdelay_desc'] = 'Die Verwendung des MathJax-Schriftsatzes erfordert eine Verarbeitungsverzögerung für jede generierte PDF-Datei, die es MathJax ermöglicht,
         die Verarbeitung/den Satz abzuschließen. Der Standardwert sollte die meisten Fälle abdecken. Wenn Ihre Quizinstanzen viele mathematische Eingaben enthalten und
         nicht alle diese Eingaben gesetzt wurden, müssen Sie diesen Wert möglicherweise auf einen höheren Wert setzen.';
 $string['setting_pdfexportdir'] = 'Export Pfad auf dem Server';
-$string['setting_pdfexportdir_desc'] = 'Dies ist der Pfad eines Verzeichnisses im Dateisystem Ihres Servers, in dem die PDFs zusätzlich gespeichert werden, 
+$string['setting_pdfexportdir_desc'] = 'Dies ist der Pfad eines Verzeichnisses im Dateisystem Ihres Servers, in dem die PDFs zusätzlich gespeichert werden,
         wenn Sie die obige Option aktivieren.';
 $string['setting_pdfgenerationtimeout'] = 'Timeout für die PDF-Erstellung (Sekunden)';
-$string['setting_pdfgenerationtimeout_desc'] = 'Stellen Sie den Timeout in Sekunden ein, der für die Generierung der PDF-Dateien gelten soll. 
-        Wenn der Generierungsprozess nach der angegebenen Zeit nicht abgeschlossen ist, wird der Prozess abgebrochen. Stellen Sie den Wert 0 ein, 
+$string['setting_pdfgenerationtimeout_desc'] = 'Stellen Sie den Timeout in Sekunden ein, der für die Generierung der PDF-Dateien gelten soll.
+        Wenn der Generierungsprozess nach der angegebenen Zeit nicht abgeschlossen ist, wird der Prozess abgebrochen. Stellen Sie den Wert 0 ein,
         um das Timeout zu deaktivieren.';
 $string['setting_usersattemptslist_heading'] = 'Versuchs-Übersichtsseite';
 $string['setting_usersattemptslist_intro'] = 'Export Übersicht Einleitung';
@@ -117,6 +123,22 @@ $string['template_usersattemptslist_nofiles'] = 'Für diesen Versuch konnten kei
 $string['template_usersattemptslist_pdfexportheader'] = 'Generierte PDF Dateien';
 $string['template_usersattemptslist_reexportattempttitle'] = 'Versuch erneut exportieren';
 $string['template_usersattemptslist_zipdownload'] = 'Alle exportierten Dateien als Zip-Archiv herunterladen';
+
+$string['wkhtmltopdf_binary'] = 'Pfad zur wkhtmltopdf-Datei';
+$string['wkhtmltopdf_binary_desc'] = 'Absoluter Pfad zur ausführbaren Datei „wkhtmltopdf“. '
+    . 'Leer lassen, um die automatische Erkennung zu verwenden. Beispiele: '
+    . '/usr/local/bin/wkhtmltopdf, /usr/bin/wkhtmltopdf, '
+    . 'C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe';
+
+$string['wkhtmltopdf_heading'] = 'Einstellungen für die WKHTMLTOPDF-Binary';
+$string['wkhtmltopdf_heading_desc'] = 'Konfigurieren Sie, wie das Plugin die ausführbare Datei „wkhtmltopdf“ findet. '
+    . 'Sie können einen absoluten Pfad angeben oder das Feld leer lassen, damit das Plugin die Binary automatisch erkennt.';
+
+$string['wkhtmltopdfnotfound'] =
+    'Die ausführbare Datei „wkhtmltopdf“ wurde nicht gefunden. Legen Sie im Plugin die Einstellung '
+    . '„Pfad zur wkhtmltopdf-Datei“ auf einen absoluten Pfad fest oder installieren Sie wkhtmltopdf '
+    . 'und stellen Sie sicher, dass es im System-PATH verfügbar ist.';
+
 $string['envcheck_execfailed'] = 'Problem beim Versuch einen CLI Aufruf abzusetzen.';
 $string['envcheck_notexecutable'] = 'Das im Plugin enthaltene Binary muss durch den Webserver-User ausführbar sein. Details sind in der Readme beschrieben.';
 $string['envcheck_sharedlibsmissing'] = 'Dem enthaltenen Binary fehlen shared Libraries: {$a}';

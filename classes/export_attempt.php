@@ -19,6 +19,7 @@ namespace local_quizattemptexport;
 use core\uuid;
 use Knp\Snappy\Pdf;
 use local_quizattemptexport\processing\attachments\processor as attachment_processor;
+use local_quizattemptexport\local\helper\wkhtmltopdf_locator;
 
 /**
  * Interface that may be used to export a quiz attempt as
@@ -111,102 +112,32 @@ class export_attempt {
         // Generate temp file name for pdf generation.
         $tempexportfile = $CFG->tempdir . '/' . uuid::generate() . '.pdf';
 
-        // Decide which wkhtmltopdf binary to use.
-        $osinfo = php_uname('s');
-        $binarypath = '/usr/local/bin/wkhtmltopdf';
-
         try {
             /********************
-             * Snappy WHHTMLTOPDF
+             * Snappy WKHTMLTOPDF
              ********************/
             // Start pdf generation and write into a temp file.
-            // $snappy = new Pdf();
-            // $snappy->setLogger($this->logger);
-            // $snappy->setTemporaryFolder($CFG->tempdir);
-            // $snappy->setTimeout($conf->pdfgenerationtimeout);
+            $snappy = new Pdf();
+            $snappy->setLogger($this->logger);
+            $snappy->setTemporaryFolder($CFG->tempdir);
+            $snappy->setTimeout($conf->pdfgenerationtimeout);
 
-            // $snappy->setOption('toc', false);
-            // $snappy->setOption('no-outline', true);
-            // $snappy->setOption('images', true);
-            // $snappy->setOption('enable-local-file-access', true);
-            // $snappy->setOption('enable-external-links', true);
+            $snappy->setOption('toc', false);
+            $snappy->setOption('no-outline', true);
+            $snappy->setOption('images', true);
+            $snappy->setOption('enable-local-file-access', true);
+            $snappy->setOption('enable-external-links', true);
 
-            // if ($conf->mathjaxenable) {
-            //     $snappy->setOption('javascript-delay', $conf->mathjaxdelay);
-            // }
+            if ($conf->mathjaxenable) {
+                $snappy->setOption('javascript-delay', $conf->mathjaxdelay);
+            }
 
-            // $snappy->setBinary($binarypath);
-            // $snappy->generateFromHtml($html, $tempexportfile);
+            // Decide which wkhtmltopdf binary to use.
+            $binarypath = wkhtmltopdf_locator::get_binary($conf->wkhtmltopdf_binary ?? null);
 
-            /*******************
-             * DOMPDF
-             *******************/
-            $options = new \Dompdf\Options();
-            $options->set('defaultFont', 'Courier');
-            $options->set('isHtml5ParserEnabled', false); // FIX for "Frame not found in cellmap"
-
-            // Instantiate and use the dompdf class.
-            $dompdf = new \Dompdf\Dompdf($options);
-            // Without this extra css styles DOMPDF can not generte PDF file as we have no real tables in HTML.
-            $html .= '
-                <style>
-                /* PDF-safe overrides for CSS-table layout that crashes Dompdf */
-                .multichoice div.answer { display: block !important; width: 90% !important; }
-                .multichoice div.answer .r0,
-                .multichoice div.answer .r1 { display: block !important; margin-bottom: 6px; }
-                .multichoice div.answer div input { display: inline-block !important; width: auto !important; vertical-align: top; }
-                .multichoice div.answer div > * { display: inline-block !important; vertical-align: top; }
-
-                /* Optional: avoid border-collapse quirks on some builds */
-                table { border-collapse: collapse; table-layout: fixed; }
-                fieldset { display:block; border:1px solid #000; padding:10px; }
-                legend { display:block; margin-bottom:6px; }
-                </style>
-                ';
-
-            $dompdf->loadHtml($html);
-            // file_put_contents('/var/www/moodledata/repository/createdpdfs/temp.html', $html);
-
-            // Setup the paper size and orientation (Optional).
-            $dompdf->setPaper('A4', 'landscape');
-
-            // Render the HTML as PDF.
-            $dompdf->render();
-
-            // Get PDF content.
-            $pdfcontent = $dompdf->output();
-
-            // Save the file locally.
-            file_put_contents($tempexportfile, $pdfcontent);
-
-            /*******************************
-             * Moodle built-in PDF generator
-             *******************************/
-            // require_once($CFG->dirroot . '/lib/pdflib.php');
-            // Create Moodle TCPDF instance
-            // $pdf = new \pdf(); // Moodle wrapper (extends TCPDF)
-
-            // // Basics
-            // $pdf->setPrintHeader(false);
-            // $pdf->setPrintFooter(false);
-            // $pdf->SetAutoPageBreak(true, 15);
-            // $pdf->SetMargins(15, 15, 15);
-
-            // // A4 Landscape to match your Dompdf setup
-            // $pdf->AddPage('L', 'A4');
-
-            // // Write HTML
-            // // last params: $ln=true, $fill=false, $reseth=true, $cell=false, $align='', $autopadding=true
-            // $pdf->writeHTML($html, true, false, true, false, '');
-
-            // // Save to temp file (no browser output)
-            // $pdf->Output($tempexportfile, 'F');
-
-
-
-
+            $snappy->setBinary($binarypath);
+            $snappy->generateFromHtml($html, $tempexportfile);
         } catch (\Exception $exc) {
-
             // Check if file really was not generated or if the error returned
             // by wkhtmltopdf may have been non-critical.
 

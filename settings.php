@@ -38,19 +38,19 @@ $generateHtmlButtons = function($keyvaluelist) {
         document.addEventListener('DOMContentLoaded', () => {
             let dynamicfilenamebuttoncontent = document.getElementById("dynamicfilename-buttons");
             let buttons = dynamicfilenamebuttoncontent.getElementsByTagName("button");
-    
+
             let textField = document.getElementById("id_s_local_quizattemptexport_dynamicfilename");
-    
+
             Array.from(buttons).forEach(function(button) {
                     button.addEventListener('click', function() {
-                            
+
                     let placeholder = "_" + button.getAttribute('data-placeholder');
                     let cursorPosition = textField.selectionStart;
                     let valueBeforeCursor = textField.value.substring(0, cursorPosition);
                     let valueAfterCursor = textField.value.substring(cursorPosition);
-    
+
                     textField.value = valueBeforeCursor + placeholder + valueAfterCursor;
-    
+
                     textField.selectionStart = cursorPosition + placeholder.length;
                     textField.selectionEnd = cursorPosition + placeholder.length;
                     });
@@ -58,7 +58,7 @@ $generateHtmlButtons = function($keyvaluelist) {
         });
         </script>
         JS;
-        
+
         return $html;
 };
 
@@ -131,7 +131,7 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
                 get_string('setting_dynamicfilenameheading_desc', 'local_quizattemptexport'))
     );
 
-    $choices = array('sha256' => 'sha256');        
+    $choices = array('sha256' => 'sha256');
     $settings->add(new admin_setting_configselect('local_quizattemptexport/dynamicfilenamehashalgo',
                 get_string('setting_dynamicfilenamehashalgo', 'local_quizattemptexport'),
                 get_string('setting_dynamicfilenamehashalgo_desc', 'local_quizattemptexport'),
@@ -158,11 +158,11 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
     );
 
     $settings->add(new admin_setting_heading('local_quizattemptexport/overview_heading', get_string('setting_usersattemptslist_heading', 'local_quizattemptexport'), null));
-    
+
     // Show description on overview page.
-    $settings->add(new admin_setting_confightmleditor('local_quizattemptexport/overview_intro', 
-        get_string('setting_usersattemptslist_intro', 'local_quizattemptexport', null, true), 
-        get_string('setting_usersattemptslist_intro_description', 'local_quizattemptexport', null, true), 
+    $settings->add(new admin_setting_confightmleditor('local_quizattemptexport/overview_intro',
+        get_string('setting_usersattemptslist_intro', 'local_quizattemptexport', null, true),
+        get_string('setting_usersattemptslist_intro_description', 'local_quizattemptexport', null, true),
         ''
     ));
 
@@ -173,4 +173,35 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
         ["fullname" => "fullname", "username" => "username", "idnumber" => "idnumber"]
     ));
 
+    // Heading: WKHTMLTOPDF binary settings.
+    $settings->add(new admin_setting_heading(
+        'local_quizattemptexport/wkhtmltopdf_heading',
+        get_string('wkhtmltopdf_heading', 'local_quizattemptexport'),
+        get_string('wkhtmltopdf_heading_desc', 'local_quizattemptexport')
+    ));
+
+    // Absolute path to wkhtmltopdf (leave empty to auto-detect in code).
+    $settings->add(new admin_setting_configtext(
+        'local_quizattemptexport/wkhtmltopdf_binary',
+        get_string('wkhtmltopdf_binary', 'local_quizattemptexport'),
+        get_string('wkhtmltopdf_binary_desc', 'local_quizattemptexport'),
+        '',
+        PARAM_RAW_TRIMMED // We'll still validate/escape at runtime before exec.
+    ));
+
+    // --- Diagnostics hint (admin-only page link).
+    $diagurl = new moodle_url('/local/quizattemptexport/diagnostics.php');
+    $settings->add(new admin_setting_heading(
+        'local_quizattemptexport/diagnostics_heading',
+        get_string('diagnosticsheading', 'local_quizattemptexport'),
+        \html_writer::div(get_string('diagnosticsintro', 'local_quizattemptexport'))
+        . \html_writer::div(
+            \html_writer::link(
+                $diagurl,
+                get_string('diagnosticslinktext', 'local_quizattemptexport'),
+                ['class' => 'btn btn-secondary']
+            ),
+            'mt-2'
+        )
+    ));
 }
