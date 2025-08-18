@@ -114,7 +114,17 @@ if ($hasexportcap && $reexportattemptid) {
     }
 
     $export = new \local_quizattemptexport\export_attempt($attempt);
-    $export->export_pdf();
+    [$haserror, $errormessage] = $export->export_pdf();
+
+    // Check if pdf creation encountered an error.
+    if ($haserror) {
+        $settingsurl = new \moodle_url('/admin/settings.php', ['section' => 'local_quizattemptexport']);
+        $errormessage .= html_writer::div(
+            html_writer::link($settingsurl, get_string('pluginsettingslink', 'local_quizattemptexport')),
+            'mt-2'
+        );
+        redirect($selfurl, $errormessage, null, \core\output\notification::NOTIFY_ERROR);
+    }
 
     redirect($selfurl, get_string('page_overview_attemptedreexport', 'local_quizattemptexport'));
 }

@@ -95,9 +95,32 @@ class export_attempt {
         $this->page->set_pagetype('site-index'); //necessary, or the current url will be used automatically
     }
 
-
-    public function export_pdf() {
+    /**
+     * Generates and exports a PDF representation of a quiz attempt.
+     *
+     * This method:
+     *  - Builds HTML from the attempt object.
+     *  - Uses wkhtmltopdf (via Snappy) to render a temporary PDF file.
+     *  - Performs sanity checks to ensure the PDF was generated correctly.
+     *  - Creates a final filename and optionally writes the PDF to the filesystem.
+     *  - Stores the PDF into Moodle's file API for access in the `local_quizattemptexport` file area.
+     *  - Exports attachments related to the attempt.
+     *
+     * Error handling:
+     *  - If wkhtmltopdf fails or the file cannot be created, an error flag and message are returned.
+     *  - If the final file does not exist or has zero size, an error is flagged.
+     *
+     * @throws \moodle_exception If required quiz data cannot be retrieved.
+     *
+     * @return array An array with two elements:
+     *               - bool $haserror: Whether an error occurred (`true` if generation failed).
+     *               - string $errormessage: The error message, or an empty string if no error.
+     */
+    public function export_pdf(): array {
         global $CFG, $DB;
+
+        $errormessage = '';
+        $haserror = false;
 
         $conf = util::get_config();
 
@@ -141,10 +164,17 @@ class export_attempt {
             // Check if file really was not generated or if the error returned
             // by wkhtmltopdf may have been non-critical.
 
-            if (!file_exists($tempexportfile) || !filesize($tempexportfile)) {
-                $this->logexception($exc);
-                return;
-            }
+            $errormessage = $exc->getMessage();
+            $haserror = true;
+            $this->logexception($exc);
+            return [$haserror, $errormessage];
+        }
+
+        // Post-generation sanity check (for silent failures).
+        if (!file_exists($tempexportfile) || !filesize($tempexportfile)) {
+            $haserror = true;
+            $errormessage = get_string('pdfnotgenerated', 'local_quizattemptexport'); // or hardcoded message
+            return [$haserror, $errormessage];
         }
 
         // Get content from temp file for further processing and clean up.
@@ -153,7 +183,7 @@ class export_attempt {
 
         // Generate the parts of the target file name.
 
-        // Quiz instance name
+        // Quiz instance name.
         $cm = $this->attempt_obj->get_cm();
         $instance = $DB->get_record('quiz', ['id' => $cm->instance]);
         $quizname = clean_param($instance->name, PARAM_FILE);
@@ -161,25 +191,24 @@ class export_attempt {
         // The current time for more uniqueness.
         $time = date('YmdHis', time());
 
-        $filename = self::generate_filename($quizname, $this->user_rec,$this->attempt_obj,$time,$tempfilecontent);
+        $filename = self::generate_filename($quizname, $this->user_rec, $this->attempt_obj,$time,$tempfilecontent);
 
         // Write file into filesystem?
         if ($this->exportfilesystem) {
-
-            // TODO local filname might require milliseconds instead of seconds.
+            // TODO: MDL-0 local filname might require milliseconds instead of seconds.
             // Write file into the defined export dir, so it may be archived using sftp.
             $localfilepath = $this->exportpath . '/' . $filename;
             file_put_contents($localfilepath, $tempfilecontent);
         }
 
         // Debug output...
-        //file_put_contents($localfilepath . '.html', $html);
+        // file_put_contents($localfilepath . '.html', $html);
 
         // Write file into moodle file system for web access to the files.
         $cm = $this->attempt_obj->get_cm();
         $context = \context_module::instance($cm->id);
 
-        $filedata = new \stdClass;
+        $filedata = new \stdClass();
         $filedata->contextid = $context->id;
         $filedata->component = 'local_quizattemptexport';
         $filedata->filearea = 'export';
@@ -189,14 +218,31 @@ class export_attempt {
         $filedata->filename = $filename;
 
         $fs = get_file_storage();
-        $file = $fs->create_file_from_string($filedata, $tempfilecontent);
+        $fs->create_file_from_string($filedata, $tempfilecontent);
 
+        // Verify the file is really there and non-empty.
+        $check = $fs->get_file(
+            $filedata->contextid,
+            $filedata->component,
+            $filedata->filearea,
+            $filedata->itemid,
+            $filedata->filepath,
+            $filedata->filename
+        );
+
+        if (!$check || $check->get_filesize() <= 0) {
+            $haserror = true;
+            $errormessage = get_string('pdfnotgenerated', 'local_quizattemptexport');
+            ob_end_clean();
+            return [$haserror, $errormessage];
+        }
 
         // Export attachments.
         attachment_processor::execute($this->attempt_obj);
 
         // Clean up any unexpected output.
         ob_end_clean();
+        return [$haserror, $errormessage];
     }
 
 
