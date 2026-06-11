@@ -43,6 +43,7 @@ $string['except_dirmissing'] = 'Directory missing: {$a}';
 $string['except_dirnotwritable'] = 'Directory is not writable: {$a}';
 $string['except_usernoidnumber'] = 'User does not have an idnumber. User id: {$a}';
 $string['except_usernotfound'] = 'User could not be found. User id: {$a}';
+$string['formulaonimage_correctlabel'] = 'Correct';
 $string['label_coursename'] = 'Exam';
 $string['label_quizname'] = 'Assessment';
 $string['label_studentname'] = 'Student';

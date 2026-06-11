@@ -43,6 +43,7 @@ $string['except_dirmissing'] = 'Verzeichnis existiert nicht: {$a}';
 $string['except_dirnotwritable'] = 'Verzeichnis ist nicht beschreibbar: {$a}';
 $string['except_usernoidnumber'] = 'Der Nutzer hat keine "idnumber". Nutzer-ID: {$a}';
 $string['except_usernotfound'] = 'Der Nutzer konnte nicht gefunden werden. Nutzer-ID: {$a}';
+$string['formulaonimage_correctlabel'] = 'Korrekt';
 $string['label_coursename'] = 'Prüfung';
 $string['label_quizname'] = 'Quiz';
 $string['label_studentname'] = 'Teilnehmer*in';
