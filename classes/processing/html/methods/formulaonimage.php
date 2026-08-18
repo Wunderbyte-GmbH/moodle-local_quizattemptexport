@@ -17,7 +17,8 @@
 namespace local_quizattemptexport\processing\html\methods;
 
 use local_quizattemptexport\processing\html\domdocument_util;
-use qtype_formulaonimage\local\services\evaluator;
+use qtype_formulaonimage\local\helper\number_parser;
+use qtype_formulaonimage\local\services\calculator;
 use qtype_formulaonimage\local\services\grading_service;
 
 /**
@@ -78,59 +79,110 @@ class formulaonimage extends base {
      * @param array $response Response data.
      * @return string PNG image content.
      */
-    protected static function generate_image(\qtype_formulaonimage_question $question, array $response): string {
+    public static function generate_image(\qtype_formulaonimage_question $question, array $response): string {
         $file = self::get_background_file($question);
         $image = imagecreatefromstring($file->get_content());
         $black = imagecolorallocate($image, 0, 0, 0);
         $green = imagecolorallocate($image, 8, 95, 56);
         $white = imagecolorallocatealpha($image, 255, 255, 255, 35);
 
-        $correctvalues = [];
-        if (!empty($question->showcorrectinpdf)) {
-            $correctvalues = self::calculate_correct_values($question, $response);
-        }
-
-        foreach ($question->fields as $field) {
-            $value = (string)($response[$field->name] ?? '');
-            $corrects = $correctvalues[$field->name] ?? [];
-            self::draw_field($image, $field, $value, $corrects, $black, $green, $white);
+        foreach (self::field_texts($question, $response) as $identifier => $texts) {
+            self::draw_field(
+                $image,
+                $question->fields[$identifier],
+                $texts['answer'],
+                $texts['corrects'],
+                $black,
+                $green,
+                $white
+            );
         }
 
         ob_start();
         imagepng($image);
         $content = ob_get_clean();
-        imagedestroy($image);
+        // No imagedestroy(): GdImage is an object and is freed by the garbage collector.
+        // The function has had no effect since PHP 8.0.
         return $content;
     }
 
     /**
-     * Calculates the correct value for each field, based on the formula rules.
+     * Returns the text to draw into each field box.
+     *
+     * Kept separate from the drawing so it can be unit tested without GD.
      *
      * @param \qtype_formulaonimage_question $question Question instance.
      * @param array $response Response data.
-     * @return array Map of field name to a list of formatted correct values (one per rule).
+     * @return array Map of field identifier to ['answer' => string, 'corrects' => string[]].
      */
-    protected static function calculate_correct_values(\qtype_formulaonimage_question $question, array $response): array {
+    public static function field_texts(\qtype_formulaonimage_question $question, array $response): array {
         $service = new grading_service();
-        $values = $service->parse_values($response, $question->fields, $question->numberformat);
-        $evaluator = new evaluator();
-        $result = [];
-        foreach ($question->rules as $rule) {
-            if (!isset($question->fields[$rule->targetfield])) {
-                continue;
-            }
-            if (!self::has_expression_values($rule->expression, $values)) {
-                continue;
-            }
-            try {
-                $expected = $evaluator->evaluate($rule->expression, $values);
-            } catch (\Throwable $exception) {
-                continue;
-            }
-            $label = get_string('formulaonimage_correctlabel', 'local_quizattemptexport');
-            $result[$rule->targetfield][] = $label . ': ' . format_float($expected, 4, true, true);
+        // Auto-calculated fields are never part of the response, so their value has to be
+        // recomputed from the student's inputs, exactly as the question renderer does.
+        $computed = $service->student_values($response, $question->fields, $question->rules, $question->numberformat);
+
+        $expected = [];
+        $label = get_string('formulaonimage_correctlabel', 'local_quizattemptexport');
+        if (!empty($question->showcorrectinpdf)) {
+            $expected = self::expected_values($question, $response);
         }
-        return $result;
+
+        $texts = [];
+        foreach ($question->fields as $identifier => $field) {
+            if (calculator::is_calculated($field)) {
+                $answer = isset($computed[$identifier])
+                    ? number_parser::format($computed[$identifier], $question->numberformat)
+                    : '';
+            } else {
+                // Show what the student actually typed, including input that did not parse.
+                $answer = (string)($response[$identifier] ?? '');
+            }
+
+            $corrects = [];
+            foreach ($expected[$identifier] ?? [] as $value) {
+                $corrects[] = $label . ': ' . number_parser::format($value, $question->numberformat);
+            }
+
+            $texts[$identifier] = [
+                'answer' => $answer,
+                // Two rules on the same field can expect the same value; show it once.
+                'corrects' => array_values(array_unique($corrects)),
+            ];
+        }
+        return $texts;
+    }
+
+    /**
+     * Returns the value each rule expected, so the PDF shows what grading compared against.
+     *
+     * This mirrors grading_service::grade(): a normal field is expected to satisfy its formula
+     * for the values the student entered, while an auto-calculated field is expected to match
+     * the answer key. When the student's input was invalid the rule could not be evaluated at
+     * all, so the answer key is used as a fallback - that is the case where a corrector most
+     * needs to see the correct value.
+     *
+     * @param \qtype_formulaonimage_question $question Question instance.
+     * @param array $response Response data.
+     * @return array Map of field identifier to a list of expected values, one per rule.
+     */
+    protected static function expected_values(\qtype_formulaonimage_question $question, array $response): array {
+        $service = new grading_service();
+        $graded = $service->grade($response, $question->fields, $question->rules, $question->numberformat);
+        $answerkey = $service->correct_values($question->rules);
+
+        $values = [];
+        foreach ($graded->rules as $detail) {
+            $target = $detail->rule->targetfield;
+            if (!isset($question->fields[$target])) {
+                continue;
+            }
+            $value = $detail->expected ?? ($answerkey[$target] ?? null);
+            if ($value === null) {
+                continue;
+            }
+            $values[$target][] = $value;
+        }
+        return $values;
     }
 
     /**
@@ -209,26 +261,6 @@ class formulaonimage extends base {
      */
     protected static function font_size(int $height): int {
         return max(6, min(14, (int)round($height * 0.35)));
-    }
-
-    /**
-     * Checks if all expression field references have numeric values.
-     *
-     * @param string $expression Formula expression.
-     * @param array $values Parsed values.
-     * @return bool
-     */
-    protected static function has_expression_values(string $expression, array $values): bool {
-        preg_match_all('/[a-zA-Z][a-zA-Z0-9_]*/', $expression, $matches);
-        foreach ($matches[0] as $name) {
-            if (in_array(strtolower($name), ['sqrt', 'pow'], true)) {
-                continue;
-            }
-            if (!array_key_exists($name, $values) || $values[$name] === null) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**
