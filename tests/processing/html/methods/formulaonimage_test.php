@@ -235,6 +235,27 @@ final class formulaonimage_test extends \advanced_testcase {
     }
 
     /**
+     * Tests a text answer is drawn as typed, with the expected words as its correct value.
+     *
+     * @return void
+     */
+    public function test_text_answers_are_drawn_as_words(): void {
+        /** @var \qtype_formulaonimage_question $question */
+        $question = \test_question_maker::make_question('formulaonimage', 'booking');
+        $question->showcorrectinpdf = true;
+
+        $texts = formulaonimage::field_texts($question, [
+            'amount' => '1200', 'account' => 'Miete', 'side' => 'Soll',
+        ]);
+
+        $this->assertSame('Miete', $texts['account']['answer']);
+        $this->assertSame([$this->label() . ': Mietaufwand'], $texts['account']['corrects']);
+        $this->assertSame([$this->label() . ': Soll'], $texts['side']['corrects']);
+        // The number field is still formatted as a number.
+        $this->assertSame([$this->label() . ': 1200'], $texts['amount']['corrects']);
+    }
+
+    /**
      * Tests the flattened PNG really has the answer and the correct value drawn into it.
      *
      * @return void

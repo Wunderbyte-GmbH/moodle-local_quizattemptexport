@@ -140,7 +140,10 @@ class formulaonimage extends base {
 
             $corrects = [];
             foreach ($expected[$identifier] ?? [] as $value) {
-                $corrects[] = $label . ': ' . number_parser::format($value, $question->numberformat);
+                // A text rule expects words, which are shown as the teacher wrote them.
+                $corrects[] = $label . ': ' . (is_string($value)
+                    ? $value
+                    : number_parser::format($value, $question->numberformat));
             }
 
             $texts[$identifier] = [
@@ -167,7 +170,13 @@ class formulaonimage extends base {
      */
     protected static function expected_values(\qtype_formulaonimage_question $question, array $response): array {
         $service = new grading_service();
-        $graded = $service->grade($response, $question->fields, $question->rules, $question->numberformat);
+        $graded = $service->grade(
+            $response,
+            $question->fields,
+            $question->rules,
+            $question->numberformat,
+            !empty($question->casesensitive)
+        );
         $answerkey = $service->correct_values($question->rules);
 
         $values = [];
