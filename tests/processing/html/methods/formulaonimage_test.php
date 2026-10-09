@@ -256,6 +256,35 @@ final class formulaonimage_test extends \advanced_testcase {
     }
 
     /**
+     * Tests a dropdown is drawn with the text of the chosen option, not its stored number.
+     *
+     * The dropdown question (from qtype_formulaonimage's test helper) has the dropdowns
+     * "category" (A|B|C, correct "B") and "verb" (Hören|hören|Lesen, correct "hören").
+     * A response stores the number of the chosen option: "3" is the third option.
+     *
+     * @return void
+     */
+    public function test_dropdown_answers_are_drawn_as_option_text(): void {
+        // Only formulaonimage versions with dropdowns (GL-173) have this test question.
+        if (!class_exists(\qtype_formulaonimage\local\fieldtype\dropdown_field::class)) {
+            $this->markTestSkipped('This qtype_formulaonimage version has no dropdown fields.');
+        }
+        /** @var \qtype_formulaonimage_question $question */
+        $question = \test_question_maker::make_question('formulaonimage', 'dropdown');
+        $question->showcorrectinpdf = true;
+
+        // The student chose C (option 3) and left the verb on "Please choose" ('').
+        $texts = formulaonimage::field_texts($question, ['price' => '10', 'category' => '3', 'verb' => '']);
+
+        // The option's text is drawn, not "3"; nothing chosen draws nothing.
+        $this->assertSame('C', $texts['category']['answer']);
+        $this->assertSame('', $texts['verb']['answer']);
+        // The correct option is shown as its text, written as in the options.
+        $this->assertSame([$this->label() . ': B'], $texts['category']['corrects']);
+        $this->assertSame([$this->label() . ': hören'], $texts['verb']['corrects']);
+    }
+
+    /**
      * Tests the flattened PNG really has the answer and the correct value drawn into it.
      *
      * @return void
