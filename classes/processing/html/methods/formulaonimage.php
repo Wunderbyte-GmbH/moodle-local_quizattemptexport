@@ -18,6 +18,8 @@ namespace local_quizattemptexport\processing\html\methods;
 
 use local_quizattemptexport\processing\html\domdocument_util;
 use qtype_formulaonimage\local\helper\number_parser;
+use qtype_formulaonimage\local\fieldtype\dropdown_field;
+use qtype_formulaonimage\local\fieldtype\field_type_registry;
 use qtype_formulaonimage\local\services\calculator;
 use qtype_formulaonimage\local\services\grading_service;
 
@@ -136,6 +138,12 @@ class formulaonimage extends base {
             } else {
                 // Show what the student actually typed, including input that did not parse.
                 $answer = (string)($response[$identifier] ?? '');
+                // A dropdown (GL-173) stores the number of the chosen option, so ask the
+                // field's type for the text to show. Versions of formulaonimage without
+                // dropdowns have no such method, and there the stored value is the answer.
+                if (class_exists(dropdown_field::class)) {
+                    $answer = field_type_registry::for_field($field)->format_response($field, $answer);
+                }
             }
 
             $corrects = [];
