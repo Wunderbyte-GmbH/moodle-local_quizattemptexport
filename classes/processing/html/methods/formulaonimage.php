@@ -238,18 +238,18 @@ class formulaonimage extends base {
         int $correctcolor,
         int $background
     ): void {
-        global $CFG;
-
         $x = (int)round($field->xpos);
         $y = (int)round($field->ypos);
         $width = (int)round($field->width);
         $height = (int)round($field->height);
         imagefilledrectangle($image, $x, $y, $x + $width, $y + $height, $background);
 
-        $font = $CFG->dirroot . '/local/quizattemptexport/font/Open_Sans/OpenSans-Regular.ttf';
+        $font = self::font_file();
         $rows = 1 + \count($corrects);
         $rowheight = (int)round($height / $rows);
-        $fontsize = self::font_size($rowheight);
+        // All rows get the same size, so the answer and its correct values look alike. The
+        // text starts 3 pixels into the box, and keeps the same margin on the right.
+        $fontsize = self::font_size($rowheight, $width - 6, array_merge([$value], $corrects));
 
         self::draw_text($image, $font, $fontsize, $x + 3, $y, $rowheight, $value, $color);
         foreach (array_values($corrects) as $i => $text) {
@@ -286,13 +286,59 @@ class formulaonimage extends base {
     }
 
     /**
-     * Calculates a font size that fits within a row of the given height.
+     * Calculates the font size for the rows of a field box.
+     *
+     * The text grows with the box, as on the attempt page, where formulaonimage gives a field
+     * about half its height as font size. There is no fixed upper limit (it used to be 14):
+     * the PDF shrinks the background image to the page width, so on a large image, e.g. 4400
+     * pixels wide, a fixed size ended up only a few pixels high. A text too wide for the box
+     * gets a smaller size until it fits, because the PDF cannot scroll it like an input can.
+     *
+     * Public so it can be unit tested.
      *
      * @param int $height Row height in pixels.
-     * @return int
+     * @param int $width Width the text may use, in pixels.
+     * @param string[] $texts The texts drawn in the rows; the widest one has to fit.
+     * @return int Font size in points, at least 6.
      */
-    protected static function font_size(int $height): int {
-        return max(6, min(14, (int)round($height * 0.35)));
+    public static function font_size(int $height, int $width, array $texts): int {
+        // GD sizes text in points, 1 point being 1.33 pixels. So 0.35 of the row height
+        // is about half of it in pixels, like on the attempt page. Never below 6.
+        $size = max(6, (int)round($height * 0.35));
+        // Make the widest text fit into the box, one point at a time, but not below 6.
+        while ($size > 6 && self::text_width($size, $texts) > $width) {
+            $size--;
+        }
+        return $size;
+    }
+
+    /**
+     * Returns how wide the widest of the texts is at a font size.
+     *
+     * @param int $size Font size in points.
+     * @param string[] $texts Texts to measure.
+     * @return int Width in pixels.
+     */
+    protected static function text_width(int $size, array $texts): int {
+        $widest = 0;
+        foreach ($texts as $text) {
+            // The corners of the text's box: [0] is the lower left x, [2] the lower right x.
+            $box = imagettfbbox($size, 0, self::font_file(), $text);
+            if ($box !== false) {
+                $widest = max($widest, $box[2] - $box[0]);
+            }
+        }
+        return $widest;
+    }
+
+    /**
+     * Returns the font the answers are drawn with.
+     *
+     * @return string Path to the TTF file.
+     */
+    protected static function font_file(): string {
+        global $CFG;
+        return $CFG->dirroot . '/local/quizattemptexport/font/Open_Sans/OpenSans-Regular.ttf';
     }
 
     /**
