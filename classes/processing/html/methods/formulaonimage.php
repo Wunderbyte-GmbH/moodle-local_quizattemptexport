@@ -20,7 +20,6 @@ use local_quizattemptexport\processing\html\domdocument_util;
 use qtype_formulaonimage\local\helper\number_parser;
 use qtype_formulaonimage\local\fieldtype\dropdown_field;
 use qtype_formulaonimage\local\fieldtype\field_type_registry;
-use qtype_formulaonimage\local\services\calculator;
 use qtype_formulaonimage\local\services\grading_service;
 
 /**
@@ -131,7 +130,7 @@ class formulaonimage extends base {
 
         $texts = [];
         foreach ($question->fields as $identifier => $field) {
-            if (calculator::is_calculated($field)) {
+            if (self::is_calculated_field($field)) {
                 $answer = isset($computed[$identifier])
                     ? number_parser::format($computed[$identifier], $question->numberformat)
                     : '';
@@ -161,6 +160,22 @@ class formulaonimage extends base {
             ];
         }
         return $texts;
+    }
+
+    /**
+     * Whether a field is auto-calculated: its value comes from a formula, not from the student.
+     *
+     * @param \stdClass $field Field record.
+     * @return bool
+     */
+    protected static function is_calculated_field(\stdClass $field): bool {
+        // Formulaonimage 2026100800 and later (the versions with dropdowns) has a class per
+        // field type, and the calculated type is the one the student cannot fill in.
+        if (class_exists(dropdown_field::class)) {
+            return field_type_registry::for_field($field)->is_locked();
+        }
+        // Older versions only have the stored type name, which is what they checked themselves.
+        return ($field->fieldtype ?? '') === 'calculated';
     }
 
     /**
