@@ -312,6 +312,103 @@ final class formulaonimage_test extends \advanced_testcase {
     }
 
     /**
+     * Tests the text in a tall field box is drawn large, not at the old fixed size.
+     *
+     * Regression test: the size was capped at 14. The PDF shrinks the background image to
+     * the page width, so on a large image (4400 pixels wide, with boxes about 120 pixels
+     * high) the answers ended up only a few pixels high.
+     *
+     * @return void
+     */
+    public function test_generated_image_draws_large_text_into_a_tall_box(): void {
+        $this->setAdminUser();
+        /** @var \core_question_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
+        $category = $generator->create_question_category([]);
+        $created = $generator->create_question('formulaonimage', 'sum', ['category' => $category->id]);
+        /** @var \qtype_formulaonimage_question $question */
+        $question = \question_bank::load_question($created->id);
+        // Make the "total" box as tall as the boxes on a large image (it is 40 in the template).
+        $question->fields['total']->height = 120;
+
+        $png = formulaonimage::generate_image($question, ['a' => '10', 'b' => '5', 'total' => '15', 'tax' => '3']);
+
+        // The digits of "15" are drawn about 40 pixels high now. At the old size 14 they
+        // were 13 pixels high.
+        $this->assertGreaterThan(30, $this->ink_height(imagecreatefromstring($png), $question->fields['total']));
+    }
+
+    /**
+     * Tests the font size grows with the height of the box, as on the attempt page.
+     *
+     * @return void
+     */
+    public function test_font_size_grows_with_the_box(): void {
+        // A box of the usual size keeps the size it always had: 0.35 of 30 is 10.5, so 11.
+        $this->assertSame(11, formulaonimage::font_size(30, 400, ['Hören']));
+        // A tall box gets a large size instead of the old limit 14: 0.35 of 117 is 41.
+        $this->assertSame(41, formulaonimage::font_size(117, 400, ['Hören']));
+    }
+
+    /**
+     * Tests a text too wide for its box gets a smaller size, so it stays inside the box.
+     *
+     * @return void
+     */
+    public function test_font_size_shrinks_text_that_is_too_wide(): void {
+        global $CFG;
+        // The correct value is the widest of the two texts of this box.
+        $correct = $this->label() . ': 1.234.567,89';
+
+        $size = formulaonimage::font_size(117, 200, ['12', $correct]);
+
+        // Smaller than the 41 the height alone would give...
+        $this->assertLessThan(41, $size);
+        // ...and the correct value now fits into the 200 pixels.
+        $font = $CFG->dirroot . '/local/quizattemptexport/font/Open_Sans/OpenSans-Regular.ttf';
+        $box = imagettfbbox($size, 0, $font, $correct);
+        $this->assertLessThanOrEqual(200, $box[2] - $box[0]);
+    }
+
+    /**
+     * Tests the font size never goes below 6, so the text stays readable at all.
+     *
+     * @return void
+     */
+    public function test_font_size_is_at_least_6(): void {
+        // A text that cannot fit even at size 6 is drawn at 6 and may stick out of the box.
+        $this->assertSame(6, formulaonimage::font_size(117, 10, ['A long answer']));
+        // A very low box also gets 6.
+        $this->assertSame(6, formulaonimage::font_size(5, 400, ['12']));
+    }
+
+    /**
+     * Returns how many pixel rows the dark (answer) text in a field box spans.
+     *
+     * @param \GdImage $image Generated image.
+     * @param \stdClass $field Field definition.
+     * @return int Rows from the topmost to the lowest dark pixel, 0 when there is none.
+     */
+    protected function ink_height(\GdImage $image, \stdClass $field): int {
+        $top = null;
+        $bottom = null;
+        for ($y = (int)$field->ypos; $y <= (int)$field->ypos + (int)$field->height; $y++) {
+            for ($x = (int)$field->xpos; $x <= (int)$field->xpos + (int)$field->width; $x++) {
+                $colour = imagecolorat($image, $x, $y);
+                // Dark means all three channels are low, as in count_ink().
+                if ((($colour >> 16) & 0xFF) < 90 && (($colour >> 8) & 0xFF) < 90 && ($colour & 0xFF) < 90) {
+                    // The first dark row found is the top; every later one moves the bottom.
+                    $top = $top ?? $y;
+                    $bottom = $y;
+                    // One dark pixel is enough for this row.
+                    break;
+                }
+            }
+        }
+        return $top === null ? 0 : $bottom - $top + 1;
+    }
+
+    /**
      * Counts the dark (answer) and green (correct value) pixels inside a field box.
      *
      * @param \GdImage $image Generated image.
