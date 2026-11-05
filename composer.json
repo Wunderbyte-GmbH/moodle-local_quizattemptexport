@@ -1,9 +1,17 @@
 {
   "require": {
-    "knplabs/knp-snappy": "*",
-    "monolog/monolog": "*",
+    "knplabs/knp-snappy": "^1.7",
+    "symfony/process": "^6.4",
     "h4cc/wkhtmltopdf-amd64" : "~0.12",
     "wemersonjanuario/wkhtmltopdf-windows"  : "~0.12",
     "mathjax/mathjax" : "2.7.9"
+  },
+  "replace": {
+    "psr/log": "*"
+  },
+  "config": {
+    "platform": {
+      "php": "8.1.0"
+    }
   }
 }
