@@ -32,7 +32,7 @@ class processor {
 
         $html = domdocument_util::prepare_html($html);
         $dom = domdocument_util::initialize_domdocument($html);
-        $additional_css = [];
+        $additionalcss = [];
 
         $xpath = new \DOMXPath($dom);
         $questions = $xpath->query('//div[starts-with(@class, "que ")]');
@@ -49,26 +49,26 @@ class processor {
             $parts = explode('-', $id);
             $slot = (int) array_pop($parts);
 
-            $input_html = domdocument_util::save_html($dom, $question);
-            $input_html = domdocument_util::prepare_html($input_html);
-            $output_html = '';
+            $inputhtml = domdocument_util::save_html($dom, $question);
+            $inputhtml = domdocument_util::prepare_html($inputhtml);
+            $outputhtml = '';
 
             /** @var \local_quizattemptexport\processing\html\methods\base $processingclass */
             $processingclass = '\local_quizattemptexport\processing\html\methods\\' . $qtype;
             if (class_exists($processingclass)) {
-                $output_html = $processingclass::process($input_html, $attempt, $slot);
-                if (!isset($additional_css[$qtype])) {
-                    $additional_css[$qtype] = $processingclass::get_css();
+                $outputhtml = $processingclass::process($inputhtml, $attempt, $slot);
+                if (!isset($additionalcss[$qtype])) {
+                    $additionalcss[$qtype] = $processingclass::get_css();
                 }
             }
 
-            if (!empty($output_html)) {
-                $html = str_replace($input_html, $output_html, $html);
+            if (!empty($outputhtml)) {
+                $html = str_replace($inputhtml, $outputhtml, $html);
             }
         }
 
         // Return html and additional css as array.
-        return [$html, implode("\n\n", $additional_css)];
+        return [$html, implode("\n\n", $additionalcss)];
     }
 
     /**

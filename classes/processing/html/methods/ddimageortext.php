@@ -125,11 +125,11 @@ class ddimageortext extends base {
             $newnode->appendChild($imagenode);
 
             /** @var \DOMElement $contentdiv */
-            foreach ($contentdiv->childNodes as $childNode) {
+            foreach ($contentdiv->childNodes as $childnode) {
 
-                /** @var \DOMElement $childNode */
-                if (false !== strpos($childNode->getAttribute('class'), 'comment')) {
-                    $childNode->parentNode->insertBefore($newnode, $childNode);
+                /** @var \DOMElement $childnode */
+                if (false !== strpos($childnode->getAttribute('class'), 'comment')) {
+                    $childnode->parentNode->insertBefore($newnode, $childnode);
                 }
             }
         }
@@ -193,8 +193,8 @@ class ddimageortext extends base {
 
         // Iterating all drops and calculating dimensions.
         $calculateddrops = [];
-        $largest_x = 0;
-        $largest_y = 0;
+        $largestx = 0;
+        $largesty = 0;
         foreach ($dropdefinitions as $dropzone) {
             if (empty($dropzone->drop)) {
                 continue;
@@ -218,36 +218,36 @@ class ddimageortext extends base {
                 $textboxheight = $textdimensions['height'] + ($margin * 2);
 
                 // Get starting positions for border rect and fill rect.
-                $backgroundrect_x_from = $dropx;
-                $backgroundrect_y_from = $dropy;
+                $backgroundrectxfrom = $dropx;
+                $backgroundrectyfrom = $dropy;
 
                 // Get end positions for rectangles.
-                $backgroundrect_x_to = $backgroundrect_x_from + ($textboxwidth + (2 * $border));
-                $backgroundrect_y_to = $backgroundrect_y_from + ($textboxheight + (2 * $border));
+                $backgroundrectxto = $backgroundrectxfrom + ($textboxwidth + (2 * $border));
+                $backgroundrectyto = $backgroundrectyfrom + ($textboxheight + (2 * $border));
 
                 // Calculate text position.
                 // Need to offset y-value as it starts bottom left for text, instead of top left as for other stuff.
-                $text_x = $backgroundrect_x_from + $border + $margin;
-                $text_y = $backgroundrect_y_from + $border + $margin + $calculatedfontsize;
+                $textx = $backgroundrectxfrom + $border + $margin;
+                $texty = $backgroundrectyfrom + $border + $margin + $calculatedfontsize;
 
                 // Gather drop data.
                 $drop = new \stdClass();
                 $drop->type = 'text';
-                $drop->bgrect_x_from = $backgroundrect_x_from;
-                $drop->bgrect_x_to = $backgroundrect_x_to;
-                $drop->bgrect_y_from = $backgroundrect_y_from;
-                $drop->bgrect_y_to = $backgroundrect_y_to;
-                $drop->text_y = $text_y;
-                $drop->text_x = $text_x;
+                $drop->bgrect_x_from = $backgroundrectxfrom;
+                $drop->bgrect_x_to = $backgroundrectxto;
+                $drop->bgrect_y_from = $backgroundrectyfrom;
+                $drop->bgrect_y_to = $backgroundrectyto;
+                $drop->text_y = $texty;
+                $drop->text_x = $textx;
                 $drop->text = $text;
                 $calculateddrops[] = $drop;
 
                 // Check if dimensions exceed current maximum.
-                if ($backgroundrect_x_to > $largest_x) {
-                    $largest_x = $backgroundrect_x_to;
+                if ($backgroundrectxto > $largestx) {
+                    $largestx = $backgroundrectxto;
                 }
-                if ($backgroundrect_y_to > $largest_y) {
-                    $largest_y = $backgroundrect_y_to;
+                if ($backgroundrectyto > $largesty) {
+                    $largesty = $backgroundrectyto;
                 }
             } else {
                 // Get the drop file.
@@ -266,34 +266,34 @@ class ddimageortext extends base {
                 $calculateddrops[] = $drop;
 
                 // Calculate dimensions.
-                $stop_x = $dropx + $imageinfo['width'];
-                $stop_y = $dropy + $imageinfo['height'];
+                $stopx = $dropx + $imageinfo['width'];
+                $stopy = $dropy + $imageinfo['height'];
 
                 // Check if dimensions exceed current maximum.
-                if ($stop_x > $largest_x) {
-                    $largest_x = $stop_x;
+                if ($stopx > $largestx) {
+                    $largestx = $stopx;
                 }
-                if ($stop_y > $largest_y) {
-                    $largest_y = $stop_y;
+                if ($stopy > $largesty) {
+                    $largesty = $stopy;
                 }
             }
         }
 
         // Check if the boxes we want to render exceed the available background area. Create a new background
         // with appropriate dimensions if necessary.
-        if ($largest_y > $bgfileinfo['height'] || $largest_x > $bgfileinfo['width']) {
-            $newbg_height = $bgfileinfo['height'];
-            if ($largest_y > $bgfileinfo['height']) {
-                $newbg_height = $largest_y + 3;
+        if ($largesty > $bgfileinfo['height'] || $largestx > $bgfileinfo['width']) {
+            $newbgheight = $bgfileinfo['height'];
+            if ($largesty > $bgfileinfo['height']) {
+                $newbgheight = $largesty + 3;
             }
-            $newbg_width = $bgfileinfo['width'];
-            if ($largest_x > $bgfileinfo['width']) {
-                $newbg_width = $largest_x + 3;
+            $newbgwidth = $bgfileinfo['width'];
+            if ($largestx > $bgfileinfo['width']) {
+                $newbgwidth = $largestx + 3;
             }
 
-            $tempimg = imagecreatetruecolor($newbg_width, $newbg_height);
+            $tempimg = imagecreatetruecolor($newbgwidth, $newbgheight);
             $bgcolor = imagecolorallocate($tempimg, 255, 255, 255);
-            imagefilledrectangle($tempimg, 0, 0, $newbg_width, $newbg_height, $bgcolor);
+            imagefilledrectangle($tempimg, 0, 0, $newbgwidth, $newbgheight, $bgcolor);
             imagecopyresampled($tempimg, $gdbgfile, 0, 0, 0, 0, $bgfileinfo['width'], $bgfileinfo['height'], $bgfileinfo['width'], $bgfileinfo['height']);
             imagedestroy($gdbgfile);
             $gdbgfile = $tempimg;
@@ -335,24 +335,24 @@ class ddimageortext extends base {
         return $imagecontent;
     }
 
-    protected static function calculateTextBox($text, $fontFile, $fontSize, $fontAngle) {
+    protected static function calculateTextBox($text, $fontfile, $fontsize, $fontangle) {
         /************
         simple function that calculates the *exact* bounding box (single pixel precision).
         The function returns an associative array with these keys:
         left, top:  coordinates you will pass to imagettftext
         width, height: dimension of the image you have to create
          *************/
-        $rect = imagettfbbox($fontSize, $fontAngle, $fontFile, $text);
-        $minX = min([$rect[0], $rect[2], $rect[4], $rect[6]]);
-        $maxX = max([$rect[0], $rect[2], $rect[4], $rect[6]]);
-        $minY = min([$rect[1], $rect[3], $rect[5], $rect[7]]);
-        $maxY = max([$rect[1], $rect[3], $rect[5], $rect[7]]);
+        $rect = imagettfbbox($fontsize, $fontangle, $fontfile, $text);
+        $minx = min([$rect[0], $rect[2], $rect[4], $rect[6]]);
+        $maxx = max([$rect[0], $rect[2], $rect[4], $rect[6]]);
+        $miny = min([$rect[1], $rect[3], $rect[5], $rect[7]]);
+        $maxy = max([$rect[1], $rect[3], $rect[5], $rect[7]]);
 
         return [
-            "left"   => abs($minX) - 1,
-            "top"    => abs($minY) - 1,
-            "width"  => $maxX - $minX,
-            "height" => $maxY - $minY,
+            "left"   => abs($minx) - 1,
+            "top"    => abs($miny) - 1,
+            "width"  => $maxx - $minx,
+            "height" => $maxy - $miny,
             "box"    => $rect,
         ];
     }

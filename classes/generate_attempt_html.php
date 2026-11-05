@@ -29,11 +29,11 @@ use local_quizattemptexport\processing\html\processor as html_processor;
 
 class generate_attempt_html {
     private $page;
-    private $attempt_obj;
-    private $attempt_rec;
-    private $quiz_rec;
+    private $attemptobj;
+    private $attemptrec;
+    private $quizrec;
     private $accessmanager;
-    private $user_rec;
+    private $userrec;
 
     /**
      *
@@ -53,12 +53,12 @@ class generate_attempt_html {
 
         // Prepare HTML we want to process.
         $htmltoprocess = $this->generate_attempt_output();
-        [$processedhtml, $additional_css] = html_processor::execute($htmltoprocess, $this->attempt_obj);
+        [$processedhtml, $additionalcss] = html_processor::execute($htmltoprocess, $this->attemptobj);
 
         // Prepare template context.
         $templatecontext = new \stdClass();
         $templatecontext->content = $processedhtml;
-        $templatecontext->additional_css = $additional_css;
+        $templatecontext->additional_css = $additionalcss;
         $templatecontext->pdfheader = $this->report_header();
 
         // Check if MathJax typesetting has been enabled.
@@ -91,12 +91,12 @@ class generate_attempt_html {
     private function initialize_attempt(\mod_quiz\quiz_attempt $attempt) {
         global $DB;
 
-        $this->attempt_obj = $attempt;
-        $this->attempt_rec = $this->attempt_obj->get_attempt();
-        $this->quiz_rec = $this->attempt_obj->get_quiz();
-        $this->accessmanager = $this->attempt_obj->get_access_manager(time());
+        $this->attemptobj = $attempt;
+        $this->attemptrec = $this->attemptobj->get_attempt();
+        $this->quizrec = $this->attemptobj->get_quiz();
+        $this->accessmanager = $this->attemptobj->get_access_manager(time());
 
-        $this->user_rec = $DB->get_record('user', ['id' => $this->attempt_obj->get_userid()]);
+        $this->userrec = $DB->get_record('user', ['id' => $this->attemptobj->get_userid()]);
     }
 
     /**
@@ -113,8 +113,8 @@ class generate_attempt_html {
         global $DB;
 
         $enrolkey = 'n/a';
-        $course = $this->attempt_obj->get_course();
-        $userid = $this->attempt_obj->get_userid();
+        $course = $this->attemptobj->get_course();
+        $userid = $this->attemptobj->get_userid();
 
         $sql = 'SELECT ue.*
                 FROM
@@ -154,13 +154,13 @@ class generate_attempt_html {
         $conf = get_config('local_quizattemptexport');
 
         // Prepare data.
-        $course = $this->attempt_obj->get_course();
-        $quiz = $this->quiz_rec;
-        $attemptsubmittedtime = date('d.m.Y - H:i:s', $this->attempt_rec->timefinish);
-        $attemptstartedtime = date('d.m.Y - H:i:s', $this->attempt_rec->timestart);
+        $course = $this->attemptobj->get_course();
+        $quiz = $this->quizrec;
+        $attemptsubmittedtime = date('d.m.Y - H:i:s', $this->attemptrec->timefinish);
+        $attemptstartedtime = date('d.m.Y - H:i:s', $this->attemptrec->timestart);
 
         // Prepare result data.
-        $marksachieved = $this->attempt_obj->get_sum_marks();
+        $marksachieved = $this->attemptobj->get_sum_marks();
         $grademultiplier = $quiz->grade / $quiz->sumgrades;
         $grademax = round($quiz->grade, 2);
         $gradeachieved = round($marksachieved * $grademultiplier, 2);
@@ -178,8 +178,8 @@ class generate_attempt_html {
         $templatedata = [
             'coursename' => $course->fullname,
             'quizname' => $quiz->name,
-            'studentname' => fullname($this->user_rec),
-            'matriculationid' => $this->user_rec->idnumber,
+            'studentname' => fullname($this->userrec),
+            'matriculationid' => $this->userrec->idnumber,
             'attemptstarted' => $attemptstartedtime,
             'attemptended' => $attemptsubmittedtime,
             'attemptresult' => $attemptresultstr,
@@ -209,17 +209,17 @@ class generate_attempt_html {
         $showall = true;
 
         try {
-            $options = $this->attempt_obj->get_display_options(true);
+            $options = $this->attemptobj->get_display_options(true);
             $options->flags = 0; // The flags attribute has to be "0".
             $options->rightanswer = \question_display_options::VISIBLE;
             $options->correctness = \question_display_options::VISIBLE;
 
-            $slots = $this->attempt_obj->get_slots();
-            $headtags = $this->attempt_obj->get_html_head_contributions($page, $showall);
+            $slots = $this->attemptobj->get_slots();
+            $headtags = $this->attemptobj->get_html_head_contributions($page, $showall);
             $this->accessmanager->setup_attempt_page($this->page);
 
-            $this->page->set_title(format_string($this->attempt_obj->get_quiz_name()));
-            $this->page->set_heading($this->attempt_obj->get_course()->fullname);
+            $this->page->set_title(format_string($this->attemptobj->get_quiz_name()));
+            $this->page->set_heading($this->attemptobj->get_course()->fullname);
 
             /////////////////////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////////////////////
@@ -228,10 +228,10 @@ class generate_attempt_html {
 
             // Work out some time-related things.
             $overtime = 0;
-            if ($this->attempt_rec->timefinish) {
-                if ($timetaken = ($this->attempt_rec->timefinish - $this->attempt_rec->timestart)) {
-                    if ($this->quiz_rec->timelimit && $timetaken > ($this->quiz_rec->timelimit + 60)) {
-                        $overtime = $timetaken - $this->quiz_rec->timelimit;
+            if ($this->attemptrec->timefinish) {
+                if ($timetaken = ($this->attemptrec->timefinish - $this->attemptrec->timestart)) {
+                    if ($this->quizrec->timelimit && $timetaken > ($this->quizrec->timelimit + 60)) {
+                        $overtime = $timetaken - $this->quizrec->timelimit;
                         $overtime = format_time($overtime);
                     }
                     $timetaken = format_time($timetaken);
@@ -248,20 +248,20 @@ class generate_attempt_html {
             // always show student-info
             // if (!$attemptobj->get_quiz()->showuserpicture && $attemptobj->get_userid() != $USER->id) {
 
-            $student = $DB->get_record('user', ['id' => $this->attempt_obj->get_userid()]);
+            $student = $DB->get_record('user', ['id' => $this->attemptobj->get_userid()]);
             $usrepicture = new \user_picture($student);
-            $usrepicture->courseid = $this->attempt_obj->get_courseid();
+            $usrepicture->courseid = $this->attemptobj->get_courseid();
             $summarydata['user'] = [
                 'title' => $usrepicture,
                 'content' => new \action_link(
                     new \moodle_url('/user/view.php', [
-                    'id' => $student->id, 'course' => $this->attempt_obj->get_courseid()]),
+                    'id' => $student->id, 'course' => $this->attemptobj->get_courseid()]),
                     fullname($student, true)
                 ),
             ];
             // }
-            if ($this->attempt_obj->has_capability('mod/quiz:viewreports')) {
-                $attemptlist = $this->attempt_obj->links_to_other_attempts($this->attempt_obj->review_url(
+            if ($this->attemptobj->has_capability('mod/quiz:viewreports')) {
+                $attemptlist = $this->attemptobj->links_to_other_attempts($this->attemptobj->review_url(
                     null,
                     $page,
                     $showall
@@ -277,13 +277,13 @@ class generate_attempt_html {
             // Timing information.
             $summarydata['startedon'] = [
                 'title' => get_string('startedon', 'quiz'),
-                'content' => userdate($this->attempt_rec->timestart),
+                'content' => userdate($this->attemptrec->timestart),
             ];
 
-            if ($this->attempt_rec->timefinish) {
+            if ($this->attemptrec->timefinish) {
                 $summarydata['completedon'] = [
                     'title' => 'Compeleted on',
-                    'content' => userdate($this->attempt_rec->timefinish),
+                    'content' => userdate($this->attemptrec->timefinish),
                 ];
                 $summarydata['timetaken'] = [
                     'title' => 'time taken',
@@ -299,9 +299,9 @@ class generate_attempt_html {
             }
 
             // Show marks (if the user is allowed to see marks at the moment).
-            $grade = quiz_rescale_grade($this->attempt_rec->sumgrades, $this->quiz_rec, false);
-            if ($options->marks >= \question_display_options::MARK_AND_MAX && quiz_has_grades($this->quiz_rec)) {
-                if (!$this->attempt_rec->timefinish) {
+            $grade = quiz_rescale_grade($this->attemptrec->sumgrades, $this->quizrec, false);
+            if ($options->marks >= \question_display_options::MARK_AND_MAX && quiz_has_grades($this->quizrec)) {
+                if (!$this->attemptrec->timefinish) {
                     $summarydata['grade'] = [
                         'title' => 'Grade',
                         'content' => 'Attempt still in progress',
@@ -309,14 +309,14 @@ class generate_attempt_html {
                 } else if (is_null($grade)) {
                     $summarydata['grade'] = [
                         'title' => 'Grade',
-                        'content' => quiz_format_grade($this->quiz_rec, $grade),
+                        'content' => quiz_format_grade($this->quizrec, $grade),
                     ];
                 } else {
                     // Show raw marks only if they are different from the grade (like on the view page).
-                    if ($this->quiz_rec->grade != $this->quiz_rec->sumgrades) {
+                    if ($this->quizrec->grade != $this->quizrec->sumgrades) {
                         $a = new \stdClass();
-                        $a->grade = quiz_format_grade($this->quiz_rec, $this->attempt_rec->sumgrades);
-                        $a->maxgrade = quiz_format_grade($this->quiz_rec, $this->quiz_rec->sumgrades);
+                        $a->grade = quiz_format_grade($this->quizrec, $this->attemptrec->sumgrades);
+                        $a->maxgrade = quiz_format_grade($this->quizrec, $this->quizrec->sumgrades);
                         $summarydata['marks'] = [
                             'title' => get_string('marks', 'quiz'),
                             'content' => get_string('outofshort', 'quiz', $a),
@@ -325,11 +325,11 @@ class generate_attempt_html {
 
                     // Now the scaled grade.
                     $a = new \stdClass();
-                    $a->grade = \html_writer::tag('b', quiz_format_grade($this->quiz_rec, $grade));
-                    $a->maxgrade = quiz_format_grade($this->quiz_rec, $this->quiz_rec->grade);
-                    if ($this->quiz_rec->grade != 100) {
+                    $a->grade = \html_writer::tag('b', quiz_format_grade($this->quizrec, $grade));
+                    $a->maxgrade = quiz_format_grade($this->quizrec, $this->quizrec->grade);
+                    if ($this->quizrec->grade != 100) {
                         $a->percent = \html_writer::tag('b', format_float(
-                            $this->attempt_rec->sumgrades * 100 / $this->quiz_rec->sumgrades,
+                            $this->attemptrec->sumgrades * 100 / $this->quizrec->sumgrades,
                             0
                         ));
                         $formattedgrade = get_string('outofpercent', 'quiz', $a);
@@ -344,7 +344,7 @@ class generate_attempt_html {
             }
 
             // Feedback if there is any, and the user is allowed to see it now.
-            $feedback = $this->attempt_obj->get_overall_feedback($grade);
+            $feedback = $this->attemptobj->get_overall_feedback($grade);
             if ($options->overallfeedback && $feedback) {
                 $summarydata['feedback'] = [
                     'title' => get_string('feedback', 'quiz'),
@@ -352,9 +352,9 @@ class generate_attempt_html {
                 ];
             }
 
-            $quiz_renderer = $this->page->get_renderer('mod_quiz');
-            // echo $quiz_renderer->review_summary_table($summarydata, $page);
-            $output = $quiz_renderer->questions($this->attempt_obj, true, $slots, $page, $showall, $options);
+            $quizrenderer = $this->page->get_renderer('mod_quiz');
+            // echo $quizrenderer->review_summary_table($summarydata, $page);
+            $output = $quizrenderer->questions($this->attemptobj, true, $slots, $page, $showall, $options);
 
             // Put an empty div inside the questions box to prevent a pagebreak on this place.
             $searchpattern = '#<div id=".*?" class="que.*?</div>#';

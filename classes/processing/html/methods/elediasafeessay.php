@@ -65,10 +65,10 @@ class elediasafeessay extends base {
 
             // Remove "answer" label.
             $alabel = null;
-            foreach ($taparent->childNodes as $childNode) {
-                /** @var \DOMElement $childNode */
-                if ($childNode->tagName == 'label') {
-                    $alabel = $childNode;
+            foreach ($taparent->childNodes as $childnode) {
+                /** @var \DOMElement $childnode */
+                if ($childnode->tagName == 'label') {
+                    $alabel = $childnode;
                     break;
                 }
             }

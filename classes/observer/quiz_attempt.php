@@ -41,8 +41,8 @@ class quiz_attempt {
                 $categories = explode(',', $catfilter);
             }
 
-            $event_data = $event->get_data();
-            $params = ['attemptid' => $event_data['objectid']];
+            $eventdata = $event->get_data();
+            $params = ['attemptid' => $eventdata['objectid']];
 
             $sql = '
             SELECT c.*, cc.path
@@ -65,7 +65,7 @@ class quiz_attempt {
                 if (!empty($catfilter) && empty(array_intersect(explode('/', $course->path), $categories))) {
                     return;
                 }
-                generate_pdf::add_attempt_to_queue($event_data['objectid']);
+                generate_pdf::add_attempt_to_queue($eventdata['objectid']);
             }
         }
     }

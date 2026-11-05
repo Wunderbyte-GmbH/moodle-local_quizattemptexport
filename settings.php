@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$generateHtmlButtons = function ($keyvaluelist) {
+$generatehtmlbuttons = function ($keyvaluelist) {
         $html = '<div id="dynamicfilename-buttons">';
 
     foreach ($keyvaluelist as $key => $value) {
@@ -96,12 +96,12 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
         0
     ));
 
-    $pdfexportdir_default = $CFG->dataroot . '/quizattemptexport';
+    $pdfexportdirdefault = $CFG->dataroot . '/quizattemptexport';
     $settings->add(new admin_setting_configdirectory(
         'local_quizattemptexport/pdfexportdir',
         get_string('setting_pdfexportdir', 'local_quizattemptexport'),
         get_string('setting_pdfexportdir_desc', 'local_quizattemptexport'),
-        $pdfexportdir_default
+        $pdfexportdirdefault
     ));
 
     $settings->add(new admin_setting_configtext(
@@ -167,7 +167,7 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
     $settings->add(new admin_setting_configtextarea(
         'local_quizattemptexport/dynamicfilename',
         get_string('setting_dynamicfilename', 'local_quizattemptexport'),
-        $generateHtmlButtons($keyvaluebuttonlist) . get_string('setting_dynamicfilename_desc', 'local_quizattemptexport'),
+        $generatehtmlbuttons($keyvaluebuttonlist) . get_string('setting_dynamicfilename_desc', 'local_quizattemptexport'),
         'QUIZNAME_USERID_ATTEMPTID',
         PARAM_RAW,
         $cols = '50',

@@ -163,11 +163,11 @@ class ddmarker extends base {
             $newnode->appendChild($imagenode);
 
             /** @var \DOMElement $contentdiv */
-            foreach ($contentdiv->childNodes as $childNode) {
+            foreach ($contentdiv->childNodes as $childnode) {
 
-                /** @var \DOMElement $childNode */
-                if (false !== strpos($childNode->getAttribute('class'), 'comment')) {
-                    $childNode->parentNode->insertBefore($newnode, $childNode);
+                /** @var \DOMElement $childnode */
+                if (false !== strpos($childnode->getAttribute('class'), 'comment')) {
+                    $childnode->parentNode->insertBefore($newnode, $childnode);
                 }
             }
         }
@@ -278,25 +278,25 @@ class ddmarker extends base {
             $textboxheight = $textdimensions['height'] + ($margin * 2);
 
             // Get starting position for border rect.
-            $backgroundrect_x_from = $dropx;
-            $backgroundrect_y_from = $dropy;
+            $backgroundrectxfrom = $dropx;
+            $backgroundrectyfrom = $dropy;
 
             // Get end position for rectangle.
-            $backgroundrect_x_to = $backgroundrect_x_from + ($textboxwidth + (2 * $border));
-            $backgroundrect_y_to = $backgroundrect_y_from + ($textboxheight + (2 * $border));
+            $backgroundrectxto = $backgroundrectxfrom + ($textboxwidth + (2 * $border));
+            $backgroundrectyto = $backgroundrectyfrom + ($textboxheight + (2 * $border));
 
             // Get starting position for text.
-            $text_x = $backgroundrect_x_from + $border + $margin;
-            $text_y = $backgroundrect_y_from + $border + $margin + $calculatedfontsize;
+            $textx = $backgroundrectxfrom + $border + $margin;
+            $texty = $backgroundrectyfrom + $border + $margin + $calculatedfontsize;
 
             // Save coordinates and related data into object.
             $coords = new \stdClass();
-            $coords->bgrect_x_from = $backgroundrect_x_from;
-            $coords->bgrect_y_from = $backgroundrect_y_from;
-            $coords->bgrect_x_to = $backgroundrect_x_to;
-            $coords->bgrect_y_to = $backgroundrect_y_to;
-            $coords->text_x = $text_x;
-            $coords->text_y = $text_y;
+            $coords->bgrect_x_from = $backgroundrectxfrom;
+            $coords->bgrect_y_from = $backgroundrectyfrom;
+            $coords->bgrect_x_to = $backgroundrectxto;
+            $coords->bgrect_y_to = $backgroundrectyto;
+            $coords->text_x = $textx;
+            $coords->text_y = $texty;
             $coords->text = $text;
             $coords->shape = !empty($marker->shape) ? $marker->shape : null; // Only required if $avoidoverlap is used.
             $textboxes[] = $coords;
@@ -370,25 +370,25 @@ class ddmarker extends base {
                     $boxesoffset = floor(($shapeheight - $aggregatedboxheights) / $boxcount);
 
                     // Reposition boxes.
-                    $new_start_x = $group->startpoint[0] + $margin;
-                    $new_start_y = $group->startpoint[1] + $margin;
+                    $newstartx = $group->startpoint[0] + $margin;
+                    $newstarty = $group->startpoint[1] + $margin;
                     foreach ($group->boxes as $box) {
                         // Calculate current dimensions / offsets.
                         $boxheight = $box->bgrect_y_to - $box->bgrect_y_from;
                         $boxwidth = $box->bgrect_x_to - $box->bgrect_x_from;
-                        $text_x_offset = $box->text_x - $box->bgrect_x_from;
-                        $text_y_offset = $box->text_y - $box->bgrect_y_from;
+                        $textxoffset = $box->text_x - $box->bgrect_x_from;
+                        $textyoffset = $box->text_y - $box->bgrect_y_from;
 
                         // Calculate new dimensions.
-                        $box->bgrect_x_from = $new_start_x;
-                        $box->bgrect_y_from = $new_start_y;
-                        $box->bgrect_x_to = $new_start_x + $boxwidth;
-                        $box->bgrect_y_to = $new_start_y + $boxheight;
-                        $box->text_x = $new_start_x + $text_x_offset;
-                        $box->text_y = $new_start_y + $text_y_offset;
+                        $box->bgrect_x_from = $newstartx;
+                        $box->bgrect_y_from = $newstarty;
+                        $box->bgrect_x_to = $newstartx + $boxwidth;
+                        $box->bgrect_y_to = $newstarty + $boxheight;
+                        $box->text_x = $newstartx + $textxoffset;
+                        $box->text_y = $newstarty + $textyoffset;
 
                         // Calculate new start-y for next box.
-                        $new_start_y = $box->bgrect_y_to + $boxesoffset;
+                        $newstarty = $box->bgrect_y_to + $boxesoffset;
                     }
                 }
             }
@@ -400,32 +400,32 @@ class ddmarker extends base {
 
         // Calculate largest x and y values so we may check if any of our boxes exceed the
         // available background.
-        $largest_x = 0;
-        $largest_y = 0;
+        $largestx = 0;
+        $largesty = 0;
         foreach ($textboxes as $box) {
-            if ($box->bgrect_x_to > $largest_x) {
-                $largest_x = $box->bgrect_x_to;
+            if ($box->bgrect_x_to > $largestx) {
+                $largestx = $box->bgrect_x_to;
             }
-            if ($box->bgrect_y_to > $largest_y) {
-                $largest_y = $box->bgrect_y_to;
+            if ($box->bgrect_y_to > $largesty) {
+                $largesty = $box->bgrect_y_to;
             }
         }
 
         // Check if our text boxes exceed the available background area. Create a new background
         // with appropriate dimensions if necessary.
-        if ($largest_y > $bgfileinfo['height'] || $largest_x > $bgfileinfo['width']) {
-            $newbg_height = $bgfileinfo['height'];
-            if ($largest_y > $bgfileinfo['height']) {
-                $newbg_height = $largest_y + 3;
+        if ($largesty > $bgfileinfo['height'] || $largestx > $bgfileinfo['width']) {
+            $newbgheight = $bgfileinfo['height'];
+            if ($largesty > $bgfileinfo['height']) {
+                $newbgheight = $largesty + 3;
             }
-            $newbg_width = $bgfileinfo['width'];
-            if ($largest_x > $bgfileinfo['width']) {
-                $newbg_width = $largest_x + 3;
+            $newbgwidth = $bgfileinfo['width'];
+            if ($largestx > $bgfileinfo['width']) {
+                $newbgwidth = $largestx + 3;
             }
 
-            $tempimg = imagecreatetruecolor($newbg_width, $newbg_height);
+            $tempimg = imagecreatetruecolor($newbgwidth, $newbgheight);
             $bgcolor = imagecolorallocate($tempimg, 255, 255, 255);
-            imagefilledrectangle($tempimg, 0, 0, $newbg_width, $newbg_height, $bgcolor);
+            imagefilledrectangle($tempimg, 0, 0, $newbgwidth, $newbgheight, $bgcolor);
             imagecopyresampled($tempimg, $gdbgfile, 0, 0, 0, 0, $bgfileinfo['width'], $bgfileinfo['height'], $bgfileinfo['width'], $bgfileinfo['height']);
             imagedestroy($gdbgfile);
             $gdbgfile = $tempimg;
@@ -464,24 +464,24 @@ class ddmarker extends base {
         return $imagecontent;
     }
 
-    protected static function calculateTextBox($text, $fontFile, $fontSize, $fontAngle) {
+    protected static function calculateTextBox($text, $fontfile, $fontsize, $fontangle) {
         /************
         simple function that calculates the *exact* bounding box (single pixel precision).
         The function returns an associative array with these keys:
         left, top:  coordinates you will pass to imagettftext
         width, height: dimension of the image you have to create
          *************/
-        $rect = imagettfbbox($fontSize, $fontAngle, $fontFile, $text);
-        $minX = min([$rect[0], $rect[2], $rect[4], $rect[6]]);
-        $maxX = max([$rect[0], $rect[2], $rect[4], $rect[6]]);
-        $minY = min([$rect[1], $rect[3], $rect[5], $rect[7]]);
-        $maxY = max([$rect[1], $rect[3], $rect[5], $rect[7]]);
+        $rect = imagettfbbox($fontsize, $fontangle, $fontfile, $text);
+        $minx = min([$rect[0], $rect[2], $rect[4], $rect[6]]);
+        $maxx = max([$rect[0], $rect[2], $rect[4], $rect[6]]);
+        $miny = min([$rect[1], $rect[3], $rect[5], $rect[7]]);
+        $maxy = max([$rect[1], $rect[3], $rect[5], $rect[7]]);
 
         return [
-            "left"   => abs($minX) - 1,
-            "top"    => abs($minY) - 1,
-            "width"  => $maxX - $minX,
-            "height" => $maxY - $minY,
+            "left"   => abs($minx) - 1,
+            "top"    => abs($miny) - 1,
+            "width"  => $maxx - $minx,
+            "height" => $maxy - $miny,
             "box"    => $rect,
         ];
     }

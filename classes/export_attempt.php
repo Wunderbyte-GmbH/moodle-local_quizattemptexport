@@ -39,14 +39,14 @@ class export_attempt {
     private $exportpath;
     private $exportfilesystem;
 
-    /** @var \mod_quiz\quiz_attempt $attempt_obj */
-    private $attempt_obj;
-    private $user_rec;
+    /** @var \mod_quiz\quiz_attempt $attemptobj */
+    private $attemptobj;
+    private $userrec;
 
     public function __construct(\mod_quiz\quiz_attempt $attempt) {
         global $SITE, $CFG, $PAGE, $DB;
 
-        $this->attempt_obj = $attempt;
+        $this->attemptobj = $attempt;
 
         // Load Vendor requirements.
         require_once($CFG->dirroot . '/local/quizattemptexport/vendor/autoload.php');
@@ -55,8 +55,8 @@ class export_attempt {
         // Monolog version in the same request ends in a fatal error.
         $this->logger = new \local_quizattemptexport\local\logger();
 
-        if (!$this->user_rec = $DB->get_record('user', ['id' => $this->attempt_obj->get_userid()])) {
-            $exc = new \moodle_exception('except_usernotfound', 'local_quizattemptexport', '', $this->attempt_obj->get_userid());
+        if (!$this->userrec = $DB->get_record('user', ['id' => $this->attemptobj->get_userid()])) {
+            $exc = new \moodle_exception('except_usernotfound', 'local_quizattemptexport', '', $this->attemptobj->get_userid());
             $this->logexception($exc);
 
             throw $exc;
@@ -74,7 +74,7 @@ class export_attempt {
         if ($this->exportfilesystem = get_config('local_quizattemptexport', 'exportfilesystem')) {
             // Check export directory.
             try {
-                $this->exportpath = util::prepare_filearea_server($this->attempt_obj);
+                $this->exportpath = util::prepare_filearea_server($this->attemptobj);
             } catch (\moodle_exception $e) {
                 $this->logexception($e);
 
@@ -123,7 +123,7 @@ class export_attempt {
 
         // Generate the HTML content to be rendered into a PDF.
         $generator = new generate_attempt_html($this->page);
-        $html = $generator->generate($this->attempt_obj);
+        $html = $generator->generate($this->attemptobj);
 
         // Set up some processing requirements.
         set_time_limit(0);
@@ -180,14 +180,14 @@ class export_attempt {
         // Generate the parts of the target file name.
 
         // Quiz instance name.
-        $cm = $this->attempt_obj->get_cm();
+        $cm = $this->attemptobj->get_cm();
         $instance = $DB->get_record('quiz', ['id' => $cm->instance]);
         $quizname = clean_param($instance->name, PARAM_FILE);
 
         // The current time for more uniqueness.
         $time = date('YmdHis', time());
 
-        $filename = self::generate_filename($quizname, $this->user_rec, $this->attempt_obj, $time, $tempfilecontent);
+        $filename = self::generate_filename($quizname, $this->userrec, $this->attemptobj, $time, $tempfilecontent);
 
         // Write file into filesystem?
         if ($this->exportfilesystem) {
@@ -201,15 +201,15 @@ class export_attempt {
         // file_put_contents($localfilepath . '.html', $html);
 
         // Write file into moodle file system for web access to the files.
-        $cm = $this->attempt_obj->get_cm();
+        $cm = $this->attemptobj->get_cm();
         $context = \context_module::instance($cm->id);
 
         $filedata = new \stdClass();
         $filedata->contextid = $context->id;
         $filedata->component = 'local_quizattemptexport';
         $filedata->filearea = 'export';
-        $filedata->itemid = $this->attempt_obj->get_attemptid();
-        $filedata->userid = $this->attempt_obj->get_userid();
+        $filedata->itemid = $this->attemptobj->get_attemptid();
+        $filedata->userid = $this->attemptobj->get_userid();
         $filedata->filepath = '/';
         $filedata->filename = $filename;
 
@@ -234,7 +234,7 @@ class export_attempt {
         }
 
         // Export attachments.
-        attachment_processor::execute($this->attempt_obj);
+        attachment_processor::execute($this->attemptobj);
 
         // Clean up any unexpected output.
         ob_end_clean();
