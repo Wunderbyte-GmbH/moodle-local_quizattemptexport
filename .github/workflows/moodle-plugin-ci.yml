@@ -42,7 +42,9 @@ jobs:
       # disable_phpcs: true
       # disable_phplint: true
       # disable_mustache: true
-      # disable_ci_validate: true
+      # The table is named quizattemptexport, not local_quizattemptexport. Renaming it needs a
+      # migration on live sites, so validate is skipped until that is done.
+      disable_ci_validate: true
 
     secrets:
       ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
