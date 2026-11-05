@@ -34,6 +34,7 @@ class export_attempt {
 
     private $page;
 
+    /** @var \local_quizattemptexport\local\logger */
     private $logger;
 
     private $exportpath;
@@ -51,10 +52,9 @@ class export_attempt {
         // Load Vendor requirements.
         require_once($CFG->dirroot . '/local/quizattemptexport/vendor/autoload.php');
 
-        // Create logger.
-        $log = new \Monolog\Logger('quizattemptexport');
-        $log->pushHandler(new \Monolog\Handler\StreamHandler($CFG->dataroot . '/quizattemptexport.log', \Monolog\Logger::ERROR));
-        $this->logger = $log;
+        // Create logger. Not Monolog: Moodle 5.2+ ships Monolog 3 in core, and loading a second
+        // Monolog version in the same request ends in a fatal error.
+        $this->logger = new \local_quizattemptexport\local\logger();
 
         if (!$this->user_rec = $DB->get_record('user', array('id' => $this->attempt_obj->get_userid()))) {
 
@@ -141,7 +141,6 @@ class export_attempt {
              ********************/
             // Start pdf generation and write into a temp file.
             $snappy = new Pdf();
-            $snappy->setLogger($this->logger);
             $snappy->setTemporaryFolder($CFG->tempdir);
             $snappy->setTimeout($conf->pdfgenerationtimeout);
 
