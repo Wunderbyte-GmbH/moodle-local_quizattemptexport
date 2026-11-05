@@ -46,10 +46,8 @@ class multichoice extends base {
 
         // Get correctness icons if any.
         $icons = $xpath->query('//div[@class="answer"]//i');
+        /** @var \DOMElement $icon */
         foreach ($icons as $icon) {
-
-            /** @var \DOMElement $icon */
-
             // Check attributes of element containing the icon for indication of correctness. Decide
             // which image to replace the icon with depending on type of correctness.
             $parentclassvals = $icon->parentNode->getAttribute('class');
@@ -81,6 +79,11 @@ class multichoice extends base {
         return domdocument_util::save_html($dom);
     }
 
+    /**
+     * Returns the CSS the multiple choice output needs in the PDF.
+     *
+     * @return string
+     */
     public static function get_css(): string {
         return "
             .multichoice .ablock .prompt {

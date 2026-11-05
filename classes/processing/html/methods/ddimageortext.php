@@ -27,6 +27,14 @@ use local_quizattemptexport\processing\html\domdocument_util;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ddimageortext extends base {
+    /**
+     * Processes the HTML of one drag and drop onto image question for the PDF.
+     *
+     * @param string $questionhtml The question's container div.
+     * @param \mod_quiz\quiz_attempt $attempt The attempt the question belongs to.
+     * @param int $slot The question's slot in the attempt.
+     * @return string The processed HTML.
+     */
     public static function process(string $questionhtml, \mod_quiz\quiz_attempt $attempt, int $slot): string {
         global $CFG, $DB;
 
@@ -91,8 +99,8 @@ class ddimageortext extends base {
         // Rewrite SRC of background image with our generated image as a base64 encoded data url.
         $dataurl = 'data:image/png;base64,' . base64_encode($imagecontent);
         $backgrounds = $xpath->query('//img[starts-with(@class, "dropbackground")]');
+        /** @var \DOMElement $bg */
         foreach ($backgrounds as $bg) {
-            /** @var \DOMElement $bg */
             $bg->setAttribute('src', $dataurl);
         }
 
@@ -124,10 +132,8 @@ class ddimageortext extends base {
             $newnode->appendChild($titlenode);
             $newnode->appendChild($imagenode);
 
-            /** @var \DOMElement $contentdiv */
+            /** @var \DOMElement $childnode */
             foreach ($contentdiv->childNodes as $childnode) {
-
-                /** @var \DOMElement $childnode */
                 if (false !== strpos($childnode->getAttribute('class'), 'comment')) {
                     $childnode->parentNode->insertBefore($newnode, $childnode);
                 }
@@ -138,6 +144,11 @@ class ddimageortext extends base {
     }
 
 
+    /**
+     * Returns the CSS the drag and drop onto image output needs in the PDF.
+     *
+     * @return string
+     */
     public static function get_css(): string {
         return "
             .ddimageortext div.correctresult {
@@ -153,7 +164,13 @@ class ddimageortext extends base {
         ";
     }
 
-
+    /**
+     * Draws the dropped items onto the background image.
+     *
+     * @param \qtype_ddimageortext_question $question
+     * @param array $dropdefinitions The drop zones and what was dropped into them.
+     * @return string The image content.
+     */
     protected static function generate_image(\qtype_ddimageortext_question $question, array $dropdefinitions) {
         global $CFG, $DB;
 
@@ -161,8 +178,14 @@ class ddimageortext extends base {
         $fs = get_file_storage();
 
         // Get the background image from the specific question instance.
-        $params = ['contextid' => $question->contextid, 'itemid' => $question->id, 'filearea' => 'bgimage', 'component' => 'qtype_ddimageortext'];
-        $select = 'contextid = :contextid AND itemid = :itemid AND filearea = :filearea AND component = :component AND filesize <> 0';
+        $params = [
+            'contextid' => $question->contextid,
+            'itemid' => $question->id,
+            'filearea' => 'bgimage',
+            'component' => 'qtype_ddimageortext',
+        ];
+        $select = 'contextid = :contextid AND itemid = :itemid AND filearea = :filearea AND component = :component'
+            . ' AND filesize <> 0';
         $dropbg = $DB->get_record_select('files', $select, $params);
         $bgfileinstance = $fs->get_file_instance($dropbg);
         $bgfilecontent = $bgfileinstance->get_content();
@@ -183,7 +206,18 @@ class ddimageortext extends base {
         $bgcolor = imagecolorallocate($gdbgfile, 255, 255, 255);
         imagefilledrectangle($gdbgfile, 0, 0, $bgfileinfo['width'], $bgfileinfo['height'], $bgcolor);
         $tempbg = imagecreatefromstring($bgfilecontent);
-        imagecopyresampled($gdbgfile, $tempbg, 0, 0, 0, 0, $bgfileinfo['width'], $bgfileinfo['height'], $bgfileinfo['width'], $bgfileinfo['height']);
+        imagecopyresampled(
+            $gdbgfile,
+            $tempbg,
+            0,
+            0,
+            0,
+            0,
+            $bgfileinfo['width'],
+            $bgfileinfo['height'],
+            $bgfileinfo['width'],
+            $bgfileinfo['height']
+        );
         imagedestroy($tempbg);
 
         // Defining some data used in the following calculations.
@@ -204,8 +238,14 @@ class ddimageortext extends base {
             $dropy = $dropzone->definition->xy[1];
 
             // Render image or text? If there is a drop file it is an image, if there is no drop file it is text...
-            $params = ['contextid' => $question->contextid, 'itemid' => $dropzone->drop->id, 'filearea' => 'dragimage', 'component' => 'qtype_ddimageortext'];
-            $select = 'contextid = :contextid AND itemid = :itemid AND filearea = :filearea AND component = :component AND filesize <> 0';
+            $params = [
+                'contextid' => $question->contextid,
+                'itemid' => $dropzone->drop->id,
+                'filearea' => 'dragimage',
+                'component' => 'qtype_ddimageortext',
+            ];
+            $select = 'contextid = :contextid AND itemid = :itemid AND filearea = :filearea AND component = :component'
+                . ' AND filesize <> 0';
             $dropfile = $DB->get_record_select('files', $select, $params);
             if (empty($dropfile)) {
                 // Define text data.
@@ -213,7 +253,7 @@ class ddimageortext extends base {
                 $text = str_replace(['<br>', '<br/>', '<br />'], ["\n", "\n", "\n"], $dropzone->drop->text);
 
                 // Get dimensions for text box.
-                $textdimensions = self::calculateTextBox($text, $font, $calculatedfontsize, 0);
+                $textdimensions = self::calculate_text_box($text, $font, $calculatedfontsize, 0);
                 $textboxwidth = $textdimensions['width'] + ($margin * 2);
                 $textboxheight = $textdimensions['height'] + ($margin * 2);
 
@@ -294,7 +334,18 @@ class ddimageortext extends base {
             $tempimg = imagecreatetruecolor($newbgwidth, $newbgheight);
             $bgcolor = imagecolorallocate($tempimg, 255, 255, 255);
             imagefilledrectangle($tempimg, 0, 0, $newbgwidth, $newbgheight, $bgcolor);
-            imagecopyresampled($tempimg, $gdbgfile, 0, 0, 0, 0, $bgfileinfo['width'], $bgfileinfo['height'], $bgfileinfo['width'], $bgfileinfo['height']);
+            imagecopyresampled(
+                $tempimg,
+                $gdbgfile,
+                0,
+                0,
+                0,
+                0,
+                $bgfileinfo['width'],
+                $bgfileinfo['height'],
+                $bgfileinfo['width'],
+                $bgfileinfo['height']
+            );
             imagedestroy($gdbgfile);
             $gdbgfile = $tempimg;
         }
@@ -305,7 +356,17 @@ class ddimageortext extends base {
                 $gddropfile = imagecreatefromstring($drop->imagecontent);
 
                 // Render onto background and clean it up.
-                imagecopymerge($gdbgfile, $gddropfile, $drop->image_x, $drop->image_y, 0, 0, $drop->image_width, $drop->image_height, 100);
+                imagecopymerge(
+                    $gdbgfile,
+                    $gddropfile,
+                    $drop->image_x,
+                    $drop->image_y,
+                    0,
+                    0,
+                    $drop->image_width,
+                    $drop->image_height,
+                    100
+                );
                 imagedestroy($gddropfile);
             } else {
                 // Define colors for text box.
@@ -314,8 +375,22 @@ class ddimageortext extends base {
 
                 // Draw text box.
                 imagesetthickness($gdbgfile, $border);
-                imagefilledrectangle($gdbgfile, $drop->bgrect_x_from, $drop->bgrect_y_from, $drop->bgrect_x_to, $drop->bgrect_y_to, $bgcolor);
-                imagerectangle($gdbgfile, $drop->bgrect_x_from, $drop->bgrect_y_from, $drop->bgrect_x_to, $drop->bgrect_y_to, $bordercolor);
+                imagefilledrectangle(
+                    $gdbgfile,
+                    $drop->bgrect_x_from,
+                    $drop->bgrect_y_from,
+                    $drop->bgrect_x_to,
+                    $drop->bgrect_y_to,
+                    $bgcolor
+                );
+                imagerectangle(
+                    $gdbgfile,
+                    $drop->bgrect_x_from,
+                    $drop->bgrect_y_from,
+                    $drop->bgrect_x_to,
+                    $drop->bgrect_y_to,
+                    $bordercolor
+                );
 
                 // Render text onto text box.
                 imagettftext($gdbgfile, $calculatedfontsize, 0, $drop->text_x, $drop->text_y, $textcolor, $font, $drop->text);
@@ -335,13 +410,17 @@ class ddimageortext extends base {
         return $imagecontent;
     }
 
-    protected static function calculateTextBox($text, $fontfile, $fontsize, $fontangle) {
-        /************
-        simple function that calculates the *exact* bounding box (single pixel precision).
-        The function returns an associative array with these keys:
-        left, top:  coordinates you will pass to imagettftext
-        width, height: dimension of the image you have to create
-         *************/
+    /**
+     * Calculates the exact bounding box of a text (single pixel precision).
+     *
+     * @param string $text
+     * @param string $fontfile Path to the TrueType font.
+     * @param float $fontsize
+     * @param float $fontangle
+     * @return array left and top: coordinates to pass to imagettftext; width and height: size of the box;
+     *               box: the raw result of imagettfbbox().
+     */
+    protected static function calculate_text_box($text, $fontfile, $fontsize, $fontangle) {
         $rect = imagettfbbox($fontsize, $fontangle, $fontfile, $text);
         $minx = min([$rect[0], $rect[2], $rect[4], $rect[6]]);
         $maxx = max([$rect[0], $rect[2], $rect[4], $rect[6]]);

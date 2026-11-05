@@ -31,18 +31,30 @@ use local_quizattemptexport\local\helper\wkhtmltopdf_locator;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class export_attempt {
+    /** @var \moodle_page Page used to render the attempt. */
     private $page;
 
     /** @var \local_quizattemptexport\local\logger */
     private $logger;
 
+    /** @var string|null Directory on the server the PDF is also written to, if enabled. */
     private $exportpath;
+
+    /** @var string|false Whether the PDF is also written to the server's file system. */
     private $exportfilesystem;
 
     /** @var \mod_quiz\quiz_attempt $attemptobj */
     private $attemptobj;
+
+    /** @var \stdClass The user the attempt belongs to. */
     private $userrec;
 
+    /**
+     * Constructor.
+     *
+     * @param \mod_quiz\quiz_attempt $attempt The attempt to export.
+     * @throws \moodle_exception If the user is missing or the export directory cannot be used.
+     */
     public function __construct(\mod_quiz\quiz_attempt $attempt) {
         global $SITE, $CFG, $PAGE, $DB;
 
@@ -62,15 +74,6 @@ class export_attempt {
             throw $exc;
         }
 
-        // idnumber currently not used...
-        // if (empty($this->user_rec->idnumber)) {
-
-        // $exc = new \moodle_exception('except_usernoidnumber', 'local_quizattemptexport', '', $this->user_rec->id);
-        // $this->logmessage($exc->getMessage());
-
-        // throw $exc;
-        // }
-
         if ($this->exportfilesystem = get_config('local_quizattemptexport', 'exportfilesystem')) {
             // Check export directory.
             try {
@@ -89,7 +92,7 @@ class export_attempt {
 
         $this->page->set_url('/');
         $this->page->set_pagelayout('popup');
-        $this->page->set_pagetype('site-index'); // necessary, or the current url will be used automatically
+        $this->page->set_pagetype('site-index'); // Necessary, or the current URL will be used automatically.
     }
 
     /**
@@ -127,7 +130,7 @@ class export_attempt {
 
         // Set up some processing requirements.
         set_time_limit(0);
-        ob_start();// tcpdf doesnt like outputs here.
+        ob_start(); // TCPDF doesn't like output here.
 
         // Generate temp file name for pdf generation.
         $tempexportfile = $CFG->tempdir . '/' . uuid::generate() . '.pdf';
@@ -169,7 +172,7 @@ class export_attempt {
         // Post-generation sanity check (for silent failures).
         if (!file_exists($tempexportfile) || !filesize($tempexportfile)) {
             $haserror = true;
-            $errormessage = get_string('pdfnotgenerated', 'local_quizattemptexport'); // or hardcoded message
+            $errormessage = get_string('pdfnotgenerated', 'local_quizattemptexport');
             return [$haserror, $errormessage];
         }
 
@@ -196,9 +199,6 @@ class export_attempt {
             $localfilepath = $this->exportpath . '/' . $filename;
             file_put_contents($localfilepath, $tempfilecontent);
         }
-
-        // Debug output...
-        // file_put_contents($localfilepath . '.html', $html);
 
         // Write file into moodle file system for web access to the files.
         $cm = $this->attemptobj->get_cm();
@@ -278,8 +278,14 @@ class export_attempt {
     }
 
     /**
-     * Generates a filename.
+     * Generates the PDF's file name from the dynamic file name setting.
      *
+     * @param string $quizname
+     * @param \stdClass $user The user the attempt belongs to.
+     * @param \mod_quiz\quiz_attempt $attempt
+     * @param int $time Time of the export.
+     * @param string $tempcontent The PDF content, used for the optional content hash.
+     * @return string
      */
     protected function generate_filename($quizname, $user, $attempt, $time, $tempcontent) {
         // Get the format from the settings.
@@ -292,7 +298,9 @@ class export_attempt {
         $username = isset($user->username) ? $user->username : '';
         $attemptid = is_object($attempt) ? $attempt->get_attemptid() : '';
         $contenthash = (isset($tempcontent) && isset($hashtype)) ? hash($hashtype, $tempcontent) : '';
-        $convertedquizname = isset($quizname) ? clean_param(\core_text::convert($quizname, 'utf-8', 'ascii'), PARAM_ALPHANUMEXT) : '';
+        $convertedquizname = isset($quizname)
+            ? clean_param(\core_text::convert($quizname, 'utf-8', 'ascii'), PARAM_ALPHANUMEXT)
+            : '';
 
         // Replace the wildcards with the actual values.
         $replacements = [
@@ -306,7 +314,7 @@ class export_attempt {
             $format = str_replace($wildcard, $value, $format);
         }
 
-        // Remove consecutive underscores for missing values
+        // Remove consecutive underscores for missing values.
         $format = preg_replace('/_+/', '_', $format);
         // Replace invalid characters in the file name.
         $filename = preg_replace('/[^a-zA-Z0-9\-_\.]/', '', $format);

@@ -25,6 +25,13 @@
 
 namespace local_quizattemptexport;
 
+/**
+ * Static collection of utility methods.
+ *
+ * @package    local_quizattemptexport
+ * @copyright  Ralf Wiederhold 2021
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class util {
     /**
      * This method returns the applicable export path within the servers filesystem
@@ -72,6 +79,11 @@ class util {
     }
 
 
+    /**
+     * Returns the plugin configuration with the PDF generation timeout and MathJax delay normalised.
+     *
+     * @return \stdClass
+     */
     public static function get_config() {
         $conf = get_config('local_quizattemptexport');
 

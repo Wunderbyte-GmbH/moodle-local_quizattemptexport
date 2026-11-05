@@ -35,27 +35,48 @@ namespace local_quizattemptexport\task;
 use local_quizattemptexport\export_attempt;
 use local_quizattemptexport\util;
 
-// Deprecated; these files have been deprecated as of Moodle 4.2 and will be removed in Moodle 4.7
-//
-//
-
-
+/**
+ * Scheduled task that generates the queued PDF exports.
+ *
+ * @package    local_quizattemptexport
+ * @copyright  Ralf Wiederhold 2020
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class generate_pdf extends \core\task\scheduled_task {
+    /** @var string Name of the lock directory in the dataroot. */
     const LOCKDIRNAME = 'quizattemptexport_lockdir';
+
+    /** @var bool Whether this run holds the lock. */
     protected $haslock = false;
 
+    /** @var int Queued, not processed yet. */
     const STATUS_WAITING = 0;
+    /** @var int Being processed by a task run. */
     const STATUS_PROCESSING = 1;
+    /** @var int PDF generated. */
     const STATUS_PROCESSED = 2;
+    /** @var int PDF generation failed. */
     const STATUS_ERROR = 3;
 
+    /** @var int Default number of attempts processed per run. */
     const ATTEMPTS_PER_RUN = 100;
+    /** @var int MathJax delay in seconds above which fewer attempts are processed per run. */
     const JSDELAY_CUTOFF_SECONDS = 60;
 
+    /**
+     * Returns the task name.
+     *
+     * @return string
+     */
     public function get_name() {
         return get_string('task_generate_pdf_name', 'local_quizattemptexport');
     }
 
+    /**
+     * Generates the PDFs of the queued attempts.
+     *
+     * @return void
+     */
     public function execute() {
         global $DB;
 
@@ -89,7 +110,14 @@ class generate_pdf extends \core\task\scheduled_task {
         mtrace('Max attempts being processed: ' . $attemptsperrun);
 
         // Get some non processed attempts and mark them as being processed.
-        $attempts = $DB->get_records('quizattemptexport', ['status' => self::STATUS_WAITING], 'timecreated ASC', '*', 0, $attemptsperrun);
+        $attempts = $DB->get_records(
+            'quizattemptexport',
+            ['status' => self::STATUS_WAITING],
+            'timecreated ASC',
+            '*',
+            0,
+            $attemptsperrun
+        );
         foreach ($attempts as $attempt) {
             $DB->set_field('quizattemptexport', 'status', self::STATUS_PROCESSING, ['id' => $attempt->id]);
             mtrace('Marking queued attempt record as being processed: ' . $attempt->id);

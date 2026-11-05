@@ -39,8 +39,12 @@ class renderer extends \plugin_renderer_base {
         $templatedata = [
             'intro' => get_config('local_quizattemptexport', 'overview_intro'),
             'users' => [],
-            'exportallurl' => $canexportagain && !empty($rawdata) ? new \moodle_url('/local/quizattemptexport/overview.php', ['cmid' => $cmid, 'exportall' => 1]) : '',
-            'zipdownloadurl' => !empty($rawdata) ? new \moodle_url('/local/quizattemptexport/overview.php', ['cmid' => $cmid, 'downloadzip' => 1]) : '',
+            'exportallurl' => $canexportagain && !empty($rawdata)
+                ? new \moodle_url('/local/quizattemptexport/overview.php', ['cmid' => $cmid, 'exportall' => 1])
+                : '',
+            'zipdownloadurl' => !empty($rawdata)
+                ? new \moodle_url('/local/quizattemptexport/overview.php', ['cmid' => $cmid, 'downloadzip' => 1])
+                : '',
         ];
 
             // Extract all user IDs from $rawdata.
@@ -84,7 +88,10 @@ class renderer extends \plugin_renderer_base {
 
                 $reexporturl = null;
                 if ($canexportagain) {
-                    $reexporturl = new \moodle_url('/local/quizattemptexport/overview.php', ['cmid' => $attemptobj->get_cmid(), 'reexport' => $attemptid]);
+                    $reexporturl = new \moodle_url(
+                        '/local/quizattemptexport/overview.php',
+                        ['cmid' => $attemptobj->get_cmid(), 'reexport' => $attemptid]
+                    );
                 }
 
                 $attemptdata = [

@@ -46,12 +46,12 @@ class elediasafeessay extends base {
 
         // Get the textarea if any.
         $textareas = $xpath->query('//textarea');
+        /** @var \DOMElement $ta */
         foreach ($textareas as $ta) {
-            /** @var \DOMElement $ta */
-
             // Create a div to replace the textarea with.
             $newnode = $dom->createElement('div');
-            $newnode->setAttribute('class', 'qtype_elediasafeessay_editor qtype_elediasafeessay_response readonly'); // Using classes from the HTML-editor display mode.
+            // Using classes from the HTML-editor display mode.
+            $newnode->setAttribute('class', 'qtype_elediasafeessay_editor qtype_elediasafeessay_response readonly');
 
             // Create a dom fragment, append text with line breaks and append fragment to div.
             $fragment = $dom->createDocumentFragment();
@@ -65,8 +65,8 @@ class elediasafeessay extends base {
 
             // Remove "answer" label.
             $alabel = null;
+            /** @var \DOMElement $childnode */
             foreach ($taparent->childNodes as $childnode) {
-                /** @var \DOMElement $childnode */
                 if ($childnode->tagName == 'label') {
                     $alabel = $childnode;
                     break;
@@ -96,8 +96,6 @@ class elediasafeessay extends base {
         // the fullname of the user that has done the grading in the relevant steps.
         $cells = $xpath->query('//div[@class="responsehistoryheader"]/table/tbody/tr/td[@class="cell c2"]');
         foreach ($cells as $key => $cell) {
-            /** @var \DOMElement $cell */
-
             if (!empty($gradingsteps[$key])) {
                 $user = $DB->get_record('user', ['id' => $gradingsteps[$key]]);
                 $username = get_string('userdeleted', 'moodle');
@@ -113,6 +111,11 @@ class elediasafeessay extends base {
         return domdocument_util::save_html($dom);
     }
 
+    /**
+     * Returns the CSS the eLeDia safe essay output needs in the PDF.
+     *
+     * @return string
+     */
     public static function get_css(): string {
         return '
             .que.elediasafeessay .answer {

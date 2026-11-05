@@ -27,15 +27,34 @@ namespace local_quizattemptexport;
 
 use local_quizattemptexport\processing\html\processor as html_processor;
 
+/**
+ * Renders a quiz attempt as the HTML that is converted to PDF.
+ *
+ * @package    local_quizattemptexport
+ * @copyright  Ralf Wiederhold 2020
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class generate_attempt_html {
+    /** @var \moodle_page Page used to render the attempt. */
     private $page;
+
+    /** @var \mod_quiz\quiz_attempt The attempt being rendered. */
     private $attemptobj;
+
+    /** @var \stdClass The quiz_attempts record. */
     private $attemptrec;
+
+    /** @var \stdClass The quiz record. */
     private $quizrec;
+
+    /** @var \mod_quiz\access_manager Access manager of the quiz. */
     private $accessmanager;
+
+    /** @var \stdClass The user the attempt belongs to. */
     private $userrec;
 
     /**
+     * Constructor.
      *
      * @param \moodle_page $page
      */
@@ -43,6 +62,12 @@ class generate_attempt_html {
         $this->page = $page;
     }
 
+    /**
+     * Renders the given attempt as a complete HTML document.
+     *
+     * @param \mod_quiz\quiz_attempt $attempt
+     * @return string
+     */
     public function generate(\mod_quiz\quiz_attempt $attempt) {
         global $CFG;
 
@@ -64,7 +89,9 @@ class generate_attempt_html {
         // Check if MathJax typesetting has been enabled.
         if ($conf->mathjaxenable) {
             // Build base path to MathJax.
-            $basepath = $CFG->dirroot . DIRECTORY_SEPARATOR . 'local' . DIRECTORY_SEPARATOR . 'quizattemptexport' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'mathjax' . DIRECTORY_SEPARATOR . 'mathjax' . DIRECTORY_SEPARATOR;
+            $basepath = implode(DIRECTORY_SEPARATOR, [
+                $CFG->dirroot, 'local', 'quizattemptexport', 'vendor', 'mathjax', 'mathjax',
+            ]) . DIRECTORY_SEPARATOR;
             $osinfo = php_uname('s');
             if (false !== strpos($osinfo, 'Windows')) {
                 // Within Windows environment the path requires a bit of tweaking...
@@ -88,6 +115,12 @@ class generate_attempt_html {
         return $output;
     }
 
+    /**
+     * Loads the records the rendering needs for the given attempt.
+     *
+     * @param \mod_quiz\quiz_attempt $attempt
+     * @return void
+     */
     private function initialize_attempt(\mod_quiz\quiz_attempt $attempt) {
         global $DB;
 
@@ -140,7 +173,8 @@ class generate_attempt_html {
             // Make sure required plugin table exists.
             if ($tables = $DB->get_tables()) {
                 if (in_array('block_eledia_multikeys', $tables)) {
-                    if ($keyrec = $DB->get_record('block_eledia_multikeys', ['enrolid' => $enrolment->enrolid, 'userid' => $userid])) {
+                    $keyrec = $DB->get_record('block_eledia_multikeys', ['enrolid' => $enrolment->enrolid, 'userid' => $userid]);
+                    if ($keyrec) {
                         $enrolkey = $keyrec->code;
                     }
                 }
@@ -150,6 +184,11 @@ class generate_attempt_html {
         return $enrolkey;
     }
 
+    /**
+     * Collects the data for the report header.
+     *
+     * @return array
+     */
     protected function report_header() {
         $conf = get_config('local_quizattemptexport');
 
@@ -193,6 +232,11 @@ class generate_attempt_html {
         return $templatedata;
     }
 
+    /**
+     * Renders the questions of the attempt the way the quiz review page does.
+     *
+     * @return string
+     */
     protected function generate_attempt_output() {
         global $USER, $DB;
 
@@ -204,7 +248,7 @@ class generate_attempt_html {
         $olduser = $USER;
         $USER = $mainadminfull;
 
-        // set up vars required by copypasta
+        // Set up the variables required by the code copied from mod/quiz/review.php.
         $page = 0;
         $showall = true;
 
@@ -221,10 +265,7 @@ class generate_attempt_html {
             $this->page->set_title(format_string($this->attemptobj->get_quiz_name()));
             $this->page->set_heading($this->attemptobj->get_course()->fullname);
 
-            /////////////////////////////////////////////////////////////////////////////////
-            /////////////////////////////////////////////////////////////////////////////////
-            /////////////////////////////////////////////////////////////////////////////////
-            // COPYPASTA aus mod/quiz/review.php
+            // Copied from mod/quiz/review.php.
 
             // Work out some time-related things.
             $overtime = 0;
@@ -245,8 +286,7 @@ class generate_attempt_html {
             // Prepare summary informat about the whole attempt.
             $summarydata = [];
 
-            // always show student-info
-            // if (!$attemptobj->get_quiz()->showuserpicture && $attemptobj->get_userid() != $USER->id) {
+            // Always show the student info.
 
             $student = $DB->get_record('user', ['id' => $this->attemptobj->get_userid()]);
             $usrepicture = new \user_picture($student);
@@ -259,7 +299,6 @@ class generate_attempt_html {
                     fullname($student, true)
                 ),
             ];
-            // }
             if ($this->attemptobj->has_capability('mod/quiz:viewreports')) {
                 $attemptlist = $this->attemptobj->links_to_other_attempts($this->attemptobj->review_url(
                     null,
@@ -353,7 +392,6 @@ class generate_attempt_html {
             }
 
             $quizrenderer = $this->page->get_renderer('mod_quiz');
-            // echo $quizrenderer->review_summary_table($summarydata, $page);
             $output = $quizrenderer->questions($this->attemptobj, true, $slots, $page, $showall, $options);
 
             // Put an empty div inside the questions box to prevent a pagebreak on this place.

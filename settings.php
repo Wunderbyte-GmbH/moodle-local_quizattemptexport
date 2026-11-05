@@ -62,7 +62,7 @@ $generatehtmlbuttons = function ($keyvaluelist) {
         return $html;
 };
 
-if ($hassiteconfig) { // needs this condition or there is error on login page
+if ($hassiteconfig) { // Needs this condition or there is an error on the login page.
     $settings = new admin_settingpage('local_quizattemptexport', get_string('pluginname', 'local_quizattemptexport'));
     $ADMIN->add('localplugins', $settings);
 
@@ -174,7 +174,11 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
         $rows = '2'
     ));
 
-    $settings->add(new admin_setting_heading('local_quizattemptexport/overview_heading', get_string('setting_usersattemptslist_heading', 'local_quizattemptexport'), null));
+    $settings->add(new admin_setting_heading(
+        'local_quizattemptexport/overview_heading',
+        get_string('setting_usersattemptslist_heading', 'local_quizattemptexport'),
+        null
+    ));
 
     // Show description on overview page.
     $settings->add(new admin_setting_confightmleditor(
@@ -208,7 +212,7 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
         PARAM_RAW_TRIMMED // We'll still validate/escape at runtime before exec.
     ));
 
-    // --- Diagnostics hint (admin-only page link).
+    // Diagnostics hint (admin-only page link).
     $diagurl = new moodle_url('/local/quizattemptexport/diagnostics.php');
     $settings->add(new admin_setting_heading(
         'local_quizattemptexport/diagnostics_heading',

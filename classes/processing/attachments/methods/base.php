@@ -89,9 +89,18 @@ abstract class base {
             $newfile->filepath = '/';
             $newfile->userid = $userid;
 
-            // Only write file into filesystem if it does not exist yet. (If the attachment file has the same name but not the same content anymore, e.g. since
-            // the user was allowed to edit his attempt, the content hash part of the filename will make sure this is recognized as a different file...)
-            if (!$fs->get_file($newfile->context, $newfile->component, $newfile->filearea, $newfile->itemid, $newfile->filepath, $newfile->filename)) {
+            // Only write file into filesystem if it does not exist yet. (If the attachment file has the same name but
+            // not the same content anymore, e.g. since the user was allowed to edit his attempt, the content hash part
+            // of the filename will make sure this is recognized as a different file...)
+            $existing = $fs->get_file(
+                $newfile->context,
+                $newfile->component,
+                $newfile->filearea,
+                $newfile->itemid,
+                $newfile->filepath,
+                $newfile->filename
+            );
+            if (!$existing) {
                 $fs->create_file_from_storedfile($newfile, $attachment);
             }
 
@@ -108,8 +117,14 @@ abstract class base {
     }
 
     /**
-     * Generates a filename for a given attempt.
+     * Generates the file name of an exported attachment from the dynamic file name setting.
      *
+     * @param string $quizname
+     * @param \stdClass $user The user the attempt belongs to.
+     * @param \mod_quiz\quiz_attempt $attempt
+     * @param \stored_file $attachment The attachment being exported.
+     * @param int $slot The slot of the question the attachment belongs to.
+     * @return string
      */
     protected static function generate_filename($quizname, $user, $attempt, $attachment, $slot) {
         // Get the format from the settings.
@@ -128,7 +143,9 @@ abstract class base {
         $filetype = array_pop($filenameparts);
         $filenamepart = implode('.', $filenameparts);
         $contenthash = (is_object($attachment) && isset($hashtype)) ? hash($hashtype, $attachment->get_content()) : '';
-        $convertedquizname = isset($quizname) ? clean_param(\core_text::convert($quizname, 'utf-8', 'ascii'), PARAM_ALPHANUMEXT) : '';
+        $convertedquizname = isset($quizname)
+            ? clean_param(\core_text::convert($quizname, 'utf-8', 'ascii'), PARAM_ALPHANUMEXT)
+            : '';
 
         // Replace the wildcards with the actual values.
         $replacements = [
@@ -142,7 +159,7 @@ abstract class base {
             $format = str_replace($wildcard, $value, $format);
         }
 
-        // Remove consecutive underscores for missing values
+        // Remove consecutive underscores for missing values.
         $format = preg_replace('/_+/', '_', $format);
         // Replace invalid characters in the file name.
         $filename = preg_replace('/[^a-zA-Z0-9\-_\.]/', '', $format);

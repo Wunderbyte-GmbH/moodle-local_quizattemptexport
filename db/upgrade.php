@@ -23,8 +23,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Upgrades the plugin's database schema.
+ *
+ * @param int $oldversion The version the plugin is upgraded from.
+ * @return bool
+ */
 function xmldb_local_quizattemptexport_upgrade($oldversion) {
     global $CFG, $DB;
 

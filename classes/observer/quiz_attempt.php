@@ -27,9 +27,20 @@ namespace local_quizattemptexport\observer;
 
 use local_quizattemptexport\task\generate_pdf;
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Static collection of handler methods for quiz attempt events.
+ *
+ * @package    local_quizattemptexport
+ * @copyright  Ralf Wiederhold 2020
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class quiz_attempt {
+    /**
+     * Queues the PDF export of a submitted attempt, if automatic export is enabled for its course category.
+     *
+     * @param \mod_quiz\event\attempt_submitted $event
+     * @return void
+     */
     public static function handle_submitted(\mod_quiz\event\attempt_submitted $event) {
         global $DB;
 

@@ -137,7 +137,11 @@ if ($hasexportcap && $reexportall) {
     $current = 1;
 
     foreach ($allattempts as $attemptid => $attemptrec) {
-        $progressbar->update($current++, $allattemptsnum, get_string('page_overview_progressbar_step', 'local_quizattemptexport', $attemptid));
+        $progressbar->update(
+            $current++,
+            $allattemptsnum,
+            get_string('page_overview_progressbar_step', 'local_quizattemptexport', $attemptid)
+        );
 
         $attempt = \mod_quiz\quiz_attempt::create($attemptid);
         $export = new \local_quizattemptexport\export_attempt($attempt);
@@ -162,10 +166,20 @@ $navbar->add($strpagetitle, $selfurl);
 // Collect the data we want to display.
 $fs = get_file_storage();
 $rawdata = [];
-foreach ($DB->get_records('quiz_attempts', ['quiz' => $instance->id, 'preview' => 0, 'state' => 'finished'], '', 'DISTINCT userid AS id') as $userid => $notused) {
+$finishedusers = $DB->get_records(
+    'quiz_attempts',
+    ['quiz' => $instance->id, 'preview' => 0, 'state' => 'finished'],
+    '',
+    'DISTINCT userid AS id'
+);
+foreach ($finishedusers as $userid => $notused) {
     $rawdata[$userid] = [];
 
-    foreach ($DB->get_records('quiz_attempts', ['quiz' => $instance->id, 'userid' => $userid, 'preview' => 0, 'state' => 'finished']) as $attempt) {
+    $userattempts = $DB->get_records(
+        'quiz_attempts',
+        ['quiz' => $instance->id, 'userid' => $userid, 'preview' => 0, 'state' => 'finished']
+    );
+    foreach ($userattempts as $attempt) {
         $rawdata[$userid][$attempt->id] = [
             'pdfs' => [],
             'attachments' => [],

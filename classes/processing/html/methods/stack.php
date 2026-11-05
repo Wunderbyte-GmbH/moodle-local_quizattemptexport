@@ -45,9 +45,8 @@ class stack extends base {
 
         // Get any plot images.
         $plots = $xpath->query('//div[@class="stack_plot"]/img');
+        /** @var \DOMElement $plot */
         foreach ($plots as $plot) {
-            /** @var \DOMElement $plot */
-
             // Get value of source attribute and determine local path and file type.
             $src = $plot->getAttribute('src');
             $parts = explode('/', $src);
@@ -77,11 +76,11 @@ class stack extends base {
                 $parts = explode(' ', $viewbox);
                 unset($svgdom);
 
-                // Get width/height for use in IMG element
+                // Get width/height for use in IMG element.
                 $width = $parts[2];
                 $height = $parts[3];
             } else {
-                // Get width/height for use in IMG element
+                // Get width/height for use in IMG element.
                 $imgsize = getimagesize($path);
                 $width = $imgsize[0];
                 $height = $imgsize[1];
@@ -106,6 +105,11 @@ class stack extends base {
     }
 
 
+    /**
+     * Returns the CSS the STACK output needs in the PDF.
+     *
+     * @return string
+     */
     public static function get_css(): string {
         return '
             .que.stack .questiontestslink {

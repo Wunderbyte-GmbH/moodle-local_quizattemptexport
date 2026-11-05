@@ -27,6 +27,14 @@ use local_quizattemptexport\processing\html\domdocument_util;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ddwtos extends base {
+    /**
+     * Processes the HTML of one drag and drop into text question for the PDF.
+     *
+     * @param string $questionhtml The question's container div.
+     * @param \mod_quiz\quiz_attempt $attempt The attempt the question belongs to.
+     * @param int $slot The question's slot in the attempt.
+     * @return string The processed HTML.
+     */
     public static function process(string $questionhtml, \mod_quiz\quiz_attempt $attempt, int $slot): string {
         global $DB;
 
@@ -77,10 +85,10 @@ class ddwtos extends base {
         $xpath = new \DOMXPath($dom);
 
         $dropzones = $xpath->query('//div[@class="qtext"]//span[contains(concat(" ", normalize-space(@class), " "), " drop ")]');
+        /** @var \DOMElement $dropzone */
         foreach ($dropzones as $dropzone) {
             // Get the definition of the drop place and the group the drop is defined for
             // from the drop zones class attribute values.
-            /** @var \DOMElement $dropzone */
             $classattr = $dropzone->getAttribute('class');
             $placeval = '';
             $groupval = '';

@@ -25,9 +25,21 @@
 
 namespace local_quizattemptexport\processing\html;
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Post-processes the HTML of a rendered quiz attempt before it is converted to PDF.
+ *
+ * @package    local_quizattemptexport
+ * @copyright  Ralf Wiederhold 2020
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class processor {
+    /**
+     * Runs the question type specific processing on every question and inlines the images.
+     *
+     * @param string $html The rendered attempt.
+     * @param \mod_quiz\quiz_attempt $attempt The attempt the HTML belongs to.
+     * @return array The processed HTML and the extra CSS the question types need.
+     */
     public static function execute(string $html, \mod_quiz\quiz_attempt $attempt) {
 
         $html = domdocument_util::prepare_html($html);
@@ -37,10 +49,8 @@ class processor {
         $xpath = new \DOMXPath($dom);
         $questions = $xpath->query('//div[starts-with(@class, "que ")]');
 
+        /** @var \DOMElement $question */
         foreach ($questions as $question) {
-
-            /** @var \DOMElement $question */
-
             $class = $question->getAttribute('class');
             $parts = explode(' ', $class);
             $qtype = $parts[1];
@@ -87,9 +97,8 @@ class processor {
         $dom = domdocument_util::initialize_domdocument($html);
         $xpath = new \DOMXPath($dom);
         $imgs = $xpath->query('//img');
+        /** @var \DOMElement $img */
         foreach ($imgs as $img) {
-
-            /** @var \DOMElement $img */
             $imgsrc = $img->getAttribute('src');
 
             // Ignore data urls.
@@ -120,7 +129,13 @@ class processor {
                 $imgfilename = urldecode(array_pop($fileargs));
                 $itemid = array_pop($fileargs);
 
-                $filerec = $DB->get_record('files', ['component' => $component, 'filearea' => $filearea, 'itemid' => $itemid, 'filename' => $imgfilename, 'contextid' => $contextid]);
+                $filerec = $DB->get_record('files', [
+                    'component' => $component,
+                    'filearea' => $filearea,
+                    'itemid' => $itemid,
+                    'filename' => $imgfilename,
+                    'contextid' => $contextid,
+                ]);
 
                 if (!empty($filerec)) {
                     $fs = get_file_storage();

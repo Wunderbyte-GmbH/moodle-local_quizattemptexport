@@ -25,8 +25,13 @@
 
 namespace local_quizattemptexport\processing\html;
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Helpers for loading and saving HTML snippets with DOMDocument.
+ *
+ * @package    local_quizattemptexport
+ * @copyright  Ralf Wiederhold 2020
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class domdocument_util {
     /**
      * Sanitizes HTML in way that you may str_replace parts of it after
@@ -59,9 +64,12 @@ class domdocument_util {
 
         // Load html and prepend with XML-Tag to ensure DOMDocument uses
         // correct encoding.
-        $dom->loadHTML('<?xml encoding="UTF-8">' . $htmlsnippet, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOWARNING | LIBXML_NOERROR);
+        $dom->loadHTML(
+            '<?xml encoding="UTF-8">' . $htmlsnippet,
+            LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOWARNING | LIBXML_NOERROR
+        );
 
-        // Remove encoding XML-Tag
+        // Remove encoding XML-Tag.
         foreach ($dom->childNodes as $item) {
             if ($item->nodeType == XML_PI_NODE) {
                 $dom->removeChild($item);
@@ -91,7 +99,7 @@ class domdocument_util {
 
         $html = $dom->saveHTML($node);
 
-        // https://stackoverflow.com/questions/53288092/how-to-use-php-domdocument-savehtmlnode-without-added-whitespace
+        // See https://stackoverflow.com/questions/53288092/how-to-use-php-domdocument-savehtmlnode-without-added-whitespace
         // Fix bug in php version < 7.3.0.alpha3 (https://bugs.php.net/bug.php?id=76285) where new
         // lines are added behind each node when they should not be added.
         $html = str_replace("\n", '', $html);

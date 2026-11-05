@@ -23,8 +23,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Adds the export overview link to the settings of a quiz.
+ *
+ * @param \settings_navigation $settingsnav
+ * @param \context $context
+ * @return void
+ */
 function local_quizattemptexport_extend_settings_navigation(\settings_navigation $settingsnav, $context) {
     global $CFG, $PAGE;
 
@@ -91,7 +96,8 @@ function local_quizattemptexport_pluginfile($course, $cm, $context, $filearea, $
         return false;
     }
 
-    // Make sure the user is logged in and has access to the module (plugins that are not course modules should leave out the 'cm' part).
+    // Make sure the user is logged in and has access to the module (plugins that are not course modules
+    // should leave out the 'cm' part).
     require_login();
     require_capability('local/quizattemptexport:viewpdf', $context);
 
@@ -104,9 +110,9 @@ function local_quizattemptexport_pluginfile($course, $cm, $context, $filearea, $
     // Extract the filename / filepath from the $args array.
     $filename = array_pop($args); // The last item in the $args array.
     if (!$args) {
-        $filepath = '/'; // $args is empty => the path is '/'
+        $filepath = '/'; // An empty $args means the path is '/'.
     } else {
-        $filepath = '/' . implode('/', $args) . '/'; // $args contains elements of the filepath
+        $filepath = '/' . implode('/', $args) . '/'; // Otherwise $args holds the elements of the file path.
     }
 
     // Retrieve the file from the Files API.

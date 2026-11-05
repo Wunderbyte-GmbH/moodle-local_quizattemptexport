@@ -27,6 +27,14 @@ use local_quizattemptexport\processing\html\domdocument_util;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ddmarker extends base {
+    /**
+     * Processes the HTML of one drag and drop markers question for the PDF.
+     *
+     * @param string $questionhtml The question's container div.
+     * @param \mod_quiz\quiz_attempt $attempt The attempt the question belongs to.
+     * @param int $slot The question's slot in the attempt.
+     * @return string The processed HTML.
+     */
     public static function process(string $questionhtml, \mod_quiz\quiz_attempt $attempt, int $slot): string {
         global $CFG, $DB;
 
@@ -94,8 +102,8 @@ class ddmarker extends base {
         // Rewrite SRC of background image with our generated image as a base64 encoded data url.
         $dataurl = 'data:image/png;base64,' . base64_encode($imagecontent);
         $backgrounds = $xpath->query('//img[starts-with(@class, "dropbackground")]');
+        /** @var \DOMElement $bg */
         foreach ($backgrounds as $bg) {
-            /** @var \DOMElement $bg */
             $bg->setAttribute('src', $dataurl);
         }
 
@@ -162,10 +170,8 @@ class ddmarker extends base {
             $newnode->appendChild($titlenode);
             $newnode->appendChild($imagenode);
 
-            /** @var \DOMElement $contentdiv */
+            /** @var \DOMElement $childnode */
             foreach ($contentdiv->childNodes as $childnode) {
-
-                /** @var \DOMElement $childnode */
                 if (false !== strpos($childnode->getAttribute('class'), 'comment')) {
                     $childnode->parentNode->insertBefore($newnode, $childnode);
                 }
@@ -175,6 +181,11 @@ class ddmarker extends base {
         return domdocument_util::save_html($dom);
     }
 
+    /**
+     * Returns the CSS the drag and drop markers output needs in the PDF.
+     *
+     * @return string
+     */
     public static function get_css(): string {
         return "
             .ddmarker div.correctresult {
@@ -190,6 +201,14 @@ class ddmarker extends base {
         ";
     }
 
+    /**
+     * Draws the placed markers onto the background image.
+     *
+     * @param \qtype_ddmarker_question $question
+     * @param array $rendermarkers The markers and where they were placed.
+     * @param bool $avoidoverlap Whether to move overlapping labels apart.
+     * @return string The image content.
+     */
     protected static function generate_image(\qtype_ddmarker_question $question, array $rendermarkers, bool $avoidoverlap = false) {
         global $CFG, $DB;
 
@@ -197,8 +216,14 @@ class ddmarker extends base {
         $fs = get_file_storage();
 
         // Get the background image from the specific question instance.
-        $params = ['contextid' => $question->contextid, 'itemid' => $question->id, 'filearea' => 'bgimage', 'component' => 'qtype_ddmarker'];
-        $select = 'contextid = :contextid AND itemid = :itemid AND filearea = :filearea AND component = :component AND filesize <> 0';
+        $params = [
+            'contextid' => $question->contextid,
+            'itemid' => $question->id,
+            'filearea' => 'bgimage',
+            'component' => 'qtype_ddmarker',
+        ];
+        $select = 'contextid = :contextid AND itemid = :itemid AND filearea = :filearea AND component = :component'
+            . ' AND filesize <> 0';
         $dropbg = $DB->get_record_select('files', $select, $params);
         $bgfileinstance = $fs->get_file_instance($dropbg);
         $bgfilecontent = $bgfileinstance->get_content();
@@ -222,7 +247,18 @@ class ddmarker extends base {
         $bgcolor = imagecolorallocate($gdbgfile, 255, 255, 255);
         imagefilledrectangle($gdbgfile, 0, 0, $bgfileinfo['width'], $bgfileinfo['height'], $bgcolor);
         $tempbg = imagecreatefromstring($bgfilecontent);
-        imagecopyresampled($gdbgfile, $tempbg, 0, 0, 0, 0, $bgfileinfo['width'], $bgfileinfo['height'], $bgfileinfo['width'], $bgfileinfo['height']);
+        imagecopyresampled(
+            $gdbgfile,
+            $tempbg,
+            0,
+            0,
+            0,
+            0,
+            $bgfileinfo['width'],
+            $bgfileinfo['height'],
+            $bgfileinfo['width'],
+            $bgfileinfo['height']
+        );
         imagedestroy($tempbg);
 
         // Iterate the shapes, if any, and render them onto the background.
@@ -273,7 +309,7 @@ class ddmarker extends base {
             $text = str_replace(['<br>', '<br/>', '<br />'], ["\n", "\n", "\n"], $marker->text);
 
             // Get dimensions for text box.
-            $textdimensions = self::calculateTextBox($text, $font, $calculatedfontsize, 0);
+            $textdimensions = self::calculate_text_box($text, $font, $calculatedfontsize, 0);
             $textboxwidth = $textdimensions['width'] + ($margin * 2);
             $textboxheight = $textdimensions['height'] + ($margin * 2);
 
@@ -307,8 +343,7 @@ class ddmarker extends base {
         // a way that they are still contained within their shape but have their overlap
         // reduced as much as possible.
         if ($avoidoverlap) {
-            // TODO polygon?
-            // TODO ellipse?
+            // Only rectangular shapes are handled here; polygons and ellipses are left as they are.
 
             // Group text boxes by their containing shape.
             $shapegroups = [];
@@ -426,7 +461,18 @@ class ddmarker extends base {
             $tempimg = imagecreatetruecolor($newbgwidth, $newbgheight);
             $bgcolor = imagecolorallocate($tempimg, 255, 255, 255);
             imagefilledrectangle($tempimg, 0, 0, $newbgwidth, $newbgheight, $bgcolor);
-            imagecopyresampled($tempimg, $gdbgfile, 0, 0, 0, 0, $bgfileinfo['width'], $bgfileinfo['height'], $bgfileinfo['width'], $bgfileinfo['height']);
+            imagecopyresampled(
+                $tempimg,
+                $gdbgfile,
+                0,
+                0,
+                0,
+                0,
+                $bgfileinfo['width'],
+                $bgfileinfo['height'],
+                $bgfileinfo['width'],
+                $bgfileinfo['height']
+            );
             imagedestroy($gdbgfile);
             $gdbgfile = $tempimg;
         }
@@ -440,10 +486,17 @@ class ddmarker extends base {
 
             // Draw text background.
             imagesetthickness($gdbgfile, $border);
-            imagefilledrectangle($gdbgfile, $box->bgrect_x_from, $box->bgrect_y_from, $box->bgrect_x_to, $box->bgrect_y_to, $bgcolor);
+            imagefilledrectangle(
+                $gdbgfile,
+                $box->bgrect_x_from,
+                $box->bgrect_y_from,
+                $box->bgrect_x_to,
+                $box->bgrect_y_to,
+                $bgcolor
+            );
             imagerectangle($gdbgfile, $box->bgrect_x_from, $box->bgrect_y_from, $box->bgrect_x_to, $box->bgrect_y_to, $bordercolor);
 
-            // Draw marker icon over text backgrounds
+            // Draw marker icon over text backgrounds.
             imagecopyresampled($gdbgfile, $markerimg, $box->bgrect_x_from - 7.5, $box->bgrect_y_from - 7.5, 0, 0, 15, 15, 15, 15);
 
             // Draw text onto its background.
@@ -464,13 +517,17 @@ class ddmarker extends base {
         return $imagecontent;
     }
 
-    protected static function calculateTextBox($text, $fontfile, $fontsize, $fontangle) {
-        /************
-        simple function that calculates the *exact* bounding box (single pixel precision).
-        The function returns an associative array with these keys:
-        left, top:  coordinates you will pass to imagettftext
-        width, height: dimension of the image you have to create
-         *************/
+    /**
+     * Calculates the exact bounding box of a text (single pixel precision).
+     *
+     * @param string $text
+     * @param string $fontfile Path to the TrueType font.
+     * @param float $fontsize
+     * @param float $fontangle
+     * @return array left and top: coordinates to pass to imagettftext; width and height: size of the box;
+     *               box: the raw result of imagettfbbox().
+     */
+    protected static function calculate_text_box($text, $fontfile, $fontsize, $fontangle) {
         $rect = imagettfbbox($fontsize, $fontangle, $fontfile, $text);
         $minx = min([$rect[0], $rect[2], $rect[4], $rect[6]]);
         $maxx = max([$rect[0], $rect[2], $rect[4], $rect[6]]);
@@ -486,6 +543,13 @@ class ddmarker extends base {
         ];
     }
 
+    /**
+     * Sorts text boxes from left to right, for usort().
+     *
+     * @param \stdClass $a
+     * @param \stdClass $b
+     * @return int
+     */
     protected static function sort_boxes_ltr($a, $b) {
 
         if ($a->bgrect_x_from < $b->bgrect_x_from) {

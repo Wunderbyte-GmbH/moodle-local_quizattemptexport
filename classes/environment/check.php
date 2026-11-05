@@ -25,7 +25,20 @@
 
 namespace local_quizattemptexport\environment;
 
+/**
+ * Environment check for the bundled wkhtmltopdf binary.
+ *
+ * @package     local_quizattemptexport
+ * @copyright   2021 Ralf Wiederhold
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class check {
+    /**
+     * Checks that the bundled wkhtmltopdf binary is executable and finds all its shared libraries.
+     *
+     * @param \environment_results $result The result object to fill.
+     * @return \environment_results
+     */
     public static function execute(\environment_results $result) {
         global $CFG;
 
@@ -37,7 +50,8 @@ class check {
         } else {
             $binarypath = $CFG->dirroot . '/local/quizattemptexport/vendor/h4cc/wkhtmltopdf-amd64/bin/wkhtmltopdf-amd64';
 
-            // Check if binary is executable. Should be executable on GIT install, needs to be made executable on manual installation...
+            // Check if binary is executable. Should be executable on GIT install, needs to be made executable
+            // on manual installation...
             if (!is_executable($binarypath)) {
                 $result->setStatus(false);
                 $result->setFeedbackStr(['envcheck_notexecutable', 'local_quizattemptexport']);
