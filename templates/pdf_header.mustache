@@ -1,11 +1,46 @@
-<style type="text/css">
+{{!
+    This file is part of Moodle - http://moodle.org/
 
-    table.reportheader th {
-        text-align: right;
-        width: 30%;
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_quizattemptexport/pdf_header
+
+    Header table at the top of an exported attempt. Included by pdf_base.
+
+    Context variables required for this template:
+    * coursename - Course name.
+    * coursecode - Optional enrolment key of the user.
+    * quizname - Quiz name.
+    * studentname - Name of the user the attempt belongs to.
+    * matriculationid - The user's ID number.
+    * attemptstarted - Start of the attempt, formatted.
+    * attemptended - End of the attempt, formatted.
+    * attemptresult - Result of the attempt, formatted.
+
+    Example context (json):
+    {
+        "coursename": "Mathematics 101",
+        "coursecode": "MATH101",
+        "quizname": "Final exam",
+        "studentname": "Jane Doe",
+        "matriculationid": "123456",
+        "attemptstarted": "05.11.2026 - 09:00:00",
+        "attemptended": "05.11.2026 - 10:00:00",
+        "attemptresult": "8.00 / 10.00 (80 %)"
     }
-
-</style>
+}}
 <table class="reportheader">
     <tr>
         <th>{{#str}}label_coursename, local_quizattemptexport{{/str}}</th>
