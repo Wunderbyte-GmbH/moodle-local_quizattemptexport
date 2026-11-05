@@ -30,7 +30,6 @@ use local_quizattemptexport\task\generate_pdf;
 defined('MOODLE_INTERNAL') || die();
 
 class quiz_attempt {
-
     public static function handle_submitted(\mod_quiz\event\attempt_submitted $event) {
         global $DB;
 
@@ -38,8 +37,7 @@ class quiz_attempt {
         $catfilter = get_config('local_quizattemptexport', 'catfilter');
 
         if ($exportenabled) {
-
-            if(!empty($catfilter)) {
+            if (!empty($catfilter)) {
                 $categories = explode(',', $catfilter);
             }
 
@@ -64,7 +62,7 @@ class quiz_attempt {
             $course = array_values($DB->get_records_sql($sql, $params))[0];
 
             if (!empty($course)) {
-                if(!empty($catfilter) && empty(array_intersect(explode('/', $course->path), $categories))){
+                if (!empty($catfilter) && empty(array_intersect(explode('/', $course->path), $categories))) {
                     return;
                 }
                 generate_pdf::add_attempt_to_queue($event_data['objectid']);

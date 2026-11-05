@@ -202,7 +202,7 @@ final class wkhtmltopdf_locator {
     private static function which(string $cmd): ?string {
         $iswin = (PHP_OS_FAMILY === 'Windows');
         if ($iswin) {
-        // No quoting on Windows; 'where' handles PATHEXT.
+            // No quoting on Windows; 'where' handles PATHEXT.
             $probe = 'where ' . $cmd;
         } else {
             $probe = 'command -v ' . escapeshellarg($cmd) . ' 2>/dev/null';

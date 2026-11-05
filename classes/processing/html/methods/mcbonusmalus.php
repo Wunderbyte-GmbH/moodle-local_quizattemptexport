@@ -28,7 +28,6 @@ namespace local_quizattemptexport\processing\html\methods;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mcbonusmalus extends multichoice {
-
     /**
      * Returns the multichoice export CSS rescoped to this question type.
      *

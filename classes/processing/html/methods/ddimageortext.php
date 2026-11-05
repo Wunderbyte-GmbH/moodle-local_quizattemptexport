@@ -21,14 +21,13 @@ use local_quizattemptexport\processing\html\domdocument_util;
 /**
  * Postprocessing implementation for qtype_ddimageortext
  *
- * @package		local_quizattemptexport
- * @copyright	2020 Ralf Wiederhold
- * @author		Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
- * @license    	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     local_quizattemptexport
+ * @copyright   2020 Ralf Wiederhold
+ * @author      Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ddimageortext extends base {
-
-    public static function process(string $questionhtml, \mod_quiz\quiz_attempt $attempt, int $slot) : string {
+    public static function process(string $questionhtml, \mod_quiz\quiz_attempt $attempt, int $slot): string {
         global $CFG, $DB;
 
         // Get question attempt and question definition.
@@ -40,16 +39,12 @@ class ddimageortext extends base {
         $userdrops = [];
         $instancechoicemapping = [];
         foreach ($qa->get_step_iterator() as $step) {
-
             // Build mapping of the choices defined in the question and the actual choice ordering
             // within the question instance.
             if ($step->get_state() instanceof \question_state_todo) {
-
                 foreach ($step->get_all_data() as $key => $value) {
-
                     // Makes sure the key is a choice group.
                     if (0 === strpos($key, '_choiceorder')) {
-
                         // Get group identifier and ordered choices.
                         $group = (int) substr($key, -1); // Max of 8 within the plugin.
                         $values = explode(',', $value);
@@ -78,11 +73,10 @@ class ddimageortext extends base {
         // on the drop zone within the attempt.
         $dropzones = [];
         foreach ($question->places as $key => $dropzone) {
-            $obj = new \stdClass;
+            $obj = new \stdClass();
             $obj->definition = $dropzone;
             $obj->drop = null;
             if (!empty($userdrops['p' . $key])) {
-
                 $obj->drop = $instancechoicemapping[$dropzone->group][$userdrops['p' . $key]];
             }
 
@@ -105,7 +99,7 @@ class ddimageortext extends base {
         // Generate image with correct answers.
         $correctdrops = [];
         foreach ($question->rightchoices as $key => $value) {
-            $obj = new \stdClass;
+            $obj = new \stdClass();
             $obj->definition = $question->places[$key];
             $obj->drop = $question->choices[$question->places[$key]->group][$value];
 
@@ -119,7 +113,6 @@ class ddimageortext extends base {
         $dataurl = 'data:image/png;base64,' . base64_encode($imagecorrectanswers);
         $content = $xpath->query('//div[@class="content"]');
         foreach ($content as $contentdiv) {
-
             $newnodetitle = new \lang_string('ddimageortext_correctanswer_title', 'local_quizattemptexport', null, $mainadminlang);
             $titlenode = $dom->createElement('h4', $newnodetitle);
 
@@ -140,7 +133,6 @@ class ddimageortext extends base {
                 }
             }
         }
-
 
         return domdocument_util::save_html($dom);
     }
@@ -204,7 +196,6 @@ class ddimageortext extends base {
         $largest_x = 0;
         $largest_y = 0;
         foreach ($dropdefinitions as $dropzone) {
-
             if (empty($dropzone->drop)) {
                 continue;
             }
@@ -217,7 +208,6 @@ class ddimageortext extends base {
             $select = 'contextid = :contextid AND itemid = :itemid AND filearea = :filearea AND component = :component AND filesize <> 0';
             $dropfile = $DB->get_record_select('files', $select, $params);
             if (empty($dropfile)) {
-
                 // Define text data.
                 $textcolor = imagecolorallocate($gdbgfile, 0, 0, 0);
                 $text = str_replace(['<br>', '<br/>', '<br />'], ["\n", "\n", "\n"], $dropzone->drop->text);
@@ -225,7 +215,7 @@ class ddimageortext extends base {
                 // Get dimensions for text box.
                 $textdimensions = self::calculateTextBox($text, $font, $calculatedfontsize, 0);
                 $textboxwidth = $textdimensions['width'] + ($margin * 2);
-                $textboxheight = $textdimensions['height']  + ($margin * 2);
+                $textboxheight = $textdimensions['height'] + ($margin * 2);
 
                 // Get starting positions for border rect and fill rect.
                 $backgroundrect_x_from = $dropx;
@@ -241,7 +231,7 @@ class ddimageortext extends base {
                 $text_y = $backgroundrect_y_from + $border + $margin + $calculatedfontsize;
 
                 // Gather drop data.
-                $drop = new \stdClass;
+                $drop = new \stdClass();
                 $drop->type = 'text';
                 $drop->bgrect_x_from = $backgroundrect_x_from;
                 $drop->bgrect_x_to = $backgroundrect_x_to;
@@ -259,16 +249,14 @@ class ddimageortext extends base {
                 if ($backgroundrect_y_to > $largest_y) {
                     $largest_y = $backgroundrect_y_to;
                 }
-
             } else {
-
                 // Get the drop file.
                 $dropfileinstance = $fs->get_file_instance($dropfile);
                 $dropfilecontent = $dropfileinstance->get_content();
                 $imageinfo = $dropfileinstance->get_imageinfo();
 
                 // Gather drop data.
-                $drop = new \stdClass;
+                $drop = new \stdClass();
                 $drop->type = 'image';
                 $drop->image_x = $dropx;
                 $drop->image_y = $dropy;
@@ -294,7 +282,6 @@ class ddimageortext extends base {
         // Check if the boxes we want to render exceed the available background area. Create a new background
         // with appropriate dimensions if necessary.
         if ($largest_y > $bgfileinfo['height'] || $largest_x > $bgfileinfo['width']) {
-
             $newbg_height = $bgfileinfo['height'];
             if ($largest_y > $bgfileinfo['height']) {
                 $newbg_height = $largest_y + 3;
@@ -313,9 +300,7 @@ class ddimageortext extends base {
         }
 
         foreach ($calculateddrops as $drop) {
-
             if ($drop->type == 'image') {
-
                 // Load drop file into GD.
                 $gddropfile = imagecreatefromstring($drop->imagecontent);
 
@@ -323,7 +308,6 @@ class ddimageortext extends base {
                 imagecopymerge($gdbgfile, $gddropfile, $drop->image_x, $drop->image_y, 0, 0, $drop->image_width, $drop->image_height, 100);
                 imagedestroy($gddropfile);
             } else {
-
                 // Define colors for text box.
                 $bordercolor = imagecolorallocate($gdbgfile, 0, 0, 0);
                 $bgcolor = imagecolorallocatealpha($gdbgfile, 255, 255, 255, 30);
@@ -351,25 +335,25 @@ class ddimageortext extends base {
         return $imagecontent;
     }
 
-    protected static function calculateTextBox($text,$fontFile,$fontSize,$fontAngle) {
+    protected static function calculateTextBox($text, $fontFile, $fontSize, $fontAngle) {
         /************
         simple function that calculates the *exact* bounding box (single pixel precision).
         The function returns an associative array with these keys:
         left, top:  coordinates you will pass to imagettftext
         width, height: dimension of the image you have to create
          *************/
-        $rect = imagettfbbox($fontSize,$fontAngle,$fontFile,$text);
-        $minX = min(array($rect[0],$rect[2],$rect[4],$rect[6]));
-        $maxX = max(array($rect[0],$rect[2],$rect[4],$rect[6]));
-        $minY = min(array($rect[1],$rect[3],$rect[5],$rect[7]));
-        $maxY = max(array($rect[1],$rect[3],$rect[5],$rect[7]));
+        $rect = imagettfbbox($fontSize, $fontAngle, $fontFile, $text);
+        $minX = min([$rect[0], $rect[2], $rect[4], $rect[6]]);
+        $maxX = max([$rect[0], $rect[2], $rect[4], $rect[6]]);
+        $minY = min([$rect[1], $rect[3], $rect[5], $rect[7]]);
+        $maxY = max([$rect[1], $rect[3], $rect[5], $rect[7]]);
 
-        return array(
+        return [
             "left"   => abs($minX) - 1,
             "top"    => abs($minY) - 1,
             "width"  => $maxX - $minX,
             "height" => $maxY - $minY,
-            "box"    => $rect
-        );
+            "box"    => $rect,
+        ];
     }
 }

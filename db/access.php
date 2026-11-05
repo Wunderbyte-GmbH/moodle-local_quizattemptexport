@@ -33,17 +33,17 @@ $capabilities = [
         'archetypes' => [
             'manager' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
-            'teacher' => CAP_ALLOW
-        ]
+            'teacher' => CAP_ALLOW,
+        ],
     ],
 
     'local/quizattemptexport:generatepdf' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
+        'archetypes' => [
             'manager' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW
-        )
+            'editingteacher' => CAP_ALLOW,
+        ],
     ],
-    
+
 ];

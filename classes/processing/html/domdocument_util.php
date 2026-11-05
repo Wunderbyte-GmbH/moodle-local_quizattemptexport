@@ -28,7 +28,6 @@ namespace local_quizattemptexport\processing\html;
 defined('MOODLE_INTERNAL') || die();
 
 class domdocument_util {
-
     /**
      * Sanitizes HTML in way that you may str_replace parts of it after
      * you have saved some parts of it using {@see domdocument_util::save_html()}
@@ -38,7 +37,7 @@ class domdocument_util {
      * @param string $html
      * @return string
      */
-    public static function prepare_html(string $html) : string {
+    public static function prepare_html(string $html): string {
 
         $html = str_replace("\n", '', $html);
 
@@ -54,7 +53,7 @@ class domdocument_util {
      * @param string $htmlsnippet
      * @return \DOMDocument
      */
-    public static function initialize_domdocument(string $htmlsnippet) : \DOMDocument {
+    public static function initialize_domdocument(string $htmlsnippet): \DOMDocument {
 
         $dom = new \DOMDocument();
 
@@ -99,5 +98,4 @@ class domdocument_util {
 
         return $html;
     }
-
 }

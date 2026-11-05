@@ -21,13 +21,12 @@ use local_quizattemptexport\processing\html\domdocument_util;
 /**
  * Postprocessing implementation for qtype_ddwtos
  *
- * @package		local_quizattemptexport
- * @copyright	2021 Ralf Wiederhold
- * @author		Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
- * @license    	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     local_quizattemptexport
+ * @copyright   2021 Ralf Wiederhold
+ * @author      Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ddwtos extends base {
-
     public static function process(string $questionhtml, \mod_quiz\quiz_attempt $attempt, int $slot): string {
         global $DB;
 
@@ -39,15 +38,11 @@ class ddwtos extends base {
         $choiceorders = [];
         $userdrops = [];
         foreach ($qa->get_step_iterator() as $step) {
-
             // Get the attempts randomized choice ordering.
             if ($step->get_state() instanceof \question_state_todo) {
-
                 foreach ($step->get_all_data() as $key => $value) {
-
                     // Makes sure the key is a choice group.
                     if (0 === strpos($key, '_choiceorder')) {
-
                         $group = substr($key, -1);
                         $choiceorders[$group] = explode(',', $value);
                     }
@@ -65,11 +60,9 @@ class ddwtos extends base {
             }
         }
 
-
         // Map the question attempts choice order onto the choice options defined in the question.
         $attemptanswers = [];
         foreach ($choiceorders as $group => $grouporder) {
-
             if (!isset($attemptanswers[$group])) {
                 $attemptanswers[$group] = [];
             }
@@ -79,14 +72,12 @@ class ddwtos extends base {
             }
         }
 
-
         // Load html snippet into dom and look for dropzones.
         $dom = domdocument_util::initialize_domdocument($questionhtml);
         $xpath = new \DOMXPath($dom);
 
         $dropzones = $xpath->query('//div[@class="qtext"]//span[contains(concat(" ", normalize-space(@class), " "), " drop ")]');
         foreach ($dropzones as $dropzone) {
-
             // Get the definition of the drop place and the group the drop is defined for
             // from the drop zones class attribute values.
             /** @var \DOMElement $dropzone */
@@ -108,7 +99,6 @@ class ddwtos extends base {
             // instead.
             $dropval = get_string('ddwtos_emptydrop_placeholderstr', 'local_quizattemptexport');
             foreach ($userdrops as $key => $val) {
-
                 $dropposition = substr($key, 1);
                 if ($placeval == 'place' . $dropposition) {
                     if (!empty($val)) {
@@ -121,5 +111,4 @@ class ddwtos extends base {
 
         return domdocument_util::save_html($dom);
     }
-
 }

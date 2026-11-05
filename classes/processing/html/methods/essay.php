@@ -21,10 +21,10 @@ use local_quizattemptexport\processing\html\domdocument_util;
 /**
  * Postprocessing implementation for qtype_essay
  *
- * @package		local_quizattemptexport
- * @copyright	2020 Ralf Wiederhold
- * @author		Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
- * @license    	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     local_quizattemptexport
+ * @copyright   2020 Ralf Wiederhold
+ * @author      Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class essay extends base {
     /**
@@ -77,13 +77,10 @@ class essay extends base {
         $gradingsteps = [];
         $qa = $attempt->get_question_attempt($slot);
         foreach ($qa->get_step_iterator() as $key => $step) {
-
             if ($step->get_state() instanceof \question_state_mangrright) {
                 $gradingsteps[$key] = $step->get_user_id();
-
             } else if ($step->get_state() instanceof \question_state_mangrpartial) {
                 $gradingsteps[$key] = $step->get_user_id();
-
             } else if ($step->get_state() instanceof \question_state_mangrwrong) {
                 $gradingsteps[$key] = $step->get_user_id();
             }
@@ -96,7 +93,6 @@ class essay extends base {
             /** @var \DOMElement $cell */
 
             if (!empty($gradingsteps[$key])) {
-
                 $user = $DB->get_record('user', ['id' => $gradingsteps[$key]]);
                 $username = get_string('userdeleted', 'moodle');
                 if (empty($user->deleted)) {
@@ -105,11 +101,9 @@ class essay extends base {
 
                 $cell->textContent = $cell->textContent . ' (' . $username . ')';
             }
-
         }
 
         // Save modified HTML and return.
         return domdocument_util::save_html($dom);
     }
-
 }

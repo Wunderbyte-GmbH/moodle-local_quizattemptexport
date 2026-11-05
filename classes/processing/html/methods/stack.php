@@ -21,13 +21,12 @@ use local_quizattemptexport\processing\html\domdocument_util;
 /**
  * Postprocessing implementation for qtype_stack
  *
- * @package		local_quizattemptexport
- * @copyright	2021 Ralf Wiederhold
- * @author		Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
- * @license    	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     local_quizattemptexport
+ * @copyright   2021 Ralf Wiederhold
+ * @author      Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class stack extends base {
-
     /**
      *
      * @param string $questionhtml
@@ -59,7 +58,6 @@ class stack extends base {
 
             // Check if file exists within local path.
             if (!file_exists($path)) {
-
                 // Use fallback image instead.
                 $path = $CFG->dirroot . '/local/quizattemptexport/pix/edit-delete.png';
                 $filetype = 'png';
@@ -67,7 +65,6 @@ class stack extends base {
 
             // Do some additional processing.
             if ($filetype == 'svg') {
-
                 // Prepare correct mime type vale.
                 $filetype = 'svg+xml';
 
@@ -83,9 +80,7 @@ class stack extends base {
                 // Get width/height for use in IMG element
                 $width = $parts[2];
                 $height = $parts[3];
-
             } else {
-
                 // Get width/height for use in IMG element
                 $imgsize = getimagesize($path);
                 $width = $imgsize[0];
@@ -111,12 +106,11 @@ class stack extends base {
     }
 
 
-    public static function get_css() : string {
+    public static function get_css(): string {
         return '
             .que.stack .questiontestslink {
                 display: none;
             }
         ';
     }
-
 }

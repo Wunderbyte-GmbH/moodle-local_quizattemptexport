@@ -26,7 +26,6 @@
 namespace local_quizattemptexport;
 
 class util {
-
     /**
      * This method returns the applicable export path within the servers filesystem
      * for the given attempt.
@@ -100,5 +99,4 @@ class util {
 
         return $conf;
     }
-
 }

@@ -63,11 +63,9 @@ $PAGE->set_heading($strpagetitle);
 
 // Check if we should export a zip file of all attempt exports.
 if ($downloadzip) {
-
     $fs = get_file_storage();
     $attemptfiles = [];
     foreach ($DB->get_records('quiz_attempts', ['quiz' => $instance->id, 'state' => 'finished', 'preview' => 0]) as $attempt) {
-
         $oneattemptfiles = $fs->get_area_files(
             $context->id,
             'local_quizattemptexport',
@@ -102,12 +100,10 @@ if ($downloadzip) {
         debugging("Problems with archiving the files.", DEBUG_DEVELOPER);
         die;
     }
-
 }
 
 // Check if we should export an attempt.
 if ($hasexportcap && $reexportattemptid) {
-
     $attempt = \mod_quiz\quiz_attempt::create($reexportattemptid);
     if ($attempt->get_quiz()->id != $instance->id) {
         throw new moodle_exception('except_attemptnotinquiz', 'local_quizattemptexport');
@@ -131,8 +127,6 @@ if ($hasexportcap && $reexportattemptid) {
 
 // Check if we should export all attempts.
 if ($hasexportcap && $reexportall) {
-
-
     echo $OUTPUT->header();
 
     $progressbar = new progress_bar('exportall', 2500);
@@ -143,7 +137,6 @@ if ($hasexportcap && $reexportall) {
     $current = 1;
 
     foreach ($allattempts as $attemptid => $attemptrec) {
-
         $progressbar->update($current++, $allattemptsnum, get_string('page_overview_progressbar_step', 'local_quizattemptexport', $attemptid));
 
         $attempt = \mod_quiz\quiz_attempt::create($attemptid);
@@ -170,14 +163,12 @@ $navbar->add($strpagetitle, $selfurl);
 $fs = get_file_storage();
 $rawdata = [];
 foreach ($DB->get_records('quiz_attempts', ['quiz' => $instance->id, 'preview' => 0, 'state' => 'finished'], '', 'DISTINCT userid AS id') as $userid => $notused) {
-
     $rawdata[$userid] = [];
 
     foreach ($DB->get_records('quiz_attempts', ['quiz' => $instance->id, 'userid' => $userid, 'preview' => 0, 'state' => 'finished']) as $attempt) {
-
         $rawdata[$userid][$attempt->id] = [
             'pdfs' => [],
-            'attachments' => []
+            'attachments' => [],
         ];
 
         $rawdata[$userid][$attempt->id]['pdfs'] = $fs->get_area_files(

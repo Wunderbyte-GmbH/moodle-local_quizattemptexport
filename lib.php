@@ -40,7 +40,7 @@ function local_quizattemptexport_extend_settings_navigation(\settings_navigation
     }
 
     // Make sure the current user may see our settings node.
-    if (!has_any_capability(array('local/quizattemptexport:viewpdf', 'local/quizattemptexport:generatepdf'), $context)) {
+    if (!has_any_capability(['local/quizattemptexport:viewpdf', 'local/quizattemptexport:generatepdf'], $context)) {
         return;
     }
 
@@ -49,7 +49,7 @@ function local_quizattemptexport_extend_settings_navigation(\settings_navigation
 
     // Add our node.
     $text = get_string('nav_exportoverview', 'local_quizattemptexport');
-    $url = new moodle_url('/local/quizattemptexport/overview.php', array('cmid' => $context->instanceid));
+    $url = new moodle_url('/local/quizattemptexport/overview.php', ['cmid' => $context->instanceid]);
     $foonode = navigation_node::create(
         $text,
         $url,
@@ -79,7 +79,7 @@ function local_quizattemptexport_extend_settings_navigation(\settings_navigation
  * @throws moodle_exception
  * @throws require_login_exception
  */
-function local_quizattemptexport_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+function local_quizattemptexport_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
 
     // Check the contextlevel is as expected - if your plugin is a block, this becomes CONTEXT_BLOCK, etc.
     if ($context->contextlevel != CONTEXT_MODULE) {
@@ -98,7 +98,6 @@ function local_quizattemptexport_pluginfile($course, $cm, $context, $filearea, $
     // Leave this line out if you set the itemid to null in make_pluginfile_url (set $itemid to 0 instead).
     $itemid = array_shift($args); // The first item in the $args array.
 
-
     // Use the itemid to retrieve any relevant data records and perform any security checks to see if the
     // user really does have access to the file in question.
 
@@ -107,7 +106,7 @@ function local_quizattemptexport_pluginfile($course, $cm, $context, $filearea, $
     if (!$args) {
         $filepath = '/'; // $args is empty => the path is '/'
     } else {
-        $filepath = '/'.implode('/', $args).'/'; // $args contains elements of the filepath
+        $filepath = '/' . implode('/', $args) . '/'; // $args contains elements of the filepath
     }
 
     // Retrieve the file from the Files API.

@@ -21,36 +21,30 @@ use local_quizattemptexport\processing\html\domdocument_util;
 /**
  * Postprocessing implementation for qtype_ddmarker
  *
- * @package		local_quizattemptexport
- * @copyright	2020 Ralf Wiederhold
- * @author		Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
- * @license    	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     local_quizattemptexport
+ * @copyright   2020 Ralf Wiederhold
+ * @author      Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ddmarker extends base {
-
-    public static function process(string $questionhtml, \mod_quiz\quiz_attempt $attempt, int $slot) : string {
+    public static function process(string $questionhtml, \mod_quiz\quiz_attempt $attempt, int $slot): string {
         global $CFG, $DB;
 
         // Get question attempt and question definition.
         $qa = $attempt->get_question_attempt($slot);
         $question = $qa->get_question();
 
-
         // Get the users drops from the question attempt data as well as the order of
         // the choices in the question instance.
         $userdrops = [];
         $instancechoicemapping = [];
         foreach ($qa->get_step_iterator() as $step) {
-
             // Build mapping of the choices defined in the question and the actual choice ordering
             // within the question instance.
             if ($step->get_state() instanceof \question_state_todo) {
-
                 foreach ($step->get_all_data() as $key => $value) {
-
                     // Makes sure the key is a choice group.
                     if (0 === strpos($key, '_choiceorder')) {
-
                         // Get group identifier and ordered choices.
                         $group = (int) substr($key, -1); // Max of 8 within the plugin.
                         $values = explode(',', $value);
@@ -73,18 +67,16 @@ class ddmarker extends base {
         // Build array of markers we need to render onto the background.
         $rendermarkers = [
             'points' => [],
-            'shapes' => []
+            'shapes' => [],
         ];
         foreach ($instancechoicemapping as $group => $groupchoices) {
             foreach ($groupchoices as $key => $option) {
-
                 if (!empty($userdrops['c' . $key])) {
-
                     // The drop construct might contain multiple coords delimited by ";". If
                     // it does not, this will create an array with a single element...
                     $multicoords = explode(';', $userdrops['c' . $key]);
                     foreach ($multicoords as $coords) {
-                        $obj = new \stdClass;
+                        $obj = new \stdClass();
                         $obj->text = $option->text;
                         $obj->coords = explode(',', $coords);
                         $rendermarkers['points'][] = $obj;
@@ -107,47 +99,41 @@ class ddmarker extends base {
             $bg->setAttribute('src', $dataurl);
         }
 
-
         // Generate image with correct answers.
         $correctmarkers = [
             'points' => [],
-            'shapes' => []
+            'shapes' => [],
         ];
         foreach ($question->rightchoices as $key => $value) {
-            $obj = new \stdClass;
+            $obj = new \stdClass();
             $obj->text = $question->choices[$question->places[$key]->group][$value]->text;
             $obj->coords = $question->places[$key]->shape->center_point();
             $obj->shape = null;
 
             if ($question->places[$key]->shape instanceof \qtype_ddmarker_shape_rectangle) {
-
                 $coords = $question->places[$key]->coords;
                 $parts = explode(';', $coords);
 
-                $shape = new \stdClass;
+                $shape = new \stdClass();
                 $shape->type = 'rect';
                 $shape->startpoint = explode(',', $parts[0]);
                 $shape->dimensions = explode(',', $parts[1]);
 
                 $correctmarkers['shapes'][] = $shape;
                 $obj->shape = $shape;
-
             } else if ($question->places[$key]->shape instanceof \qtype_ddmarker_shape_circle) {
-
                 $coords = $question->places[$key]->coords;
                 $parts = explode(';', $coords);
 
-                $shape = new \stdClass;
+                $shape = new \stdClass();
                 $shape->type = 'circle';
                 $shape->startpoint = explode(',', $parts[0]);
                 $shape->radius = $parts[1];
 
                 $correctmarkers['shapes'][] = $shape;
                 $obj->shape = $shape;
-
             } else if ($question->places[$key]->shape instanceof \qtype_ddmarker_shape_polygon) {
-
-                $shape = new \stdClass;
+                $shape = new \stdClass();
                 $shape->type = 'polygon';
                 $shape->coords = $question->places[$key]->shape->coords;
 
@@ -165,7 +151,6 @@ class ddmarker extends base {
         $dataurl = 'data:image/png;base64,' . base64_encode($imagecorrectanswers);
         $content = $xpath->query('//div[@class="content"]');
         foreach ($content as $contentdiv) {
-
             $newnodetitle = new \lang_string('ddmarker_correctanswer_title', 'local_quizattemptexport', null, $mainadminlang);
             $titlenode = $dom->createElement('h4', $newnodetitle);
 
@@ -242,11 +227,9 @@ class ddmarker extends base {
 
         // Iterate the shapes, if any, and render them onto the background.
         foreach ($rendermarkers['shapes'] as $shape) {
-
             $drawcolor = imagecolorallocate($gdbgfile, 0, 0, 0);
 
             if ($shape->type == 'circle') {
-
                 imageellipse(
                     $gdbgfile,
                     $shape->startpoint[0],
@@ -256,7 +239,6 @@ class ddmarker extends base {
                     $drawcolor
                 );
             } else if ($shape->type == 'rect') {
-
                 imagerectangle(
                     $gdbgfile,
                     $shape->startpoint[0],
@@ -266,11 +248,9 @@ class ddmarker extends base {
                     $drawcolor
                 );
             } else if ($shape->type == 'polygon') {
-
                 $pointsnum = 0;
                 $points = [];
                 foreach ($shape->coords as $coord) {
-
                     $pointsnum++;
                     $points[] = $coord[0];
                     $points[] = $coord[1];
@@ -288,7 +268,6 @@ class ddmarker extends base {
         // Iterate the markers positioned by the user and calculate all required dimensions.
         $textboxes = [];
         foreach ($rendermarkers['points'] as $marker) {
-
             $dropx = $marker->coords[0];
             $dropy = $marker->coords[1];
             $text = str_replace(['<br>', '<br/>', '<br />'], ["\n", "\n", "\n"], $marker->text);
@@ -296,7 +275,7 @@ class ddmarker extends base {
             // Get dimensions for text box.
             $textdimensions = self::calculateTextBox($text, $font, $calculatedfontsize, 0);
             $textboxwidth = $textdimensions['width'] + ($margin * 2);
-            $textboxheight = $textdimensions['height']  + ($margin * 2);
+            $textboxheight = $textdimensions['height'] + ($margin * 2);
 
             // Get starting position for border rect.
             $backgroundrect_x_from = $dropx;
@@ -311,7 +290,7 @@ class ddmarker extends base {
             $text_y = $backgroundrect_y_from + $border + $margin + $calculatedfontsize;
 
             // Save coordinates and related data into object.
-            $coords = new \stdClass;
+            $coords = new \stdClass();
             $coords->bgrect_x_from = $backgroundrect_x_from;
             $coords->bgrect_y_from = $backgroundrect_y_from;
             $coords->bgrect_x_to = $backgroundrect_x_to;
@@ -328,14 +307,12 @@ class ddmarker extends base {
         // a way that they are still contained within their shape but have their overlap
         // reduced as much as possible.
         if ($avoidoverlap) {
-
             // TODO polygon?
             // TODO ellipse?
 
             // Group text boxes by their containing shape.
             $shapegroups = [];
             foreach ($textboxes as $box) {
-
                 // Make sure the box definition contains a shape definition.
                 if (empty($box->shape)) {
                     continue;
@@ -358,7 +335,7 @@ class ddmarker extends base {
                     }
 
                     if (!$matched) {
-                        $shapegroup = new \stdClass;
+                        $shapegroup = new \stdClass();
                         $shapegroup->boxes = [$box];
                         $shapegroup->startpoint = $box->shape->startpoint;
                         $shapegroup->dimensions = $box->shape->dimensions;
@@ -370,9 +347,7 @@ class ddmarker extends base {
 
             // Iterate shape groups and check if we need to do anything.
             foreach ($shapegroups as $group) {
-
                 if ($group->type == 'rect') {
-
                     $margin = 10;
                     $shapeheight = $group->dimensions[1];
                     $aggregatedboxheights = 0;
@@ -398,7 +373,6 @@ class ddmarker extends base {
                     $new_start_x = $group->startpoint[0] + $margin;
                     $new_start_y = $group->startpoint[1] + $margin;
                     foreach ($group->boxes as $box) {
-
                         // Calculate current dimensions / offsets.
                         $boxheight = $box->bgrect_y_to - $box->bgrect_y_from;
                         $boxwidth = $box->bgrect_x_to - $box->bgrect_x_from;
@@ -429,7 +403,6 @@ class ddmarker extends base {
         $largest_x = 0;
         $largest_y = 0;
         foreach ($textboxes as $box) {
-
             if ($box->bgrect_x_to > $largest_x) {
                 $largest_x = $box->bgrect_x_to;
             }
@@ -441,7 +414,6 @@ class ddmarker extends base {
         // Check if our text boxes exceed the available background area. Create a new background
         // with appropriate dimensions if necessary.
         if ($largest_y > $bgfileinfo['height'] || $largest_x > $bgfileinfo['width']) {
-
             $newbg_height = $bgfileinfo['height'];
             if ($largest_y > $bgfileinfo['height']) {
                 $newbg_height = $largest_y + 3;
@@ -461,7 +433,6 @@ class ddmarker extends base {
 
         // Render the calculated text boxes onto the background.
         foreach ($textboxes as $box) {
-
             // Colors...
             $textcolor = imagecolorallocate($gdbgfile, 0, 0, 0);
             $bordercolor = imagecolorallocate($gdbgfile, 0, 0, 0);
@@ -493,26 +464,26 @@ class ddmarker extends base {
         return $imagecontent;
     }
 
-    protected static function calculateTextBox($text,$fontFile,$fontSize,$fontAngle) {
+    protected static function calculateTextBox($text, $fontFile, $fontSize, $fontAngle) {
         /************
         simple function that calculates the *exact* bounding box (single pixel precision).
         The function returns an associative array with these keys:
         left, top:  coordinates you will pass to imagettftext
         width, height: dimension of the image you have to create
          *************/
-        $rect = imagettfbbox($fontSize,$fontAngle,$fontFile,$text);
-        $minX = min(array($rect[0],$rect[2],$rect[4],$rect[6]));
-        $maxX = max(array($rect[0],$rect[2],$rect[4],$rect[6]));
-        $minY = min(array($rect[1],$rect[3],$rect[5],$rect[7]));
-        $maxY = max(array($rect[1],$rect[3],$rect[5],$rect[7]));
+        $rect = imagettfbbox($fontSize, $fontAngle, $fontFile, $text);
+        $minX = min([$rect[0], $rect[2], $rect[4], $rect[6]]);
+        $maxX = max([$rect[0], $rect[2], $rect[4], $rect[6]]);
+        $minY = min([$rect[1], $rect[3], $rect[5], $rect[7]]);
+        $maxY = max([$rect[1], $rect[3], $rect[5], $rect[7]]);
 
-        return array(
+        return [
             "left"   => abs($minX) - 1,
             "top"    => abs($minY) - 1,
             "width"  => $maxX - $minX,
             "height" => $maxY - $minY,
-            "box"    => $rect
-        );
+            "box"    => $rect,
+        ];
     }
 
     protected static function sort_boxes_ltr($a, $b) {

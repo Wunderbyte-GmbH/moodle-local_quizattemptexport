@@ -17,10 +17,10 @@
 /**
  * Controller for HTML postprocessing
  *
- * @package		local_quizattemptexport
- * @copyright	2020 Ralf Wiederhold
- * @author		Ralf Wiederhold <ralf.wiederhold@eledia.de>
- * @license    	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     local_quizattemptexport
+ * @copyright   2020 Ralf Wiederhold
+ * @author      Ralf Wiederhold <ralf.wiederhold@eledia.de>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace local_quizattemptexport\processing\html;
@@ -28,7 +28,6 @@ namespace local_quizattemptexport\processing\html;
 defined('MOODLE_INTERNAL') || die();
 
 class processor {
-
     public static function execute(string $html, \mod_quiz\quiz_attempt $attempt) {
 
         $html = domdocument_util::prepare_html($html);
@@ -105,7 +104,6 @@ class processor {
             // element that matches "pluginfile.php".
             $urlparts = explode('/', $imgsrc);
             if (0 === strpos($imgsrc, $CFG->wwwroot) && in_array('pluginfile.php', $urlparts)) {
-
                 // Seems to be a local file likely requiring authentication, i.e. we need to get the file
                 // content from the moodle file system by using the relevant arguments contained
                 // within the URL.
@@ -122,7 +120,6 @@ class processor {
                 $imgfilename = urldecode(array_pop($fileargs));
                 $itemid = array_pop($fileargs);
 
-
                 $filerec = $DB->get_record('files', ['component' => $component, 'filearea' => $filearea, 'itemid' => $itemid, 'filename' => $imgfilename, 'contextid' => $contextid]);
 
                 if (!empty($filerec)) {
@@ -131,15 +128,12 @@ class processor {
                     $imgcontent = $file->get_content();
                     $dataurl = 'data:' . $file->get_mimetype() . ';base64,' . base64_encode($imgcontent);
                 }
-
             } else {
-
                 // Not a local file that requires authentication. Simply load the image content
                 // from the URL if possible and build a data url from it.
 
                 $imgcontent = file_get_contents($imgsrc);
                 if (!empty($imgcontent)) {
-
                     // Get the filename extension.
                     $parts = explode('.', $imgsrc);
                     $filetype = array_pop($parts);
@@ -147,16 +141,12 @@ class processor {
                     // Pretend that the filename extension "svg" actually indicates an SVG file
                     // and handle the file content accordingly.
                     if ($filetype == 'svg') {
-
                         $dataurl = 'data:image/svg+xml;base64,' . base64_encode($imgcontent);
-
                     } else {
-
                         // Let GD decide if it wants to handle the file content. If it does, we will
                         // save it as PNG and embed that one. IF GD does not like the content, we will
                         // let the image default to our placeholder.
                         if ($imgres = imagecreatefromstring($imgcontent)) {
-
                             // Get PNG version of the file content.
                             ob_start();
                             imagepng($imgres);

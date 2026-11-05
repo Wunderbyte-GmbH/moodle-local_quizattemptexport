@@ -41,7 +41,6 @@ use local_quizattemptexport\util;
 
 
 class generate_pdf extends \core\task\scheduled_task {
-
     const LOCKDIRNAME = 'quizattemptexport_lockdir';
     protected $haslock = false;
 
@@ -81,7 +80,6 @@ class generate_pdf extends \core\task\scheduled_task {
         // Calculate number of attempts to process.
         $attemptsperrun = self::ATTEMPTS_PER_RUN;
         if ($conf->mathjaxenable) {
-
             // If MathJax typesetting is enabled we will have a specific delay applied
             // per PDF transformation. We have to account for that delay to avoid
             // blocking general execution of cron tasks.
@@ -89,7 +87,6 @@ class generate_pdf extends \core\task\scheduled_task {
             $attemptsperrun = floor(self::JSDELAY_CUTOFF_SECONDS / $jsdelay);
         }
         mtrace('Max attempts being processed: ' . $attemptsperrun);
-
 
         // Get some non processed attempts and mark them as being processed.
         $attempts = $DB->get_records('quizattemptexport', ['status' => self::STATUS_WAITING], 'timecreated ASC', '*', 0, $attemptsperrun);
@@ -109,9 +106,7 @@ class generate_pdf extends \core\task\scheduled_task {
 
         // Process attempts.
         foreach ($attempts as $attemptrec) {
-
             try {
-
                 mtrace('Trying to process attempt: ' . $attemptrec->attemptid);
 
                 // Generate attempt.
@@ -127,9 +122,7 @@ class generate_pdf extends \core\task\scheduled_task {
                 $DB->update_record('quizattemptexport', $attemptrec);
 
                 mtrace('Marking queued attempt record as processed.');
-
             } catch (\Throwable $t) {
-
                 mtrace('Error during processing.');
                 mtrace($t->getMessage());
                 mtrace($t->getTraceAsString());
@@ -175,8 +168,7 @@ class generate_pdf extends \core\task\scheduled_task {
         $maxattempts = 10;
 
         $attempts = 0;
-        while($attempts++ < $maxattempts) {
-
+        while ($attempts++ < $maxattempts) {
             if (!@mkdir($lockdirpath)) {
                 $sleepduration = rand(1, 5);
                 sleep($sleepduration);
@@ -224,7 +216,7 @@ class generate_pdf extends \core\task\scheduled_task {
     public static function add_attempt_to_queue($attemptid) {
         global $DB;
 
-        $rec = new \stdClass;
+        $rec = new \stdClass();
         $rec->attemptid = $attemptid;
         $rec->status = self::STATUS_WAITING;
         $rec->generationattempts = 0;
@@ -233,5 +225,4 @@ class generate_pdf extends \core\task\scheduled_task {
 
         $DB->insert_record('quizattemptexport', $rec);
     }
-
 }

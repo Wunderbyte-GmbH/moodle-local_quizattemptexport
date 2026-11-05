@@ -21,13 +21,12 @@ use local_quizattemptexport\processing\html\domdocument_util;
 /**
  * Postprocessing implementation for qtype_multichoice
  *
- * @package		local_quizattemptexport
- * @copyright	2021 Ralf Wiederhold
- * @author		Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
- * @license    	http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     local_quizattemptexport
+ * @copyright   2021 Ralf Wiederhold
+ * @author      Ralf Wiederhold <ralf.wiederhold@eledia.de>, 2025 Mahdi Poustini
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class multichoice extends base {
-
     /**
      * Replace font awesome correctness icons with locally embedded icons.
      *
@@ -67,7 +66,6 @@ class multichoice extends base {
 
             // Replace icon node with image node containing a data url if a correctness type could be established.
             if (!empty($replacementimgname)) {
-
                 $imgcontent = file_get_contents($CFG->dirroot . '/local/quizattemptexport/pix/' . $replacementimgname);
                 $dataurl = 'data:image/png;base64,' . base64_encode($imgcontent);
                 $replacementnode = $dom->createElement('img');
@@ -130,5 +128,4 @@ class multichoice extends base {
             }
         ";
     }
-
 }

@@ -31,7 +31,6 @@ use local_quizattemptexport\local\helper\wkhtmltopdf_locator;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class export_attempt {
-
     private $page;
 
     /** @var \local_quizattemptexport\local\logger */
@@ -56,8 +55,7 @@ class export_attempt {
         // Monolog version in the same request ends in a fatal error.
         $this->logger = new \local_quizattemptexport\local\logger();
 
-        if (!$this->user_rec = $DB->get_record('user', array('id' => $this->attempt_obj->get_userid()))) {
-
+        if (!$this->user_rec = $DB->get_record('user', ['id' => $this->attempt_obj->get_userid()])) {
             $exc = new \moodle_exception('except_usernotfound', 'local_quizattemptexport', '', $this->attempt_obj->get_userid());
             $this->logexception($exc);
 
@@ -67,14 +65,13 @@ class export_attempt {
         // idnumber currently not used...
         // if (empty($this->user_rec->idnumber)) {
 
-        //     $exc = new \moodle_exception('except_usernoidnumber', 'local_quizattemptexport', '', $this->user_rec->id);
-        //     $this->logmessage($exc->getMessage());
+        // $exc = new \moodle_exception('except_usernoidnumber', 'local_quizattemptexport', '', $this->user_rec->id);
+        // $this->logmessage($exc->getMessage());
 
-        //     throw $exc;
+        // throw $exc;
         // }
 
         if ($this->exportfilesystem = get_config('local_quizattemptexport', 'exportfilesystem')) {
-
             // Check export directory.
             try {
                 $this->exportpath = util::prepare_filearea_server($this->attempt_obj);
@@ -92,7 +89,7 @@ class export_attempt {
 
         $this->page->set_url('/');
         $this->page->set_pagelayout('popup');
-        $this->page->set_pagetype('site-index'); //necessary, or the current url will be used automatically
+        $this->page->set_pagetype('site-index'); // necessary, or the current url will be used automatically
     }
 
     /**
@@ -190,7 +187,7 @@ class export_attempt {
         // The current time for more uniqueness.
         $time = date('YmdHis', time());
 
-        $filename = self::generate_filename($quizname, $this->user_rec, $this->attempt_obj,$time,$tempfilecontent);
+        $filename = self::generate_filename($quizname, $this->user_rec, $this->attempt_obj, $time, $tempfilecontent);
 
         // Write file into filesystem?
         if ($this->exportfilesystem) {
@@ -273,10 +270,10 @@ class export_attempt {
             $errorcode = $exc->errorcode;
         }
 
-        $this->logger->critical($message,[
+        $this->logger->critical($message, [
             'trace' => $trace,
             'debug' => $debug,
-            'errorcode' => $errorcode
+            'errorcode' => $errorcode,
         ]);
     }
 
@@ -306,7 +303,7 @@ class export_attempt {
         ];
 
         foreach ($replacements as $wildcard => $value) {
-            $format = str_replace( $wildcard, $value, $format);
+            $format = str_replace($wildcard, $value, $format);
         }
 
         // Remove consecutive underscores for missing values

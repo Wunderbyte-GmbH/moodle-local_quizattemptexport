@@ -31,7 +31,6 @@ function xmldb_local_quizattemptexport_upgrade($oldversion) {
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2020112601) {
-
         // Define table quizattemptexport to be created.
         $table = new xmldb_table('quizattemptexport');
 
@@ -55,7 +54,6 @@ function xmldb_local_quizattemptexport_upgrade($oldversion) {
     }
 
     if ($oldversion < 2020112602) {
-
         // Define field generationattempts to be added to quizattemptexport.
         $table = new xmldb_table('quizattemptexport');
         $field = new xmldb_field('generationattempts', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'status');
@@ -68,7 +66,6 @@ function xmldb_local_quizattemptexport_upgrade($oldversion) {
         // Quizattemptexport savepoint reached.
         upgrade_plugin_savepoint(true, 2020112602, 'local', 'quizattemptexport');
     }
-
 
     return true;
 }
