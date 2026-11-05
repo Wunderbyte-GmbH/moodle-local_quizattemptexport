@@ -88,7 +88,7 @@ class domdocument_util {
      * @param \DOMNode|null $node
      * @return string
      */
-    public static function save_html(\DOMDocument $dom, \DOMNode $node = null) {
+    public static function save_html(\DOMDocument $dom, ?\DOMNode $node = null) {
 
         $html = $dom->saveHTML($node);
 
